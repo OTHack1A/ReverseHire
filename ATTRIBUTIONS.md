@@ -35,7 +35,7 @@ ReverseHire is distributed under the MIT licence (see `LICENSE`). This file list
 
 ## Embedding model
 
-- `intfloat/multilingual-e5-small`, downloaded on first use from Hugging Face and run locally with fastembed/ONNX. Model licence: **to be verified** on the official model card (the multilingual-e5 family is released under the MIT licence; `multilingual-e5-large` is also listed as MIT in fastembed's list, but the "small" version could not be checked in this environment).
+- `intfloat/multilingual-e5-small` (Wang et al., "Multilingual E5 Text Embeddings: A Technical Report", arXiv:2402.05672; <https://huggingface.co/intfloat/multilingual-e5-small>), downloaded on first use from Hugging Face and run locally with fastembed/ONNX (the ONNX file published by intfloat in the same repository). Model licence: **MIT** (model card and repository licence tag).
 - Fallback model `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`: Apache-2.0 according to fastembed's model list.
 - The model is not included in the repository.
 
@@ -52,7 +52,8 @@ ReverseHire is distributed under the MIT licence (see `LICENSE`). This file list
 
 ## Translation models (local CV translation into English)
 
-- **OPUS-MT** `Helsinki-NLP/opus-mt-it-en` and `Helsinki-NLP/opus-mt-uk-en` (University of Helsinki, Language Technology Research Group; trained on OPUS data). Licence: **Apache-2.0** on the Hugging Face model cards (the original OPUS-MT releases are published under **CC-BY-4.0**: credit the OPUS-MT project and the University of Helsinki when redistributing). Used in the int8-quantised ONNX export by Xenova (`Xenova/opus-mt-it-en` revision `fd0b89b9...`, `Xenova/opus-mt-uk-en` revision `b2ad6afa...`, files pinned by SHA-256 in `cv/translate.py`); the export repositories declare no separate licence, so the original model licence applies (**to be verified** before bundling them in an installer).
+- **OPUS-MT** `Helsinki-NLP/opus-mt-it-en` (<https://huggingface.co/Helsinki-NLP/opus-mt-it-en>) and `Helsinki-NLP/opus-mt-uk-en` (<https://huggingface.co/Helsinki-NLP/opus-mt-uk-en>), by the OPUS-MT project, Language Technology Research Group, University of Helsinki (<https://github.com/Helsinki-NLP/Opus-MT>), trained on OPUS data. Attribution: "Helsinki-NLP, OPUS-MT, Tiedemann & Thottingal 2020". Licence: treated as **CC-BY-4.0** (<https://creativecommons.org/licenses/by/4.0/>), the licence under which the OPUS-MT project distributes its pre-trained models; the Hugging Face model cards also state Apache-2.0, and CC-BY-4.0 is the stricter of the two.
+- Used in the ONNX, int8-quantised conversions published by Xenova: `Xenova/opus-mt-it-en` (<https://huggingface.co/Xenova/opus-mt-it-en>, revision `fd0b89b9c052adc1f2f64152f555aa17353728be`) and `Xenova/opus-mt-uk-en` (<https://huggingface.co/Xenova/opus-mt-uk-en>, revision `b2ad6afa424aaeff8913ff350860b7a7b7c0a607`), files pinned by SHA-256 in `cv/translate.py`. Changes made to the original models (by Xenova): ONNX export and int8 quantisation; ReverseHire uses the converted files unchanged. The conversion repositories declare no separate licence, so the original model licence applies.
 - They run locally with onnxruntime and the `tokenizers` library; the CV text never leaves the computer. They are not in the repository: they are looked for in `models/translation` of the data folder (or of the other model folders, or the folder named by `REVERSEHIRE_TRANSLATION_MODELS`) and are downloaded on request (`python -m reversehire.cv.translate download it uk`) or copied there with a `models` folder.
 - CTranslate2 (MIT) was evaluated and not adopted: its compiled extension is blocked by Windows Smart App Control.
 
@@ -64,7 +65,7 @@ ReverseHire is distributed under the MIT licence (see `LICENSE`). This file list
 
 | Font | Licence | Obligations |
 |---|---|---|
-| **JetBrains Mono**, © JetBrains s.r.o. and The JetBrains Mono Project Authors (<https://github.com/JetBrains/JetBrainsMono>) | SIL Open Font License 1.1 (<https://openfontlicense.org>) | Bundled with the app as the interface font. The font may be used, bundled and redistributed with software, but not sold on its own; keep the copyright notice and the licence text with every copy of the font. **To be verified**: that the OFL text file accompanies the bundled font files in the published repository, and whether the font declares a Reserved Font Name. |
+| **JetBrains Mono**, © JetBrains s.r.o. and The JetBrains Mono Project Authors (<https://github.com/JetBrains/JetBrainsMono>) | SIL Open Font License 1.1 (<https://openfontlicense.org>) | Bundled with the app as the interface font. The font may be used, bundled and redistributed with software, but not sold on its own; keep the copyright notice and the licence text with every copy of the font. The OFL text ships next to the font files (`src/reversehire/resources/fonts/OFL.txt`, copyright line "Copyright 2020 The JetBrains Mono Project Authors"); the font declares no Reserved Font Name. |
 
 ## Map libraries (bundled)
 
@@ -111,11 +112,17 @@ Licences read from the metadata of the packages installed in the project's virtu
 | fpdf2 (development) | 2.9.0 | LGPL-3.0 | only to generate the sample CV PDFs; not a dependency of the app |
 | playwright (optional) | not installed | **to be verified** | crawl engine for dynamic sites; it also downloads the Chromium browser, with its own licences |
 
-Note on Qt and the LGPL-3.0: the app uses PySide6 as a dynamically linked library installed from PyPI and does not modify it. Anyone who redistributes a packaged build (for example a single executable) must comply with the LGPL-3.0 terms for Qt (provide the licence text and the means to replace the library). **To be verified** before distributing any packaged build; installing from source, as described in the README, is not affected.
+Note on Qt and the LGPL-3.0: the app uses PySide6 as a dynamically linked library installed from PyPI and does not modify it. Anyone who redistributes a packaged build must comply with the LGPL-3.0 terms for Qt: provide the licence texts, a notice that Qt is used under the LGPL-3.0, access to the corresponding source and the means to replace the library. The ready-made builds do this (one-folder builds, with Qt as separate replaceable shared libraries; see "Third-party licences in the ready-made builds" below); installing from source, as described in the README, is not affected.
 
 Indirect dependencies also have their own licences; the full list can be obtained with `pip list` and `pip show <package>` in the virtual environment.
 
 The compiled `osmium` package is **not** used any more: regional extracts are read with the built-in reader `discovery/pbf.py`. The Excel files of the export are written with the standard library only (no spreadsheet library).
+
+## Third-party licences in the ready-made builds
+
+The ready-made builds (Windows, Linux, macOS; PyInstaller one-folder builds) contain third-party open-source components besides ReverseHire's own MIT code: the Python 3.14 interpreter and standard library (PSF licence), Qt 6.12 and PySide6 / shiboken6 under the **LGPL-3.0** (shipped unmodified as separate, replaceable shared libraries, with Chromium inside Qt WebEngine and PDFium inside Qt PDF), onnxruntime (MIT), OpenCV (Apache-2.0), Shapely with GEOS (LGPL-2.1), NumPy, lxml, cryptography, tokenizers, Pillow and the other Python packages of the table above, the bundled Leaflet libraries, the JetBrains Mono font and the two bundled ONNX models. Each keeps its own licence.
+
+Every package contains `THIRD-PARTY-NOTICES.txt` (one entry per component: version, licence, copyright holder, upstream URL, the LGPL notice for Qt and the written offer of the corresponding source) and a `licenses` folder with the full licence texts (LGPL-3.0, GPL-3.0, LGPL-2.1, Apache-2.0, MPL-2.0, BSD-3-Clause, PSF-2.0, OFL-1.1 and ReverseHire's MIT licence). Source of these files in the repository: `tools/packaging/THIRD-PARTY-NOTICES.txt` and `tools/packaging/licenses/`. The models downloaded at first use (embedding, translation, advanced OCR) are not part of the packages and are listed in the sections above.
 
 ## Source code adapted from other projects
 

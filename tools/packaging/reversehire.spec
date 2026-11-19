@@ -58,6 +58,39 @@ for name in ("rapidocr", "trafilatura", "justext", "docx", "htmldate", "courlan"
              "lingua", "tokenizers", "certifi", "tzdata"):
     datas += package_data(name)
 
+datas += package_data("onnxruntime", includes=["LICENSE", "ThirdPartyNotices.txt", "Privacy.md"])
+
+# Licence notices: the project's notices file and licence texts, plus the licence
+# files that every installed distribution ships in its *.dist-info folder.
+PACKAGING = ROOT / "tools" / "packaging"
+datas += [(str(PACKAGING / "THIRD-PARTY-NOTICES.txt"), "."), (str(PACKAGING / "licenses"), "licenses")]
+
+
+def distribution_licence_files():
+    from importlib.metadata import distributions
+
+    found, seen = [], set()
+    for dist in distributions():
+        name = (dist.metadata.get("Name") or "").strip()
+        if not name or name.lower() in seen or name.lower() in ("pyinstaller", "pyinstaller-hooks-contrib",
+                                                                  "pip", "setuptools", "altgraph", "pefile",
+                                                                  "pywin32-ctypes", "macholib", "packaging"):
+            continue
+        seen.add(name.lower())
+        for item in dist.files or []:
+            base = item.name.lower()
+            if any(word in base for word in ("licen", "copying", "notice", "authors")) and ".dist-info" in str(item):
+                source = Path(item.locate())
+                if source.is_file():
+                    relative = str(item).split(".dist-info/", 1)[-1].replace("\\", "/")
+                    target = f"licenses/packages/{name}/" + relative.rsplit("/", 1)[0] if "/" in relative \
+                        else f"licenses/packages/{name}"
+                    found.append((str(source), target))
+    return found
+
+
+datas += distribution_licence_files()
+
 hiddenimports = []
 hiddenimports += submodules("reversehire")
 hiddenimports += submodules("mcp", filter=lambda m: ".cli" not in m)
@@ -87,6 +120,29 @@ excludes = [
     "PySide6.QtScxml", "PySide6.QtStateMachine", "PySide6.QtTextToSpeech", "PySide6.QtSpatialAudio",
     "PySide6.QtHttpServer", "PySide6.QtWebSockets", "PySide6.QtWebView", "PySide6.QtCanvasPainter",
 ]
+
+version_info = None
+if WINDOWS:
+    from PyInstaller.utils.win32.versioninfo import (FixedFileInfo, StringFileInfo, StringStruct,
+                                                     StringTable, VarFileInfo, VarStruct, VSVersionInfo)
+
+    numbers = tuple(int(part) for part in VERSION.split(".")[:3]) + (0,)
+    version_info = VSVersionInfo(
+        ffi=FixedFileInfo(filevers=numbers, prodvers=numbers),
+        kids=[
+            StringFileInfo([StringTable("040904B0", [
+                StringStruct("CompanyName", "0THack1A"),
+                StringStruct("FileDescription", "ReverseHire"),
+                StringStruct("FileVersion", VERSION),
+                StringStruct("InternalName", "ReverseHire"),
+                StringStruct("LegalCopyright", "Copyright (c) 0THack1A. MIT licence."),
+                StringStruct("OriginalFilename", "ReverseHire.exe"),
+                StringStruct("ProductName", "ReverseHire"),
+                StringStruct("ProductVersion", VERSION),
+            ])]),
+            VarFileInfo([VarStruct("Translation", [1033, 1200])]),
+        ],
+    )
 
 if WINDOWS:
     icon = str(RESOURCES / "icon.ico")
@@ -118,6 +174,8 @@ def wanted(destination):
         return False  # Qt WebEngine debug resources (devtools symbols)
     if "qtwebengine_locales/" in path and name.endswith(".pak") and name[:-4] not in WEBENGINE_LOCALES:
         return False
+    if "virtualkeyboard" in name.lower():
+        return False  # Qt Virtual Keyboard: GPL-3.0 only, and not used (input method plugin)
     if name.lower().startswith("opencv_videoio_ffmpeg"):
         return False  # video input/output of OpenCV: never used (images only)
     return True
@@ -141,6 +199,7 @@ exe = EXE(  # noqa: F821
     disable_windowed_traceback=False,
     argv_emulation=False,
     icon=icon,
+    version=version_info,
 )
 
 coll = COLLECT(  # noqa: F821

@@ -137,8 +137,8 @@ The version is in `src/reversehire/_version.py` (the single place); its third nu
 
 ## Licence
 
-MIT, see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE). The ready-made builds also contain third-party open-source components (Python, Qt/PySide6 under LGPL-3.0 with Chromium through Qt WebEngine, onnxruntime, OpenCV and others), each under its own licence: `THIRD-PARTY-NOTICES.txt` and the `licenses` folder are inside every package (sources in `tools/packaging/`), and [ATTRIBUTIONS.md](ATTRIBUTIONS.md) lists data, models and services.
 
 ## Author
 
-0THack1A: [GitHub](https://github.com/OTHack1A)
+ReverseHire was conceived and is developed by 0THack1A, its creator and main contributor: [GitHub](https://github.com/OTHack1A)

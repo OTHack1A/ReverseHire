@@ -1,6 +1,8 @@
 ## How to install
 
-Ready-made builds: no Python needed. Pick the file for your system, check it against `SHA256SUMS.txt` if you like, unpack and start.
+Ready-made builds of ReverseHire by 0THack1A: no Python needed. Pick the file for your system, check it against `SHA256SUMS.txt` if you like, unpack and start.
+
+The builds contain third-party open-source components (Python, Qt/PySide6 under LGPL-3.0 with Chromium through Qt WebEngine, onnxruntime, OpenCV and others), each under its own licence. The notices are inside every package: `THIRD-PARTY-NOTICES.txt` and the `licenses` folder (in the macOS disk image next to the app, and inside the app under `Contents/Resources`). The Qt libraries are shipped unmodified as separate, replaceable shared libraries.
 
 | System | File | How to start |
 |---|---|---|

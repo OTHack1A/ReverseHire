@@ -16,7 +16,10 @@ import sys
 from pathlib import Path
 
 MACHO_MAGICS = {b"\xcf\xfa\xed\xfe", b"\xce\xfa\xed\xfe", b"\xca\xfe\xba\xbe", b"\xfe\xed\xfa\xcf"}
-_MINOS = re.compile(r"^\s*(?:minos|version)\s+(\d+(?:\.\d+)*)", re.MULTILINE)
+# LC_BUILD_VERSION: "minos 14.0" (its "tool ... version" lines are linker versions);
+# LC_VERSION_MIN_MACOSX: "version 10.13".
+_MINOS = re.compile(r"^\s*minos\s+(\d+(?:\.\d+)*)", re.MULTILINE)
+_VERSION_MIN = re.compile(r"^\s*version\s+(\d+(?:\.\d+)*)", re.MULTILINE)
 
 
 def is_macho(path: Path) -> bool:
@@ -32,10 +35,13 @@ def minimum(path: Path) -> tuple[int, ...] | None:
                             encoding="utf-8", errors="replace").stdout
     versions = []
     for block in re.split(r"Load command \d+", output):
-        if "LC_BUILD_VERSION" in block or "LC_VERSION_MIN_MACOSX" in block:
+        match = None
+        if "cmd LC_BUILD_VERSION" in block:
             match = _MINOS.search(block)
-            if match:
-                versions.append(tuple(int(x) for x in match.group(1).split(".")))
+        elif "cmd LC_VERSION_MIN_MACOSX" in block:
+            match = _VERSION_MIN.search(block)
+        if match:
+            versions.append(tuple(int(x) for x in match.group(1).split(".")))
     return max(versions) if versions else None
 
 

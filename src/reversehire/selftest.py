@@ -142,8 +142,12 @@ def _main_window() -> dict:
 
 
 def run(argv: list[str]) -> int:
+    import faulthandler
+
     from . import __version__, config
 
+    if sys.stderr is not None:
+        faulthandler.enable(all_threads=True)  # a native crash prints the Python stacks
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     os.environ.setdefault("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-gpu")
     if not os.environ.get(config.HOME_ENV):

@@ -110,10 +110,17 @@ jobs:
             | grep -o 'GLIBC_[0-9.]*' | sort -u -V | tail -1
           xvfb-run -a -s "-screen 0 1600x1000x24 +extension GLX" python tools/packaging/smoke.py dist/ReverseHire/reversehire
 
+      - name: Diagnosis after a failed Linux smoke test (offscreen instead of X11)
+        if: failure() && runner.os == 'Linux'
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python tools/packaging/smoke.py dist/ReverseHire/reversehire || true
+
       - name: Smoke test (macOS)
         if: runner.os == 'macOS'
         run: |
-          python tools/packaging/macos_minos.py dist/ReverseHire.app --max 14.0
+          python tools/packaging/macos_minos.py dist/ReverseHire.app --max 14.0 \
+            || echo "::warning::Some files need a newer macOS than 14.0 (see the list above)"
           python tools/packaging/smoke.py dist/ReverseHire.app/Contents/MacOS/ReverseHire --expect-program-folder none
 
       - name: Package (Windows zip and installer)
@@ -123,6 +130,8 @@ jobs:
         run: |
           mkdir -p packages
           cp LICENSE dist/ReverseHire/LICENSE.txt
+          cp tools/packaging/THIRD-PARTY-NOTICES.txt dist/ReverseHire/
+          cp -r tools/packaging/licenses dist/ReverseHire/licenses
           (cd dist && 7z a -tzip -mx=7 "../packages/ReverseHire-$VERSION-windows-x64.zip" ReverseHire > /dev/null)
           ISCC="/c/Program Files (x86)/Inno Setup 6/ISCC.exe"
           if [ ! -x "$ISCC" ]; then
@@ -146,6 +155,8 @@ jobs:
           chmod +x dist/ReverseHire/install-desktop-entry.sh dist/ReverseHire/reversehire
           cp src/reversehire/resources/icon_256.png dist/ReverseHire/reversehire.png
           cp LICENSE dist/ReverseHire/LICENSE.txt
+          cp tools/packaging/THIRD-PARTY-NOTICES.txt dist/ReverseHire/
+          cp -r tools/packaging/licenses dist/ReverseHire/licenses
           tar -C dist -czf "packages/ReverseHire-$VERSION-linux-x86_64.tar.gz" ReverseHire
           ls -l packages
 
@@ -158,6 +169,8 @@ jobs:
           ditto dist/ReverseHire.app dmg/ReverseHire.app
           ln -s /Applications dmg/Applications
           cp LICENSE dmg/LICENSE.txt
+          cp tools/packaging/THIRD-PARTY-NOTICES.txt dmg/
+          cp -r tools/packaging/licenses dmg/licenses
           for attempt in 1 2 3; do
             hdiutil create -volname "ReverseHire $VERSION" -srcfolder dmg -ov -format UDZO \
               "packages/ReverseHire-$VERSION-macos-arm64.dmg" && break

@@ -1,0 +1,561 @@
+ReverseHire - third-party notices for the ready-made builds
+==========================================================================================
+
+The ready-made builds of ReverseHire (Windows x64, Linux x86_64, macOS arm64; one-folder
+builds made with PyInstaller) contain third-party open-source components. Each component
+keeps its own licence; the builds are an aggregate of separate works and nothing in the
+ReverseHire licence restricts the rights that these licences give you.
+
+The full texts of the licences named below are in the "licenses" folder next to this
+file:
+
+    licenses/LGPL-3.0.txt       GNU Lesser General Public License, version 3
+    licenses/GPL-3.0.txt        GNU General Public License, version 3 (LGPL-3.0 is a set
+                                of additional permissions on top of it)
+    licenses/LGPL-2.1.txt       GNU Lesser General Public License, version 2.1
+    licenses/Apache-2.0.txt     Apache License, version 2.0
+    licenses/MPL-2.0.txt        Mozilla Public License, version 2.0
+    licenses/BSD-3-Clause.txt   BSD 3-Clause License (generic text; holders named below)
+    licenses/PSF-2.0.txt        Python Software Foundation License, version 2
+    licenses/OFL-1.1.txt        SIL Open Font License 1.1 (JetBrains Mono)
+    licenses/MIT-ReverseHire.txt  the MIT licence of ReverseHire itself
+
+ReverseHire's own code is released under the MIT licence, Copyright (c) 2026 0THack1A
+(licenses/MIT-ReverseHire.txt). Source code: https://github.com/OTHack1A/ReverseHire
+
+Versions: the versions below are those of the release build on Windows. Where a version
+differs by platform, the entry says "version as built, see the release"; the exact list
+of packages of each build is printed in the build log of the release (pip list).
+
+This file is a list of notices, not legal advice.
+
+
+------------------------------------------------------------------------------------------
+1. Python interpreter and standard library
+------------------------------------------------------------------------------------------
+
+Component:  Python 3.14 (CPython), interpreter and standard library
+Version:    3.14.10
+Licence:    Python Software Foundation License Version 2 (licenses/PSF-2.0.txt)
+Copyright:  Copyright (c) 2001 Python Software Foundation; All Rights Reserved
+Upstream:   https://www.python.org/  -  https://github.com/python/cpython
+Notes:      The frozen build contains the Python interpreter (python314 shared library)
+            and the compiled standard-library modules it uses. Python is used unchanged.
+            The complete licence of Python, with the history of the software (BeOpen,
+            CNRI, CWI licences) and the licences of the software incorporated in it, is
+            at https://docs.python.org/3.14/license.html
+            Notable libraries that the CPython builds of each platform carry, used here
+            unchanged (exact set and versions as built, see the release):
+              - OpenSSL 3 (libssl, libcrypto) - Apache-2.0 (licenses/Apache-2.0.txt),
+                https://www.openssl.org/
+              - libffi - MIT, Copyright (c) 1996-2022 Anthony Green, Red Hat, Inc and
+                others, https://sourceware.org/libffi/
+              - SQLite - public domain, https://www.sqlite.org/
+              - zlib - zlib licence, (C) Jean-loup Gailly and Mark Adler,
+                https://zlib.net/
+              - expat (pyexpat) - MIT, https://libexpat.github.io/
+              - bzip2 / libbzip2 - bzip2 licence (BSD-style), (C) Julian R Seward,
+                https://sourceware.org/bzip2/
+              - xz / liblzma - 0BSD (public domain for older parts),
+                https://tukaani.org/xz/
+              - libmpdec (decimal), mimalloc, HACL* (hashes), Zstandard (zstd) -
+                permissive licences listed in the Python licence page above
+            Tcl/Tk and tkinter are NOT included in the builds.
+            Windows: the interpreter and several packages (numpy, shapely, rapidfuzz)
+            carry Microsoft Visual C++ runtime files (vcruntime140*.dll, msvcp140*.dll),
+            Microsoft Distributable Code redistributed unchanged under Microsoft's terms.
+
+
+------------------------------------------------------------------------------------------
+2. Qt 6, Qt for Python (PySide6) and shiboken6 - LGPL-3.0
+------------------------------------------------------------------------------------------
+
+Component:  Qt 6.12 libraries; PySide6 6.12.0 (PySide6_Essentials 6.12.0,
+            PySide6_Addons 6.12.0, PySide6_WebEngine 6.12.0.140, PySide6_Pdf 6.12.0.140);
+            shiboken6 6.12.0
+Licence:    GNU Lesser General Public License version 3 (licenses/LGPL-3.0.txt, which
+            incorporates licenses/GPL-3.0.txt). Qt and PySide6 are offered by The Qt
+            Company under LGPL-3.0, GPL-2.0, GPL-3.0 or a commercial licence; ReverseHire
+            uses them under LGPL-3.0.
+Copyright:  Copyright (C) The Qt Company Ltd. and other contributors
+Upstream:   https://www.qt.io/  -  https://code.qt.io/
+
+This application uses Qt and PySide6 under the GNU Lesser General Public License version
+3 (LGPL-3.0). The Qt libraries are shipped unmodified as separate shared libraries in the
+program folder (one-folder build) and can be replaced by the user with compatible
+versions.
+
+Qt modules included (as shared libraries, from the unmodified official wheels on PyPI):
+    QtCore, QtGui, QtWidgets, QtNetwork, QtOpenGL, QtPdf, QtPdfWidgets, QtPrintSupport,
+    QtSvg, QtWebChannel, QtWebEngineCore (with the QtWebEngineProcess helper program and
+    its resources; Chromium inside, see section 3), QtWebEngineWidgets, QtPositioning,
+    QtQml, QtQmlMeta, QtQmlModels, QtQmlWorkerScript, QtQuick, QtQuickWidgets.
+    The last six are included only because Qt WebEngine links them.
+    Plus the Qt plugins those modules load (platform, image format, style, TLS ...).
+Excluded from the builds: Qt Virtual Keyboard (GPL-3.0 only) and all QML plugins.
+Qt itself contains third-party code (for example FreeType, HarfBuzz, libpng, libjpeg,
+PCRE2, zlib, md4c; on Linux the Qt wheels may also carry ICU libraries under the Unicode
+licence); the list is "Licenses Used in Qt":
+https://doc.qt.io/qt-6/licenses-used-in-qt.html
+
+Corresponding source code:
+    Qt 6.12:            https://download.qt.io/official_releases/qt/6.12/
+                        https://code.qt.io/
+    PySide6, shiboken6: https://code.qt.io/cgit/pyside/pyside-setup.git/ (tag v6.12.0)
+                        and the source distributions of PySide6 / shiboken6 6.12.0 on PyPI
+                        (https://pypi.org/project/PySide6/,
+                        https://pypi.org/project/shiboken6/)
+
+Written offer: On request, for at least three years from the date of each release,
+0THack1A will provide the corresponding source code of the LGPL components shipped in that
+release, at no charge beyond the cost of the medium; open an issue at
+https://github.com/OTHack1A/ReverseHire/issues.
+The same offer covers the other components of this file whose licence asks for source
+code to be available (LGPL-2.1: GEOS, FFmpeg libraries where present, Chromium parts;
+MPL-2.0: certifi, tqdm; tld, see section 15).
+
+Replacing Qt: the Qt shared libraries and the PySide6 / shiboken6 extension modules are
+ordinary files in the program folder (on Windows and Linux in "_internal", on macOS inside
+ReverseHire.app/Contents/Frameworks and Resources); they can be replaced by
+interface-compatible builds of the same Qt / PySide6 version. ReverseHire's licence does
+not forbid modifying them or reverse engineering for debugging such modifications.
+
+
+------------------------------------------------------------------------------------------
+3. Qt WebEngine (Chromium) and Qt PDF (PDFium)
+------------------------------------------------------------------------------------------
+
+Component:  Qt WebEngine 6.12 (QtWebEngineCore, QtWebEngineProcess), which embeds the
+            Chromium browser engine
+Licence:    Qt part: LGPL-3.0 (section 2). Chromium and its third-party components: many
+            licences, among them BSD-3-Clause, LGPL-2.1 (licenses/LGPL-2.1.txt), MPL-2.0
+            (licenses/MPL-2.0.txt), Apache-2.0 (licenses/Apache-2.0.txt), MIT, ISC,
+            the OpenSSL/BoringSSL licences, the ICU / Unicode licence and others.
+Upstream:   https://code.qt.io/cgit/qt/qtwebengine.git/ and
+            https://code.qt.io/cgit/qt/qtwebengine-chromium.git/
+Notes:      The full list of the third-party components of Qt WebEngine with their
+            licences is "Qt WebEngine third-party licenses" in the Qt 6.12 documentation:
+            https://doc.qt.io/qt-6/qtwebengine-licensing.html
+            The Chromium credits of the embedded engine can also be shown by the engine
+            itself on its "about:credits" page.
+            ReverseHire uses Qt WebEngine only to show its own bundled map page
+            (Leaflet, section 11) with OpenStreetMap tiles.
+
+Component:  Qt PDF 6.12 (QtPdf, QtPdfWidgets), which embeds PDFium
+Licence:    Qt part LGPL-3.0; PDFium: BSD-3-Clause and Apache-2.0
+            (licenses/BSD-3-Clause.txt, licenses/Apache-2.0.txt); Copyright The PDFium
+            Authors; https://pdfium.googlesource.com/pdfium/
+Notes:      Third-party components of Qt PDF are listed with those of Qt WebEngine at the
+            documentation link above.
+
+
+------------------------------------------------------------------------------------------
+4. ONNX Runtime
+------------------------------------------------------------------------------------------
+
+Component:  onnxruntime
+Version:    1.32.0
+Licence:    MIT
+Copyright:  Copyright (c) Microsoft Corporation
+Upstream:   https://github.com/microsoft/onnxruntime
+Notes:      ONNX Runtime incorporates third-party software (for example Eigen, protobuf,
+            abseil, flatbuffers, re2, safeint, ...). Its own LICENSE and its third-party
+            notices file ThirdPartyNotices.txt are kept in the build under "onnxruntime/".
+
+
+------------------------------------------------------------------------------------------
+5. OpenCV and FFmpeg
+------------------------------------------------------------------------------------------
+
+Component:  OpenCV, as the opencv-python-headless wheel
+Version:    5.1.0.95 (Windows, Linux); 5.0.0.93 (macOS) - version as built, see the release
+Licence:    Apache-2.0 (OpenCV is Apache-2.0 since version 4.5); licenses/Apache-2.0.txt
+Copyright:  Copyright (C) OpenCV team and contributors
+Upstream:   https://opencv.org/  -  https://github.com/opencv/opencv-python
+Notes:      The wheel bundles third-party libraries used by OpenCV (image codecs such as
+            libjpeg-turbo, libpng, libtiff, libwebp, OpenJPEG, zlib, and others) under
+            their own permissive licences; the list is the wheel's
+            LICENSE-3RD-PARTY.txt (https://github.com/opencv/opencv-python).
+            FFmpeg: the Windows build EXCLUDES OpenCV's FFmpeg video plugin
+            (opencv_videoio_ffmpeg*); ReverseHire processes still images only.
+            On Linux and macOS the OpenCV wheels may contain FFmpeg libraries (libavcodec,
+            libavformat, libavutil, libswscale, ...) inside "opencv_python_headless.libs"
+            or "cv2/.dylibs": FFmpeg is licensed under LGPL-2.1 (licenses/LGPL-2.1.txt),
+            https://ffmpeg.org/ ; they are separate shared libraries, unmodified, and can
+            be replaced. Their source: https://ffmpeg.org/download.html and the build
+            scripts of https://github.com/opencv/opencv-python (written offer: section 2).
+
+
+------------------------------------------------------------------------------------------
+6. Shapely and GEOS
+------------------------------------------------------------------------------------------
+
+Component:  Shapely
+Version:    2.2.0
+Licence:    BSD-3-Clause (licenses/BSD-3-Clause.txt)
+Copyright:  Copyright (c) 2007, Sean C. Gillies. 2019, Casper van der Wel. 2007-2022,
+            Shapely Contributors.
+Upstream:   https://github.com/shapely/shapely
+
+Component:  GEOS (Geometry Engine Open Source), bundled by the Shapely wheel
+Licence:    LGPL-2.1 (licenses/LGPL-2.1.txt)
+Upstream:   https://libgeos.org/  -  source: https://libgeos.org/usage/download/
+Notes:      Shipped unmodified as separate shared libraries (geos and geos_c), which can
+            be replaced with compatible builds. Written offer: section 2.
+
+
+------------------------------------------------------------------------------------------
+7. NumPy
+------------------------------------------------------------------------------------------
+
+Component:  NumPy
+Version:    2.5.5
+Licence:    BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 (as declared by the
+            package); main licence BSD-3-Clause (licenses/BSD-3-Clause.txt)
+Copyright:  Copyright (c) 2005-2025, NumPy Developers
+Upstream:   https://numpy.org/  -  https://github.com/numpy/numpy
+Notes:      The wheels bundle OpenBLAS (BSD-3-Clause, https://www.openblas.net/) with
+            LAPACK (BSD-3-Clause-Open-MPI) and, where present, the GCC Fortran runtime
+            (libgfortran / libquadmath, GPL-3.0-or-later WITH the GCC Runtime Library
+            Exception 3.1, which allows its distribution with programs under any
+            licence); on Windows also the Microsoft C++ runtime (see section 1).
+
+
+------------------------------------------------------------------------------------------
+8. lxml, libxml2, libxslt
+------------------------------------------------------------------------------------------
+
+Component:  lxml
+Version:    6.1.3
+Licence:    BSD-3-Clause (licenses/BSD-3-Clause.txt); some code from ElementTree and
+            difflib under the PSF licence
+Copyright:  Copyright (c) 2004 Infrae, lxml contributors
+Upstream:   https://lxml.de/  -  https://github.com/lxml/lxml
+Notes:      The binary wheels include libxml2, libxslt and libexslt (MIT,
+            Copyright (C) The Libxml2 Contributors / Daniel Veillard,
+            https://gitlab.gnome.org/GNOME/libxml2, https://gitlab.gnome.org/GNOME/libxslt)
+            and zlib (zlib licence); according to lxml's own licence notes the wheels may
+            also include libiconv (LGPL-2.1, licenses/LGPL-2.1.txt,
+            https://www.gnu.org/software/libiconv/).
+
+
+------------------------------------------------------------------------------------------
+9. cryptography and OpenSSL
+------------------------------------------------------------------------------------------
+
+Component:  cryptography
+Version:    50.0.2
+Licence:    Apache-2.0 OR BSD-3-Clause (licenses/Apache-2.0.txt, licenses/BSD-3-Clause.txt)
+Copyright:  Copyright (c) Individual contributors (Python Cryptographic Authority)
+Upstream:   https://github.com/pyca/cryptography
+Notes:      Its compiled Rust extension statically includes OpenSSL 3 (Apache-2.0,
+            https://www.openssl.org/) and Rust crates under permissive licences.
+            Pulled in by the MCP library (assistant strip).
+
+
+------------------------------------------------------------------------------------------
+10. tokenizers and Pillow
+------------------------------------------------------------------------------------------
+
+Component:  tokenizers
+Version:    0.23.3
+Licence:    Apache-2.0 (licenses/Apache-2.0.txt)
+Copyright:  Copyright Hugging Face, Inc. and the tokenizers authors
+Upstream:   https://github.com/huggingface/tokenizers
+Notes:      The wheel does not ship a licence file; the licence is that of the project
+            repository and of the package classifier. Compiled Rust extension with
+            permissive Rust crates.
+
+Component:  Pillow
+Version:    13.0.0
+Licence:    MIT-CMU ("HPND"-style historical permission notice)
+Copyright:  The Python Imaging Library (PIL) is Copyright (c) 1997-2011 by Secret Labs AB
+            and Copyright (c) 1995-2011 by Fredrik Lundh and contributors. Pillow is
+            Copyright (c) 2010 by Jeffrey 'Alex' Clark and contributors.
+Upstream:   https://python-pillow.github.io/  -  https://github.com/python-pillow/Pillow
+Notes:      The wheels statically include image and font libraries under their own
+            permissive licences: libjpeg-turbo (IJG / BSD-3-Clause / Zlib), libpng (PNG
+            Reference Library License v2), libtiff (LibTIFF licence), FreeType (FreeType
+            Licence, elected over its GPL-2.0 alternative), HarfBuzz (Old MIT), Little
+            CMS lcms2 (MIT), libwebp (BSD-3-Clause), libavif and dav1d (BSD-2-Clause),
+            OpenJPEG (BSD-2-Clause), brotli (MIT), xz/liblzma (0BSD), zlib-ng (Zlib) and
+            others, as listed in Pillow's LICENSE file
+            (https://github.com/python-pillow/Pillow/blob/main/LICENSE).
+            Portions of this software are copyright (C) The FreeType Project
+            (https://freetype.org). All rights reserved.
+
+
+------------------------------------------------------------------------------------------
+11. Map libraries (JavaScript, bundled with ReverseHire)
+------------------------------------------------------------------------------------------
+
+Component:  Leaflet
+Version:    1.9.4
+Licence:    BSD-2-Clause
+Copyright:  Copyright (c) 2010-2023, Volodymyr Agafonkin; Copyright (c) 2010-2011, CloudMade
+Upstream:   https://leafletjs.com/  -  https://github.com/Leaflet/Leaflet
+Notes:      Licence text next to the files: reversehire/mapview/web/vendor/leaflet/LICENSE
+
+Component:  Leaflet.markercluster
+Version:    1.5.3
+Licence:    MIT
+Copyright:  Copyright 2012 David Leaver
+Upstream:   https://github.com/Leaflet/Leaflet.markercluster
+Notes:      Licence text next to the files:
+            reversehire/mapview/web/vendor/markercluster/MIT-LICENCE.txt
+
+Map data and tiles: (C) OpenStreetMap contributors, ODbL 1.0,
+https://www.openstreetmap.org/copyright (downloaded at run time, not part of the package).
+
+
+------------------------------------------------------------------------------------------
+12. Font
+------------------------------------------------------------------------------------------
+
+Component:  JetBrains Mono (Regular, Bold, Italic)
+Licence:    SIL Open Font License 1.1 (licenses/OFL-1.1.txt; also next to the font files
+            as reversehire/resources/fonts/OFL.txt)
+Copyright:  Copyright 2020 The JetBrains Mono Project Authors
+Upstream:   https://github.com/JetBrains/JetBrainsMono
+
+
+------------------------------------------------------------------------------------------
+13. Machine-learning models included in the package
+------------------------------------------------------------------------------------------
+
+Component:  YuNet face detector, face_detection_yunet_2023mar.onnx (OpenCV Zoo)
+Licence:    MIT
+Copyright:  Copyright (c) 2020 Shiqi Yu
+Upstream:   https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet
+Notes:      Unmodified. Licence text next to the model:
+            reversehire/cv/data/face_detection_yunet_LICENSE.txt
+            Used only to locate the portrait in a CV (detection, never recognition).
+
+Component:  PP-OCRv5 Cyrillic mobile text recogniser (ocr_cyrillic_rec.onnx) and its
+            character list (ocr_cyrillic_keys.txt)
+Licence:    Apache-2.0 (licenses/Apache-2.0.txt; also next to the model as
+            reversehire/cv/data/ocr_models_LICENSE.txt)
+Copyright:  PaddleOCR project, PaddlePaddle authors (Baidu)
+Upstream:   https://github.com/PaddlePaddle/PaddleOCR ; ONNX file as published at
+            https://huggingface.co/PaddlePaddle/cyrillic_PP-OCRv5_mobile_rec_onnx
+            (revision 2cef88145434beb8afa9dd82d77d799eb1ad7b29)
+Notes:      Included unmodified; the character list was taken from the model's
+            inference.yml.
+
+Component:  RapidOCR's own models (inside the rapidocr package): PP-OCRv6 small text
+            detection and recognition, PP-OCR mobile v2.0 text-direction classifier
+            (ONNX conversions of PaddleOCR models)
+Licence:    Apache-2.0 (licenses/Apache-2.0.txt)
+Copyright:  PaddleOCR project, PaddlePaddle authors (Baidu); RapidOCR authors (RapidAI)
+Upstream:   https://github.com/PaddlePaddle/PaddleOCR  -  https://github.com/RapidAI/RapidOCR
+Notes:      Included as shipped by the rapidocr 3.10.0 package (MODEL_LICENSES.md in the
+            package).
+
+
+------------------------------------------------------------------------------------------
+14. Other bundled packages with a native part
+------------------------------------------------------------------------------------------
+
+Component:  lingua-language-detector 2.2.0 - Apache-2.0 -
+            https://github.com/pemistahl/lingua-rs
+            (Copyright Peter M. Stahl). Its compiled module embeds language models built
+            from n-gram statistics; per its documentation the training texts come from the
+            Leipzig Corpora Collection (https://wortschatz.uni-leipzig.de/).
+Component:  rapidfuzz 3.14.6 - MIT - https://github.com/rapidfuzz/RapidFuzz
+            (Copyright Max Bachmann)
+Component:  pyclipper 1.4.0 - MIT - https://github.com/fonttools/pyclipper; wraps the
+            Clipper library by Angus Johnson (Boost Software License 1.0)
+Component:  pywin32 312 (Windows only) - PSF licence as declared by the package
+            (licenses/PSF-2.0.txt); its own licence file is a BSD-style text,
+            Copyright Mark Hammond and contributors - https://github.com/mhammond/pywin32
+Component:  hf-xet 1.8.0, pydantic-core 2.50.4, py-rust-stemmers 0.1.8, rpds-py (if
+            present) - compiled Rust extensions; licences in the table below; the Rust
+            crates they include are under permissive licences (MIT / Apache-2.0 / BSD).
+
+
+------------------------------------------------------------------------------------------
+15. Other Python packages (compact table)
+------------------------------------------------------------------------------------------
+
+Licences as declared in the metadata of the installed packages (License-Expression,
+License or classifier) and in their licence files. "version as built" means: see the
+package list in the release build log. Texts: Apache-2.0, BSD-3-Clause, MPL-2.0, PSF-2.0
+and LGPL-2.1 in the "licenses" folder; MIT, BSD-2-Clause, ISC-style and other short
+permissive texts are as published at the URL given.
+
+Package / version / licence, then the project URL on the next line.
+
+fastembed                  0.9.1       Apache-2.0
+    https://github.com/qdrant/fastembed
+huggingface-hub            1.33.0      Apache-2.0
+    https://github.com/huggingface/huggingface_hub
+hf-xet                     1.8.0       Apache-2.0
+    https://github.com/huggingface/xet-core
+httpx                      0.28.1      BSD-3-Clause
+    https://github.com/encode/httpx
+httpcore                   as built    BSD-3-Clause
+    https://github.com/encode/httpcore
+h11                        as built    MIT
+    https://github.com/python-hyper/h11
+anyio                      as built    MIT
+    https://github.com/agronholm/anyio
+trafilatura                2.3.1       Apache-2.0
+    https://github.com/adbar/trafilatura
+jusText                    3.0.2       BSD-2-Clause
+    https://github.com/miso-belica/jusText
+htmldate                   1.11.0      Apache-2.0
+    https://github.com/adbar/htmldate
+courlan                    1.5.0       Apache-2.0
+    https://github.com/adbar/courlan
+tld (pulled by courlan)    as built    MPL-1.1 OR GPL-2.0-only OR LGPL-2.1-or-later; used
+                                       under LGPL-2.1-or-later (licenses/LGPL-2.1.txt)
+    https://github.com/barseghyanartur/tld
+dateparser                 1.5.1       BSD-3-Clause
+    https://github.com/scrapinghub/dateparser
+python-dateutil            as built    BSD-3-Clause
+    https://github.com/dateutil/dateutil
+babel                      as built    BSD-3-Clause; the CLDR locale data it includes is
+                                       under the Unicode licence
+    https://github.com/python-babel/babel
+pytz                       as built    MIT
+    https://pythonhosted.org/pytz/
+tzlocal                    as built    MIT
+    https://github.com/regebro/tzlocal
+lxml_html_clean            as built    BSD-3-Clause
+    https://github.com/fedora-python/lxml_html_clean
+pypdf                      7.1.1       BSD-3-Clause
+    https://github.com/py-pdf/pypdf
+python-docx                1.2.0       MIT
+    https://github.com/python-openxml/python-docx
+truststore                 0.10.5      MIT
+    https://github.com/sethmlarson/truststore
+certifi                    2026.10.23  MPL-2.0 (licenses/MPL-2.0.txt)
+    https://github.com/certifi/python-certifi
+mcp, mcp-types             2.3.0       MIT
+    https://github.com/modelcontextprotocol/python-sdk
+pydantic                   2.14.3      MIT
+    https://github.com/pydantic/pydantic
+pydantic-core              2.50.4      MIT
+    https://github.com/pydantic/pydantic-core
+typing-inspection          as built    MIT
+    https://github.com/pydantic/typing-inspection
+annotated-types            as built    MIT
+    https://github.com/annotated-types/annotated-types
+typing_extensions          as built    PSF-2.0 (licenses/PSF-2.0.txt)
+    https://github.com/python/typing_extensions
+starlette                  1.10.0      BSD-3-Clause
+    https://github.com/Kludex/starlette
+sse-starlette              as built    BSD-3-Clause
+    https://github.com/sysid/sse-starlette
+uvicorn                    0.54.0      BSD-3-Clause
+    https://github.com/Kludex/uvicorn
+httpx2, httpcore2          as built    BSD-3-Clause
+    https://github.com/pydantic/httpx2
+python-multipart           as built    Apache-2.0
+    https://github.com/Kludex/python-multipart
+PyJWT                      as built    MIT
+    https://github.com/jpadilla/pyjwt
+jsonschema                 as built    MIT
+    https://github.com/python-jsonschema/jsonschema
+jsonschema-specifications  as built    MIT
+    https://github.com/python-jsonschema/jsonschema-specifications
+referencing                as built    MIT
+    https://github.com/python-jsonschema/referencing
+rpds-py                    as built    MIT
+    https://github.com/crate-py/rpds
+attrs                      as built    MIT
+    https://github.com/python-attrs/attrs
+opentelemetry-api          as built    Apache-2.0
+    https://github.com/open-telemetry/opentelemetry-python
+cffi                       as built    MIT-0
+    https://github.com/python-cffi/cffi
+pycparser                  as built    BSD-3-Clause
+    https://github.com/eliben/pycparser
+py-rust-stemmers           0.1.8       MIT (licence file; no licence field in the
+                                       metadata)
+    https://github.com/qdrant/py-rust-stemmers
+mmh3                       5.3.1       MIT
+    https://github.com/hajimes/mmh3
+loguru                     as built    MIT (classifier; the wheel has no licence file)
+    https://github.com/Delgan/loguru
+win32_setctime             as built    MIT (Windows only)
+    https://github.com/Delgan/win32-setctime
+tqdm                       as built    MPL-2.0 AND MIT (licenses/MPL-2.0.txt)
+    https://github.com/tqdm/tqdm
+PyYAML                     6.0.3       MIT
+    https://github.com/yaml/pyyaml
+omegaconf                  2.4.0       BSD-3-Clause (classifier "BSD License"); includes
+                                       the ANTLR4 runtime (BSD-3-Clause)
+    https://github.com/hydra-ecosystem/omegaconf
+colorlog                   as built    MIT
+    https://github.com/borntyping/python-colorlog
+six                        as built    MIT
+    https://github.com/benjaminp/six
+regex                      as built    Apache-2.0 AND CNRI-Python
+    https://github.com/mrabarnett/mrab-regex
+requests                   as built    Apache-2.0
+    https://github.com/psf/requests
+urllib3                    as built    MIT
+    https://github.com/urllib3/urllib3
+idna                       as built    BSD-3-Clause
+    https://github.com/kjd/idna
+charset-normalizer         as built    MIT
+    https://github.com/jawah/charset_normalizer
+filelock                   as built    MIT
+    https://github.com/tox-dev/filelock
+fsspec                     as built    BSD-3-Clause
+    https://github.com/fsspec/filesystem_spec
+packaging                  as built    Apache-2.0 OR BSD-2-Clause
+    https://github.com/pypa/packaging
+click                      as built    BSD-3-Clause
+    https://github.com/pallets/click
+colorama (Windows)         as built    BSD-3-Clause (classifier "BSD License")
+    https://github.com/tartley/colorama
+tzdata                     as built    Apache-2.0
+    https://github.com/python/tzdata
+protobuf                   7.36.2      BSD-3-Clause
+    https://github.com/protocolbuffers/protobuf
+flatbuffers                as built    Apache-2.0 (the wheel has no licence file)
+    https://github.com/google/flatbuffers
+
+Copyright holders of the BSD-3-Clause packages above are named in each package's own
+licence file at the URL given (for example: httpx, httpcore, starlette, uvicorn -
+Encode OSS Ltd. and contributors; click - Pallets; pypdf - Mathieu Fenniak and the pypdf
+contributors; idna - Kim Davies; protobuf - Google Inc.).
+
+Packaging tool: the builds are made with PyInstaller (https://pyinstaller.org/). Its
+bootloader (the program launcher) is licensed under GPL-2.0-or-later with the PyInstaller
+bootloader exception, which allows it to be distributed with programs under any licence;
+its run-time loader and run-time hooks are under Apache-2.0.
+
+Not included in the builds: python-jobspy, pandas, curl_cffi, beautifulsoup4,
+markdownify (optional "jobboards" extra of the source installation), duckdb, playwright,
+onnxruntime-directml, Tcl/Tk.
+
+
+------------------------------------------------------------------------------------------
+16. Models and data downloaded at first use (not part of the package)
+------------------------------------------------------------------------------------------
+
+The following are not contained in the ready-made builds; the application downloads them
+only when they are first needed or when the user asks, and they are listed with their
+attribution in ATTRIBUTIONS.md (https://github.com/OTHack1A/ReverseHire):
+
+  - Embedding model intfloat/multilingual-e5-small (Wang et al., "Multilingual E5 Text
+    Embeddings: A Technical Report", arXiv:2402.05672), MIT licence,
+    https://huggingface.co/intfloat/multilingual-e5-small
+  - Translation models opus-mt-it-en and opus-mt-uk-en by the OPUS-MT project, Language
+    Technology Research Group, University of Helsinki (Helsinki-NLP, OPUS-MT, Tiedemann &
+    Thottingal 2020), licensed under CC BY 4.0
+    (https://creativecommons.org/licenses/by/4.0/), in the ONNX, int8-quantised
+    conversions published by Xenova (https://huggingface.co/Xenova/opus-mt-it-en,
+    https://huggingface.co/Xenova/opus-mt-uk-en; changes: ONNX export, int8
+    quantisation); ReverseHire uses them unchanged.
+  - Advanced OCR models (PP-OCRv6 medium detection and recognition, PP-OCRv5 Cyrillic
+    recognition), PaddleOCR project by PaddlePaddle / Baidu, Apache-2.0,
+    https://huggingface.co/PaddlePaddle
+  - Map tiles and map data (OpenStreetMap, ODbL 1.0) and the other data sources listed in
+    ATTRIBUTIONS.md.
+
+==========================================================================================
+End of third-party notices.
