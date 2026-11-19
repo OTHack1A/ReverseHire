@@ -96,7 +96,7 @@ hiddenimports += submodules("reversehire")
 hiddenimports += submodules("mcp", filter=lambda m: ".cli" not in m)
 hiddenimports += submodules("rapidocr")
 hiddenimports += ["truststore", "onnxruntime", "tokenizers", "cv2", "docx", "pypdf",
-                  "PySide6.QtPdf", "PySide6.QtPdfWidgets", "PySide6.QtPrintSupport",
+                  "PySide6.QtQuick", "PySide6.QtPdf", "PySide6.QtPdfWidgets", "PySide6.QtPrintSupport",
                   "PySide6.QtWebChannel", "PySide6.QtWebEngineCore", "PySide6.QtWebEngineWidgets"]
 if WINDOWS:
     hiddenimports += ["win32com", "win32com.client", "pythoncom", "pywintypes"]
@@ -108,12 +108,12 @@ excludes = [
     "playwright", "jobspy", "duckdb", "pandas", "torch", "tensorflow", "matplotlib",
     # GUI toolkits the app does not use
     "tkinter", "_tkinter", "PyQt5", "PyQt6", "PySide2",
-    # Qt modules the app does not use. Qt Quick and QML: Qt WebEngine's libraries link
-    # them (they stay as libraries), but the QML plugins (about 200 MB with their
-    # dependencies) are only collected through these Python modules. UNUSED_QT below
-    # also filters the libraries that only QML plugins need.
-    "PySide6.QtQml", "PySide6.QtQuick", "PySide6.QtQuickWidgets", "PySide6.QtQuickControls2",
-    "PySide6.QtWebEngineQuick", "PySide6.QtQuick3D", "PySide6.Qt3DCore", "PySide6.Qt3DRender", "PySide6.QtCharts",
+    # Qt modules the app does not use. PySide6.QtQuick (and QtQml, which it needs) IS
+    # bundled: mapview/webbackend.py imports it so that PySide knows the real types of
+    # Qt WebEngine's internal Qt Quick objects (without it the map crashed on Linux and
+    # macOS). Its QML plugins and the libraries only they need are filtered out below
+    # ("/qml/" and UNUSED_QT).
+    "PySide6.QtQuickWidgets", "PySide6.QtQuickControls2", "PySide6.QtWebEngineQuick", "PySide6.QtQuick3D", "PySide6.Qt3DCore", "PySide6.Qt3DRender", "PySide6.QtCharts",
     "PySide6.QtDataVisualization", "PySide6.QtGraphs", "PySide6.QtMultimedia",
     "PySide6.QtMultimediaWidgets", "PySide6.QtBluetooth", "PySide6.QtNfc", "PySide6.QtSensors",
     "PySide6.QtSerialPort", "PySide6.QtSql", "PySide6.QtTest", "PySide6.QtDesigner",
