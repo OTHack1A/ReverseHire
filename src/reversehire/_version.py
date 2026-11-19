@@ -8,5 +8,5 @@ Keep both as plain string assignments: setuptools and tools/build.py read them
 without importing the package.
 """
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 BUILD_DATE = "2026-11-19"

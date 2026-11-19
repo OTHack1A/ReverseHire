@@ -19,9 +19,9 @@ It is for job seekers who are willing to read the reasons behind a score, and wh
 | | Minimum |
 |---|---|
 | Windows | Windows 10 version 1809 or later, or Windows 11; 64-bit (x64) only |
-| Linux | Source installation: Python 3.12 or later, a graphical desktop and glibc 2.34 or later (needed by PySide6 6.12: Ubuntu 22.04+, Debian 12+, Fedora 35+). Ready-made build: not published yet |
-| macOS | Source installation: macOS 14 or later (PySide6 6.12 wheels), Apple Silicon. Ready-made build: not published yet (no Intel Macs) |
-| From the sources | Python 3.12 or later (the Windows ready-made build uses Python 3.14) |
+| Linux | Ready-made build: x86_64, glibc 2.35 or later (Ubuntu 22.04+, Debian 12+, Fedora 36+). Source installation: Python 3.12 or later, a graphical desktop and glibc 2.34 or later (needed by PySide6 6.12) |
+| macOS | Ready-made build: Apple Silicon only (no Intel Macs); macOS 14.4 or later declared by Qt 6.12, started only on macOS 15. Source installation: macOS 14 or later (PySide6 6.12 wheels), Apple Silicon |
+| From the sources | Python 3.12 or later (the ready-made builds use Python 3.14) |
 | Memory and disk | about 4 GB of free RAM; about 1 GB for the program plus 0.5 GB for the scoring model |
 | Screen | 1366 × 768 or larger |
 
@@ -40,17 +40,15 @@ Every table sorts by clicking a column header, and every list has one search box
 
 ## Download
 
-The first release has the **Windows (x64)** build only, on the [Releases page](https://github.com/OTHack1A/ReverseHire/releases/latest): no Python needed, unpack and start (zip), or run the installer.
+Ready-made builds for Windows, Linux and macOS are on the [Releases page](https://github.com/OTHack1A/ReverseHire/releases/latest): no Python needed.
 
 | System | Download | Start |
 |---|---|---|
 | Windows 10/11, 64-bit | `ReverseHire-<version>-windows-x64.zip` and installer `ReverseHire-<version>-setup.exe` | unpack the folder, double-click `ReverseHire.exe`; or run the installer |
-| Linux x86_64 | *not published yet* | install from the sources for now (below) |
-| macOS, Apple Silicon | *not published yet* | install from the sources for now (below) |
+| Linux x86_64 | `ReverseHire-<version>-linux-x86_64.tar.gz` | `tar xzf` the file, run `ReverseHire/reversehire`; `ReverseHire/install-desktop-entry.sh` adds a menu entry. Needs the Qt desktop libraries listed in the [installation guide](docs/INSTALLATION.md#download-a-ready-made-build) |
+| macOS, Apple Silicon | `ReverseHire-<version>-macos-arm64.dmg` | open the disk image and drag `ReverseHire.app` to Applications |
 
-The Linux and macOS builds are **not published yet**: their automatic start-up test crashes (segmentation fault) when the web map (Qt WebEngine) starts with PySide6 6.12 on Linux/macOS, also when run from the sources. It is a bug of the app, to be fixed. Linux and macOS users install from the sources for now.
-
-**The Windows build is not code-signed.** Windows SmartScreen shows "Windows protected your PC / unknown publisher" (click **More info**, then **Run anyway**); a PC with **Smart App Control** switched on blocks the program outright: use the source installation below (`start.bat`) there. A future macOS build would also be unsigned, and macOS refuses to open an unsigned app the first time (right-click the app, **Open**, or System Settings, Privacy & Security, **Open Anyway**). The Windows build is checked automatically on GitHub's machines (start-up self-test) but has not been tried by a person on a real desktop. Details, where the data goes and what is downloaded later: [installation guide, section "Download a ready-made build"](docs/INSTALLATION.md#download-a-ready-made-build).
+**The builds are not code-signed.** Windows SmartScreen shows "Windows protected your PC / unknown publisher" (click **More info**, then **Run anyway**); a PC with **Smart App Control** switched on blocks the program outright: use the source installation below (`start.bat`) there. macOS Gatekeeper refuses the unsigned app the first time: Control-click the app and choose **Open**, or open System Settings, Privacy & Security and click **Open Anyway** (on macOS 15 only the second way works); in Terminal: `xattr -dr com.apple.quarantine /Applications/ReverseHire.app`. **No person has run the Linux or macOS builds on a real desktop, and nobody has used the Windows build on a real desktop either.** All three were built on GitHub's machines and started there with the automatic self-test (locales, bundled models, web map) and an MCP `initialize` check. Details, where the data goes and what is downloaded later: [installation guide, section "Download a ready-made build"](docs/INSTALLATION.md#download-a-ready-made-build).
 
 **Intel Macs are not supported by the ready-made build** (only Apple Silicon is built; the ONNX runtime has no current release for Intel Macs). The source installation with Python 3.12 or 3.13 may still work there, untested.
 
@@ -84,11 +82,11 @@ None of this is in the repository; it is created on your PC at installation or o
 
 | Item | Requirement | Where it comes from |
 |---|---|---|
-| Windows | Windows 10 version 1809 (build 17763) or later, or Windows 11; x64 only (no 32-bit, no ARM build) | Python 3.14 supports Windows 10 and newer; Qt 6.12 (PySide6 6.12) supports Windows 10 1809 or later. Tested on Windows 11 (developer's PC) and on GitHub's Windows Server runner. |
-| Linux | Source installation: Python 3.12 or later, X11 or Wayland desktop, glibc 2.34 or later (Ubuntu 22.04+, Debian 12+, Fedora 35+). Ready-made build: not published yet | PySide6 6.12 itself needs glibc 2.34. A build was made and started on GitHub's Ubuntu 22.04 runner but crashed when the web map started (see Limits), so it is not published. |
+| Windows | Windows 10 version 1809 (build 17763) or later, or Windows 11; x64 only (no 32-bit, no ARM build) | Python 3.14 supports Windows 10 and newer; Qt 6.12 (PySide6 6.12) supports Windows 10 1809 or later. Built and started with the self-test on GitHub's Windows Server runner; never run by a person on a real desktop. |
+| Linux | Ready-made build: x86_64 only, glibc 2.35 or later (Ubuntu 22.04+, Debian 12+, Fedora 36+). Source installation: Python 3.12 or later, X11 or Wayland desktop, glibc 2.34 or later (Fedora 35+) | The highest glibc symbol version the build's binaries need is GLIBC_2.35 (measured); PySide6 6.12 itself needs glibc 2.34. Built and started with the self-test on GitHub's Ubuntu 22.04 runner (virtual X server); never run by a person on a real desktop. |
 | Linux libraries | `libegl1 libgl1 libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libnss3 libxcomposite1 libxdamage1 libxrandr2 libxtst6 libasound2` (Debian/Ubuntu names; `libasound2t64` on Ubuntu 24.04) | What Qt and Qt WebEngine load at start; a desktop installation normally has them. |
-| macOS | Source installation: macOS 14 or later (PySide6 6.12 wheels), Apple Silicon. Ready-made build: not published yet; for a future one Qt 6.12 declares macOS 14.4, not verified on a real Mac | A build was made and started on GitHub's macOS 15 runner (Apple Silicon) but crashed when the web map started (see Limits), so it is not published. |
-| Python (from the sources) | 3.12 or later (`requires-python`); the Windows ready-made build and the tests use 3.14 | `pyproject.toml` |
+| macOS | Ready-made build: Apple Silicon only; macOS 14.4 or later declared by Qt 6.12; started only on macOS 15 (GitHub runner), not verified on a real Mac or on macOS 14. Source installation: macOS 14 or later (PySide6 6.12 wheels), Apple Silicon | Qt 6.12's frameworks in the build declare macOS 14.4 as minimum and PySide6 6.12's own libraries declare 26.0, yet the build runs on the macOS 15 runner. Built and started with the self-test there; never run by a person on a real Mac. |
+| Python (from the sources) | 3.12 or later (`requires-python`); the ready-made builds and the tests use 3.14 | `pyproject.toml` |
 | Processor | 64-bit | all builds are 64-bit |
 | Memory | about 4 GB of free RAM for normal use (8 GB of RAM recommended); more while the advanced text recognition runs | installation guide, section 1 |
 | Disk | program: about 1 GB unpacked (ready-made build) or 1.4 GB (source environment); scoring model about 470 MB; optional: advanced text recognition about 147 MB, map data about 205 MB per region (Emilia-Romagna), translation models (size not stated by the program), regional register from several hundred MB to a few GB of raw files | measured sizes and the table above |
@@ -116,8 +114,7 @@ The project works but it is **not tuned on many real cases**. The manual has the
 - **Company lists are incomplete.** OpenStreetMap is not a register; the free registers cover roughly a quarter to a third of the machinery companies of a province in the study behind the feature, the province is sometimes presumed and most companies have no exact ATECO code. The complete list (Registro Imprese "Elenco") is paid and you import it yourself.
 - **Financial figures are entered by paste**, because the company-information sites forbid automated reading; only listed companies get free figures automatically.
 - **Recruiter simulators are approximations** built from public documentation (none has high confidence). The AI-written-text bar is an estimate, not proof.
-- **Linux and macOS: the web map can crash the program** (PySide6 6.12, found by the automatic start-up test on GitHub's machines, also from the sources); for this reason the first release has no Linux or macOS build. `REVERSEHIRE_MAP_FALLBACK=1` selects the plain map, which does not use Qt WebEngine (not tried there).
-- **Tried on a real PC:** Windows, classic and new Outlook drafts, Excel opening the exports, Claude Code and Codex through the MCP tools. **Not tried:** Linux and macOS on real machines (only the automatic start-up test ran there, and it crashed at the web map), Thunderbird, Apple Mail, Gmail compose, a real printer, the paid Openapi lookup, the Adzuna, Jooble and Careerjet services with a real key, Claude Desktop and Gemini CLI, and the newest functions (affinity, suggestions, idle analysis, applications tracker, register manager) on other PCs than the developer's.
+- **Tried on a real PC:** Windows, classic and new Outlook drafts, Excel opening the exports, Claude Code and Codex through the MCP tools. **Not tried:** Linux and macOS on real machines (only the automatic start-up test of the ready-made builds ran there, on GitHub's machines), Thunderbird, Apple Mail, Gmail compose, a real printer, the paid Openapi lookup, the Adzuna, Jooble and Careerjet services with a real key, Claude Desktop and Gemini CLI, and the newest functions (affinity, suggestions, idle analysis, applications tracker, register manager) on other PCs than the developer's.
 - **The assistant may not know small local companies:** in the real check it never named a well-known local cybersecurity company that the local map data did find, so use the fast ordering together with the suggestions.
 - **The idle analysis pause** (it stops when you use the PC) was verified only with simulated idle signals. **Two short stalls of the window (about 5 seconds)** were seen during heavy background work and are **not fixed yet**.
 - Italy first: the place selectors, registers and categories are Italian.
@@ -125,7 +122,7 @@ The project works but it is **not tuned on many real cases**. The manual has the
 ## Documentation
 
 - [User manual](docs/USER_MANUAL.md): how to use the app, step by step; also as a [PDF edition](docs/manual/reversehire_manual.pdf) (LaTeX).
-- [Installation guide](docs/INSTALLATION.md): the ready-made Windows build, installation from source on Windows, Linux and macOS, the data folder, first run, optional downloads, troubleshooting.
+- [Installation guide](docs/INSTALLATION.md): the ready-made builds, installation from source on Windows, Linux and macOS, the data folder, first run, optional downloads, troubleshooting.
 - [Plan and progress](docs/PLAN.md): what each phase did, with its short decision tables.
 - [Interfaces](docs/INTERFACES.md): module contracts. [MCP](docs/MCP.md): using ReverseHire from Claude, Codex and Gemini.
 - [Publishing checklist](docs/PUBLISHING.md) and [attributions](ATTRIBUTIONS.md).
