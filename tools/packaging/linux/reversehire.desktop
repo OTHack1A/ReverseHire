@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=ReverseHire
+GenericName=CV-based company finder
+Comment=Starts from a CV and finds the companies that fit the profile within a radius
+# Works when this file stays in the ReverseHire folder (%k is this file's path).
+# For the applications menu run install-desktop-entry.sh, which writes absolute paths.
+Exec=sh -c '"$(dirname "%k")/reversehire"'
+Icon=reversehire
+Terminal=false
+Categories=Office;
+StartupWMClass=reversehire

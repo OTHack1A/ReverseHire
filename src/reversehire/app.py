@@ -1,6 +1,7 @@
 """Application entry point (script `reversehire`, `python -m reversehire`)."""
 
 import logging
+import os
 import sys
 
 from . import __version__, config, i18n, applog
@@ -104,5 +105,65 @@ def main(close_after_ms: int | None = None) -> None:
     log.info("Closed (log: %s)", log_path)
 
 
-if __name__ == "__main__":
+# Modules a ready-made build runs with "<executable> -m <module> [args]", as Python
+# would: the MCP server is started that way by the assistant strip and by AI clients
+# (the command is built from sys.executable, which is the program itself there).
+# Value: (function to call, does it take the remaining arguments?).
+RUNNABLE_MODULES = {
+    "reversehire.mcp_server": ("main", False),
+    "reversehire.diagnostics": ("main", True),
+    "reversehire.cv.translate": ("_main", True),  # download of the translation models
+}
+
+
+def launch_target(argv: list[str]) -> str:
+    """What a command line asks for: "module", "self-test", "version" or "gui"."""
+    if len(argv) >= 2 and argv[0] == "-m" and argv[1] in RUNNABLE_MODULES:
+        return "module"
+    from .selftest import FLAG
+
+    if any(arg == FLAG for arg in argv):
+        return "self-test"
+    if any(arg == "--version" for arg in argv):
+        return "version"
+    return "gui"
+
+
+def run(argv: list[str] | None = None) -> int:
+    """Entry point of the script, of `python -m reversehire` and of the ready-made
+    builds: the window, or `--self-test`, `--version`, `-m reversehire.mcp_server`."""
+    argv = list(sys.argv[1:] if argv is None else argv)
+    target = launch_target(argv)
+    if target == "module":
+        import importlib
+
+        module_name, rest = argv[1], argv[2:]
+        sys.argv = [sys.argv[0]] + rest
+        function, takes_arguments = RUNNABLE_MODULES[module_name]
+        module_main = getattr(importlib.import_module(module_name), function)
+        try:
+            return int((module_main(rest) if takes_arguments else module_main()) or 0)
+        except SystemExit as stop:
+            return stop.code if isinstance(stop.code, int) else 0
+    if target == "self-test":
+        from . import selftest
+
+        code = selftest.run(argv)
+        # Qt WebEngine can hang on interpreter shutdown: the report is already written.
+        try:
+            sys.stdout.flush()
+        except (AttributeError, OSError, ValueError):
+            pass
+        os._exit(code)
+    if target == "version":
+        try:
+            print(f"ReverseHire {__version__}")
+        except (AttributeError, OSError, ValueError):
+            pass
+        return 0
     main()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(run())

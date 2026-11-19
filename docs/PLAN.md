@@ -1,8 +1,8 @@
 # ReverseHire – plan and progress
 
 Living document: every step is ticked when it is finished **and verified**. Decisions are
-recorded here in short form; the reasons and the technical detail are in
-[`DECISIONS.md`](DECISIONS.md). Update both files at every change.
+recorded here in short form, in the decision tables below; the technical detail is in
+the code, its comments and [`INTERFACES.md`](INTERFACES.md). Update this file at every change.
 
 Legend: `[x]` done and verified · `[~]` in progress · `[ ]` to do.
 
@@ -63,7 +63,7 @@ Research first, then implementation, then end-to-end verification.
 ## Phase 4 - Fixes after the owner's test, affinity verdict, registers (started 19 November 2026)
 
 - [x] "Start search" button not reacting: the click never reached the button (nothing in the log).
-- [x] Filters on every column of every table (replaced by sorting on the header and one search box, see R1 in [`DECISIONS.md`](DECISIONS.md)).
+- [x] Filters on every column of every table (replaced by sorting on the header and one search box: one box that filters every column is quicker to use than a filter per column).
 - [x] Simulated score and match always shown as 0-100 %.
 - [x] No "Confirm profile" step: the profile is valid once the CV is read; every edit is saved at once.
 - [x] Company card: social links next to the name.
@@ -108,4 +108,4 @@ Research first, then implementation, then end-to-end verification.
 | D8 | An integrated map may be added if it helps to locate places. |
 | D9 | Nothing is committed or uploaded to GitHub until the owner says so. |
 
-How the code implements D1-D9 (and the OCR choices): [`DECISIONS.md`](DECISIONS.md), table "Decisions of 2026-11-18, phase 3" (Q1-Q20). How to use the features: [`USER_MANUAL.md`](USER_MANUAL.md), sections 4 to 9 (the workflow) and 11-12; the decisions of 2026-11-19 (affinity, suggestions, register, tracker) are the table "Decisions of 2026-11-19" in [`DECISIONS.md`](DECISIONS.md) (R1-R16); module contracts: [`INTERFACES.md`](INTERFACES.md).
+How to use the features: [`USER_MANUAL.md`](USER_MANUAL.md), sections 4 to 9 (the workflow) and 11-12; module contracts: [`INTERFACES.md`](INTERFACES.md).

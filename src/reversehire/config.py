@@ -124,10 +124,36 @@ def _source_checkout_root(package_file: Path | None = None) -> Path | None:
     return None
 
 
-def program_folder(package_file: Path | None = None, prefix: str | Path | None = None) -> Path | None:
-    """The folder of the program: a source checkout's root, or the install root that
+def is_frozen() -> bool:
+    """True inside a ready-made build (PyInstaller sets ``sys.frozen``)."""
+    return bool(getattr(sys, "frozen", False))
+
+
+def frozen_program_folder(executable: str | Path | None = None, platform: str | None = None) -> Path | None:
+    """The program folder of a ready-made build: the folder that holds the executable
+    (Windows ``ReverseHire.exe``, Linux ``reversehire``). None for a macOS app bundle
+    (``X.app/Contents/MacOS/<exe>``): a bundle is not a place for user data, so the
+    per-user folder (~/Library/Application Support/ReverseHire) is used instead."""
+    exe = Path(executable if executable is not None else sys.executable)
+    try:
+        exe = exe.resolve()
+    except OSError:
+        pass
+    folder = exe.parent
+    if (platform or sys.platform) == "darwin" and folder.name == "MacOS" \
+            and folder.parent.name == "Contents" and folder.parent.parent.suffix.lower() == ".app":
+        return None
+    return folder
+
+
+def program_folder(package_file: Path | None = None, prefix: str | Path | None = None,
+                   frozen: bool | None = None) -> Path | None:
+    """The folder of the program: the folder of the executable of a ready-made build
+    (see frozen_program_folder), a source checkout's root, or the install root that
     holds the running ``venv`` (installer layout ``<install>/venv``); None otherwise
     (for example a package installed into some other Python environment)."""
+    if is_frozen() if frozen is None else frozen:
+        return frozen_program_folder()
     root = _source_checkout_root(package_file)
     if root is not None:
         return root

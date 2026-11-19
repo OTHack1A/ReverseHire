@@ -2,7 +2,7 @@
 
 This manual explains how to install ReverseHire on Windows (including a brand-new PC with nothing installed), on Linux and on macOS. How to use the app is covered in the [User Manual](USER_MANUAL.md).
 
-There are three ways to install it:
+The quickest way is a **ready-made build** from the Releases page (Windows, Linux, macOS on Apple Silicon; no Python needed): see [Download a ready-made build](#download-a-ready-made-build) just below. Otherwise there are three ways to install it:
 
 | Way | For whom | Internet needed to install |
 |---|---|---|
@@ -12,25 +12,60 @@ There are three ways to install it:
 
 None of them needs administrator rights.
 
+## Download a ready-made build
+
+Every release on the [Releases page](https://github.com/OTHack1A/ReverseHire/releases/latest) carries ready-made builds made by GitHub Actions (workflow `.github/workflows/release.yml`, PyInstaller, Python 3.14). They contain Python, Qt and every library; nothing has to be installed first.
+
+| System | File | Start |
+|---|---|---|
+| Windows 10/11, 64-bit | `ReverseHire-<version>-windows-x64.zip` | Unpack the whole `ReverseHire` folder somewhere you can write (for example `Documents`; not `C:\Program Files`) and double-click `ReverseHire.exe`. |
+| Windows 10/11, 64-bit | `ReverseHire-<version>-setup.exe` (when the release has it) | Run it: it installs for your user only into `%LOCALAPPDATA%\Programs\ReverseHire Standalone`, without administrator rights, with a Start menu entry; uninstall from Settings > Apps. |
+| Linux x86_64 with glibc 2.35 or later (Ubuntu 22.04+, Debian 12+, Fedora 36+, recent openSUSE and Arch) | `ReverseHire-<version>-linux-x86_64.tar.gz` | `tar xzf ReverseHire-<version>-linux-x86_64.tar.gz`, then `ReverseHire/reversehire`. `ReverseHire/install-desktop-entry.sh` adds it to the applications menu of your user (run it again after moving the folder; `--remove` takes it away). |
+| macOS 14 Sonoma or later, Apple Silicon (M1 and later) | `ReverseHire-<version>-macos-arm64.dmg` | Open the disk image and drag `ReverseHire.app` onto `Applications`. |
+
+`SHA256SUMS.txt` lists the SHA-256 checksum of every file (`certutil -hashfile <file> SHA256` on Windows, `sha256sum` on Linux, `shasum -a 256` on macOS).
+
+**Not available:** Intel Macs are **not supported by the ready-made build**: only Apple Silicon is built (the ONNX runtime used for text recognition and scoring has no release for macOS x86_64 after version 1.23, and none for Python 3.14; the source installation with Python 3.12 or 3.13, [section 8](#8-macos-from-the-source-code), may work, untested). Linux on ARM (aarch64): install from the sources. The minimum versions are in [section 1](#1-requirements).
+
+**The builds are not code-signed.** There is no code-signing certificate, so the systems treat them as programs of an unknown publisher:
+
+- **Windows SmartScreen** shows "Windows protected your PC" with "Unknown publisher": click **More info**, then **Run anyway**. It asks once per downloaded copy.
+- **Smart App Control** (Windows 11, *Settings > Privacy & security > Windows Security > App & browser control*) blocks unsigned programs outright when it is **On**, with no "run anyway". On such a PC use the installation from the source code ([section 5](#5-windows-from-the-source-code), `start.bat`) or the ISO ([section 4](#4-windows-installing-from-the-iso)): they run Python from python.org, which is signed. Do not switch Smart App Control off just for this: on many Windows versions, once it is off it cannot be switched on again without reinstalling Windows.
+- **macOS Gatekeeper** refuses the app the first time ("ReverseHire cannot be opened because Apple cannot check it for malicious software"). Then either Control-click (right-click) `ReverseHire.app` in Applications and choose **Open**, or open **System Settings > Privacy & Security**, scroll to the message about ReverseHire and click **Open Anyway** (on macOS 15 Sequoia only this second way works). In Terminal the same is `xattr -dr com.apple.quarantine /Applications/ReverseHire.app`. Do it only for a file downloaded from this project's Releases page.
+- **Linux** needs the desktop libraries that Qt uses, which a desktop installation normally has. If the program does not open and the terminal mentions `xcb`, `EGL` or a "platform plugin", install them (Debian/Ubuntu): `sudo apt install libegl1 libgl1 libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libnss3 libxcomposite1 libxdamage1 libxrandr2 libxtst6 libasound2` (on Ubuntu 24.04 `libasound2t64`). If the map stays empty on a system that restricts user namespaces (Ubuntu 24.04 and later), start it with `QTWEBENGINE_DISABLE_SANDBOX=1 ReverseHire/reversehire`.
+
+**Where the data goes.** The same rules as every installation ([section 2](#2-where-your-data-is)): the zip and tar.gz builds use the `userdata` folder next to the program when that folder can be written (so the whole program with its data can be moved or copied as one folder), otherwise the per-user folder; the Windows installer uses `userdata` inside its installation folder; the macOS app always uses `~/Library/Application Support/ReverseHire`, because an app bundle is not a place for data. `REVERSEHIRE_HOME` overrides them. Updating: replace the program files and keep `userdata` (the Windows installer does this by itself).
+
+**Downloaded on first use, not part of the download** (into the data folder, [section 13](#13-first-run-and-what-is-recreated-or-downloaded)): the scoring model `intfloat/multilingual-e5-small` (about 470 MB, the first time the scoring needs it) and, only when you ask: the advanced text recogniser (about 147 MB), the map data of a region (about 205 MB for Emilia-Romagna), the regional register (from several hundred MB to a few GB of raw files), the translation models. The download itself is about 400 to 500 MB and unpacks to about 1 GB. The translation models are fetched from a terminal: `ReverseHire.exe -m reversehire.cv.translate download it uk` on Windows (it prints nothing; the files appear in `userdata\models\translation`), `ReverseHire/reversehire -m reversehire.cv.translate download it uk` on Linux, `/Applications/ReverseHire.app/Contents/MacOS/ReverseHire -m reversehire.cv.translate download it uk` on macOS.
+
+**The assistant strip and AI clients** start the built-in MCP server with the program itself (`ReverseHire.exe -m reversehire.mcp_server`); the MCP window shows the exact command. `--self-test` checks a copy without touching your data (see `src/reversehire/selftest.py`).
+
+**How far these builds were checked.** Each one was built and started on GitHub's machines (Windows Server, Ubuntu 22.04 under a virtual X server, macOS 14 on Apple Silicon) with `--self-test`: locales, the bundled ONNX models, the face detector, the text recognition, the web map (Qt WebEngine with tiles from a local test server), the main window (offscreen) and the database in a temporary folder; then the built-in MCP server had to answer an `initialize` request. **No person has used these builds on a real desktop yet**, on any of the three systems; in particular the first-use downloads, the e-mail drafts and the file dialogs were not tried in a ready-made build. On Windows the developer's PC has Smart App Control on, so the Windows build could not be run there either.
+
 ## 1. Requirements
 
 | Item | Requirement |
 |---|---|
-| Operating system | Windows 10 or 11, 64-bit; Linux x86_64 or aarch64 with a graphical desktop (X11 or Wayland); macOS 13 or later (Apple silicon; Intel Macs see [section 8](#8-macos-from-the-source-code)) |
-| Python | Installed by the ISO on Windows. From source: Python 3.12 or later (tested with 3.14) |
-| Free disk space | About 3 GB (program 1.4 GB, of which about 150 MB for the local text recognition (OCR) of scanned CVs; embedding model 0.5 GB; Python 0.2 GB; working space), plus about 147 MB for the optional advanced reader of the text recognition (downloaded on request), plus about 205 MB for the map data of a region such as Emilia-Romagna (downloaded on request, together with the index built from it), the local translation models if you use them, and the files of the optional regional register (downloaded on request; the program shows the size before it downloads, and the developer's notes in the code put the largest files at between several hundred MB and a few GB: see [section 10](#10-where-everything-is)) |
-| Memory | 4 GB or more; 8 GB recommended |
+| Windows | Windows 10 version 1809 (build 17763) or later, or Windows 11; x64 only. Python 3.14 supports Windows 10 and newer, and Qt 6.12 (PySide6 6.12) Windows 10 1809 or later. Tested on Windows 11 (developer's PC) and on GitHub's Windows Server runner. |
+| Linux | Ready-made build: x86_64 with glibc 2.35 or later (Ubuntu 22.04+, Debian 12+, Fedora 36+); it is built on Ubuntu 22.04, and PySide6 6.12 itself needs glibc 2.34. From source: also aarch64. A graphical desktop (X11 or Wayland) with the Qt libraries of [section 7.1](#71-system-packages). Ready-made build tested only on GitHub's Ubuntu 22.04 runner (virtual X server). |
+| macOS | macOS 14 Sonoma or later, Apple Silicon only: the PySide6 6.12 and onnxruntime wheels for Apple Silicon are built for macOS 14. **Intel Macs are not supported by the ready-made build**; from source see [section 8](#8-macos-from-the-source-code). Ready-made build tested only on GitHub's macOS 14 runner. |
+| Python | Not needed by the ready-made builds (they carry Python 3.14). Installed by the ISO on Windows. From source: Python 3.12 or later (`requires-python`; tested with 3.14) |
+| Processor | 64-bit |
+| Screen | 1366 × 768 or larger (the window is designed for 1366 pixels) |
+| Optional programs | Claude Code or Codex CLI for the assistant strip and the suggestions; classic or new Outlook for e-mail drafts on Windows (otherwise Thunderbird, Apple Mail, the default mail program or Gmail in the browser) |
+| Free disk space | Ready-made build: about 1 GB unpacked (measured: 972 MB on Windows) plus the scoring model (about 470 MB) and the optional downloads below. From source or the ISO: about 3 GB (program 1.4 GB, of which about 150 MB for the local text recognition (OCR) of scanned CVs; embedding model 0.5 GB; Python 0.2 GB; working space), plus about 147 MB for the optional advanced reader of the text recognition (downloaded on request), plus about 205 MB for the map data of a region such as Emilia-Romagna (downloaded on request, together with the index built from it), the local translation models if you use them, and the files of the optional regional register (downloaded on request; the program shows the size before it downloads, and the developer's notes in the code put the largest files at between several hundred MB and a few GB: see [section 10](#10-where-everything-is)) |
+| Memory | About 4 GB of free RAM for normal use (8 GB of RAM recommended); more while the advanced text recognition runs |
 | Administrator rights | Not needed |
 | Internet | Not needed to install from the ISO. Needed to install from source, and when you run a search (maps, company websites). |
 
-ReverseHire is developed on Windows. Linux and macOS run the same code; the automatic tests run on all three systems (see `.github/workflows/tests.yml`).
+ReverseHire is developed on Windows. Linux and macOS run the same code; the ready-made builds are started and checked on all three systems by `.github/workflows/release.yml`.
 
 ## 2. Where your data is
 
 ReverseHire keeps your settings (`config.json`, which also holds the text and details of your application e-mails and the assistant choice), saved searches, company cards and caches (`store.sqlite`, a local SQLite database), the log (`reversehire.log`, rolling, 100 MB at most in total, see the user manual), the downloaded map data and its index (`osm`), the regional register and the files downloaded for it (`registers`), the tracker of your applications and the exact copies of the CVs you sent (`applications`), the queue of the idle analysis (`idle_analysis.json`), the copies of your CV files (`cv`), the working folder of the assistant strip (`assistant`), the MCP usage counter (`mcp_usage.json`) and downloaded models (`models`) in one **data folder**. It is chosen when the app starts, with these rules (the first that applies wins):
 
 1. **`REVERSEHIRE_HOME`**: if this environment variable is set, that folder is used.
-2. **Portable**: if the program folder can be written, the data goes into a folder named **`userdata` inside the program folder**, next to the program. The program folder is the project folder when you run from the source code, or the installation folder (the one that contains `venv`) for the ISO installation. Nothing has to be configured: a writable program folder means portable. This is the normal case for every installation described here.
+2. **Portable**: if the program folder can be written, the data goes into a folder named **`userdata` inside the program folder**, next to the program. The program folder is the project folder when you run from the source code, the installation folder (the one that contains `venv`) for the ISO installation, or the folder that holds `ReverseHire.exe` / `reversehire` for a [ready-made build](#download-a-ready-made-build) (a macOS `ReverseHire.app` has no program folder for data: it always uses the per-user folder). Nothing has to be configured: a writable program folder means portable. This is the normal case for every installation described here.
 3. **Per-user folder** of the operating system, when the program folder is read-only (for example a copy in a system folder):
 
    | System | Folder |

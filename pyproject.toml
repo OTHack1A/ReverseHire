@@ -75,7 +75,7 @@ dev = ["pytest", "fpdf2"]
 Repository = "https://github.com/OTHack1A/ReverseHire"
 
 [project.scripts]
-reversehire = "reversehire.app:main"
+reversehire = "reversehire.app:run"
 reversehire-mcp = "reversehire.mcp_server:main"
 
 [tool.setuptools.dynamic]

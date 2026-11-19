@@ -99,7 +99,7 @@ Items marked resolved were fixed on the same day; the others are decisions left 
 9. **Try a fresh clone.** In an empty folder: clone the repository, run `start.bat` (or `start.sh`), and check that the window opens, a CV of your own is read, and nothing is missing.
 10. **Declared status.** The README says honestly that the project works but is not tuned on many real cases, and which things were not tried on a real PC. Keep it that way: change those sentences only after trying the thing. The same goes for three more limits stated there: the assistant may not know small local companies, the pause of the idle analysis was verified only with simulated idle signals, and two short stalls of the window (about 5 seconds, during heavy background work) are not fixed yet.
 11. **Third-party licences.** `ATTRIBUTIONS.md` lists data, services, models and libraries with their licences (Qt/PySide6 under LGPL-3.0, `pywin32` under the PSF licence, JetBrains Mono under SIL OFL 1.1, the register sources under CC BY 4.0 and CC0). Wherever it says "to be verified", check the official source before publishing.
-12. **Internal planning documents.** `docs/PLAN.md`, `docs/DECISIONS.md` and `docs/INTERFACES.md` are published and are kept up to date; early internal plans are not part of the repository.
+12. **Internal planning documents.** `docs/PLAN.md` and `docs/INTERFACES.md` are published and are kept up to date; early internal plans are not part of the repository.
 
 ## 5. Commands to run when you decide
 

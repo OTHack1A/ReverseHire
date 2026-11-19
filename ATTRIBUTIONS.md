@@ -119,7 +119,7 @@ The compiled `osmium` package is **not** used any more: regional extracts are re
 
 ## Source code adapted from other projects
 
-Under decision N1 (`docs/DECISIONS.md`) code from MIT, Apache-2.0 or BSD repositories may be adapted with attribution. The MIT licence requires the copyright notice and the permission notice to be kept with substantial portions of the code; the full MIT text is the same as in this project's `LICENSE`, with the copyright line given below.
+By a project decision, code from MIT, Apache-2.0 or BSD repositories may be adapted with attribution. The MIT licence requires the copyright notice and the permission notice to be kept with substantial portions of the code; the full MIT text is the same as in this project's `LICENSE`, with the copyright line given below.
 
 | Project | Licence and copyright | What was adapted | Where |
 |---|---|---|---|

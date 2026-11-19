@@ -14,6 +14,19 @@ It is for job seekers who are willing to read the reasons behind a score, and wh
 
 *The pictures use invented companies and an invented CV.*
 
+## System requirements
+
+| | Minimum |
+|---|---|
+| Windows | Windows 10 version 1809 or later, or Windows 11; 64-bit (x64) only |
+| Linux | x86_64 with glibc 2.35 or later (Ubuntu 22.04+, Debian 12+, Fedora 36+) and a graphical desktop |
+| macOS | macOS 14 Sonoma or later, Apple Silicon only (no Intel Macs) |
+| From the sources | Python 3.12 or later (the ready-made builds use Python 3.14) |
+| Memory and disk | about 4 GB of free RAM; about 1 GB for the program plus 0.5 GB for the scoring model |
+| Screen | 1366 × 768 or larger |
+
+Details, the optional downloads and the optional programs: [System requirements in detail](#system-requirements-in-detail).
+
 ## The workflow in six steps
 
 1. **Load your CV.** Choose or drop a PDF, DOCX or image; it is read at once on your computer (scans and photos go through a local text recognition). Correct the profile if needed: every edit is saved immediately and can be undone.
@@ -25,7 +38,21 @@ It is for job seekers who are willing to read the reasons behind a score, and wh
 
 Every table sorts by clicking a column header, and every list has one search box that works by meaning and by exact words.
 
-## Quick start
+## Download
+
+Ready-made builds for **Windows (x64)**, **Linux (x86_64)** and **macOS (Apple Silicon)** are on the [Releases page](https://github.com/OTHack1A/ReverseHire/releases/latest): no Python needed, unpack and start.
+
+| System | Download | Start |
+|---|---|---|
+| Windows 10/11, 64-bit | `ReverseHire-<version>-windows-x64.zip` | unpack the folder, double-click `ReverseHire.exe` |
+| Linux x86_64 (glibc 2.35 or later: Ubuntu 22.04+, Debian 12+, Fedora 36+) | `ReverseHire-<version>-linux-x86_64.tar.gz` | `tar xzf` it, run `ReverseHire/reversehire` |
+| macOS 14 or later, Apple Silicon (M1 and later) | `ReverseHire-<version>-macos-arm64.dmg` | drag `ReverseHire.app` to Applications |
+
+**The builds are not code-signed.** Windows SmartScreen shows "Windows protected your PC / unknown publisher" (click **More info**, then **Run anyway**); a PC with **Smart App Control** switched on blocks the program outright: use the source installation below (`start.bat`) there. macOS refuses to open an unsigned app the first time (right-click the app, **Open**, or System Settings, Privacy & Security, **Open Anyway**). The builds are checked automatically on GitHub's machines (start-up self-test) but have not been tried by a person on every system. Details, where the data goes and what is downloaded later: [installation guide, section "Download a ready-made build"](docs/INSTALLATION.md#download-a-ready-made-build).
+
+**Intel Macs are not supported by the ready-made build** (only Apple Silicon is built; the ONNX runtime has no current release for Intel Macs). The source installation with Python 3.12 or 3.13 may still work there, untested.
+
+## Quick start (from the sources)
 
 Python 3.12 or later is needed. No administrator rights are needed. The first start creates a `.venv` folder and installs the dependencies (internet, a few minutes); later starts open the app at once.
 
@@ -50,6 +77,22 @@ None of this is in the repository; it is created on your PC at installation or o
 | Advanced text recognition (optional) | only if you accept | about 147 MB |
 | Regional register, four free official sources (optional) | only when you click **Download / update**; the program shows the size first | from several hundred MB to a few GB for the raw files |
 | Translation models for Italian and Ukrainian CVs (optional) | on request | see the installation guide |
+
+### System requirements in detail
+
+| Item | Requirement | Where it comes from |
+|---|---|---|
+| Windows | Windows 10 version 1809 (build 17763) or later, or Windows 11; x64 only (no 32-bit, no ARM build) | Python 3.14 supports Windows 10 and newer; Qt 6.12 (PySide6 6.12) supports Windows 10 1809 or later. Tested on Windows 11 (developer's PC) and on GitHub's Windows Server runner. |
+| Linux | x86_64 only, glibc 2.35 or later (Ubuntu 22.04+, Debian 12+, Fedora 36+), X11 or Wayland desktop | The build is made on Ubuntu 22.04 (glibc 2.35); PySide6 6.12 itself needs glibc 2.34. Tested only on GitHub's Ubuntu 22.04 runner under a virtual X server. |
+| Linux libraries | `libegl1 libgl1 libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libnss3 libxcomposite1 libxdamage1 libxrandr2 libxtst6 libasound2` (Debian/Ubuntu names; `libasound2t64` on Ubuntu 24.04) | What Qt and Qt WebEngine load at start; a desktop installation normally has them. |
+| macOS | macOS 14 Sonoma or later, Apple Silicon (M1 and later) only | The PySide6 6.12 and onnxruntime wheels for Apple Silicon are built for macOS 14. Tested only on GitHub's macOS 14 runner. |
+| Python (from the sources) | 3.12 or later (`requires-python`); the ready-made builds and the tests use 3.14 | `pyproject.toml` |
+| Processor | 64-bit | all builds are 64-bit |
+| Memory | about 4 GB of free RAM for normal use (8 GB of RAM recommended); more while the advanced text recognition runs | installation guide, section 1 |
+| Disk | program: about 1 GB unpacked (ready-made build) or 1.4 GB (source environment); scoring model about 470 MB; optional: advanced text recognition about 147 MB, map data about 205 MB per region (Emilia-Romagna), translation models (size not stated by the program), regional register from several hundred MB to a few GB of raw files | measured sizes and the table above |
+| Screen | 1366 × 768 or larger | the window is designed for 1366 pixels (the ten tab labels fit) |
+| Internet | only for searches (maps, company websites) and the first-time downloads | |
+| Optional programs | Claude Code or Codex CLI for the assistant strip and the suggestions; classic or new Outlook for e-mail drafts on Windows (otherwise Thunderbird, Apple Mail, the default mail program or Gmail in the browser) | |
 
 ## Privacy
 
@@ -80,7 +123,7 @@ The project works but it is **not tuned on many real cases**. The manual has the
 
 - [User manual](docs/USER_MANUAL.md): how to use the app, step by step; also as a [PDF edition](docs/manual/reversehire_manual.pdf) (LaTeX).
 - [Installation guide](docs/INSTALLATION.md): Windows ISO, Linux, macOS, the data folder, first run, optional downloads, troubleshooting.
-- [Plan and progress](docs/PLAN.md) and [decisions](docs/DECISIONS.md): what each phase did and why.
+- [Plan and progress](docs/PLAN.md): what each phase did, with its short decision tables.
 - [Interfaces](docs/INTERFACES.md): module contracts. [MCP](docs/MCP.md): using ReverseHire from Claude, Codex and Gemini.
 - [Publishing checklist](docs/PUBLISHING.md) and [attributions](ATTRIBUTIONS.md).
 
