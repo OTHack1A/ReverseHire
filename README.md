@@ -48,7 +48,15 @@ Ready-made builds for Windows, Linux and macOS are on the [Releases page](https:
 | Linux x86_64 | `ReverseHire-<version>-linux-x86_64.tar.gz` | `tar xzf` the file, run `ReverseHire/reversehire`; `ReverseHire/install-desktop-entry.sh` adds a menu entry. Needs the Qt desktop libraries listed in the [installation guide](docs/INSTALLATION.md#download-a-ready-made-build) |
 | macOS, Apple Silicon | `ReverseHire-<version>-macos-arm64.dmg` | open the disk image and drag `ReverseHire.app` to Applications |
 
-**The builds are not code-signed.** Windows SmartScreen shows "Windows protected your PC / unknown publisher" (click **More info**, then **Run anyway**); a PC with **Smart App Control** switched on blocks the program outright: use the source installation below (`start.bat`) there. macOS Gatekeeper refuses the unsigned app the first time: Control-click the app and choose **Open**, or open System Settings, Privacy & Security and click **Open Anyway** (on macOS 15 only the second way works); in Terminal: `xattr -dr com.apple.quarantine /Applications/ReverseHire.app`. **No person has run the Linux or macOS builds on a real desktop, and nobody has used the Windows build on a real desktop either.** All three were built on GitHub's machines and started there with the automatic self-test (locales, bundled models, web map) and an MCP `initialize` check. Details, where the data goes and what is downloaded later: [installation guide, section "Download a ready-made build"](docs/INSTALLATION.md#download-a-ready-made-build).
+Check the download against `SHA256SUMS.txt` if you like. Where the data goes and what is downloaded later: [installation guide, section "Download a ready-made build"](docs/INSTALLATION.md#download-a-ready-made-build).
+
+**The builds are not code-signed**, so the system warns you the first time:
+
+- **Windows SmartScreen** shows "Windows protected your PC / unknown publisher": click **More info**, then **Run anyway**.
+- **Windows with Smart App Control on** blocks the program outright: use the source installation below (`start.bat`) there.
+- **macOS Gatekeeper** refuses the app the first time: open System Settings, Privacy & Security and click **Open Anyway** (on macOS 14 a Control-click on the app and **Open** also works). In Terminal: `xattr -dr com.apple.quarantine /Applications/ReverseHire.app`.
+
+**How the builds were checked.** All three were built on GitHub's machines and started there with the automatic self-test (locales, bundled models, main window, web map) and an MCP `initialize` check. No person has run the downloaded builds on a real desktop yet: please report problems on the [Issues page](https://github.com/OTHack1A/ReverseHire/issues).
 
 **Intel Macs are not supported by the ready-made build** (only Apple Silicon is built; the ONNX runtime has no current release for Intel Macs). The source installation with Python 3.12 or 3.13 may still work there, untested.
 
