@@ -17,6 +17,15 @@ from PySide6.QtWebEngineCore import (QWebEnginePage, QWebEngineProfile, QWebEngi
                                      QWebEngineUrlRequestInfo, QWebEngineUrlRequestInterceptor)
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
+try:
+    # Qt WebEngine draws through internal Qt Quick objects (QQuickWindow, QQuickItem)
+    # whose events also reach the app's application-wide Python event filters. With the
+    # QtQuick module imported PySide knows their real types; without it, it guesses
+    # them, which crashed on Linux and macOS (see install_webchannel_script).
+    import PySide6.QtQuick  # noqa: F401
+except ImportError:  # pragma: no cover - a PySide6 build without Qt Quick
+    pass
+
 from .bridge import MapBridge
 from .policy import RequestPolicy
 from .settings import MapSettings
@@ -111,6 +120,46 @@ class GuardedPage(QWebEnginePage):
 
 _profiles: dict[str, tuple] = {}
 
+WEBCHANNEL_RESOURCE = ":/qtwebchannel/qwebchannel.js"
+
+
+def webchannel_script_source() -> str:
+    """The text of Qt's qwebchannel.js, read from the Qt WebChannel library's resources."""
+    from PySide6.QtCore import QFile, QIODevice
+
+    resource = QFile(WEBCHANNEL_RESOURCE)
+    if not resource.open(QIODevice.OpenModeFlag.ReadOnly):
+        raise OSError(f"Qt resource {WEBCHANNEL_RESOURCE} not found")
+    try:
+        return bytes(resource.readAll()).decode("utf-8")
+    finally:
+        resource.close()
+
+
+def install_webchannel_script(profile: QWebEngineProfile) -> bool:
+    """Injects qwebchannel.js into every page of `profile` before the page's own scripts.
+
+    The page used to load it from qrc:///qtwebchannel/qwebchannel.js. Qt WebEngine serves
+    qrc: through internal QObjects (URLRequestCustomJobDelegate, QWebEngineUrlRequestJob)
+    whose events also reach the app's application-wide event filters written in Python;
+    on Linux and macOS PySide6 6.12 crashed (segmentation fault) while wrapping them for
+    those filters. An injected script needs no request, so no such objects are created."""
+    from PySide6.QtWebEngineCore import QWebEngineScript
+
+    try:
+        source = webchannel_script_source()
+    except (OSError, UnicodeDecodeError) as exc:
+        log.warning("map: qwebchannel.js not available (%s); the map will use its fallback", exc)
+        return False
+    script = QWebEngineScript()
+    script.setName("reversehire-qwebchannel")
+    script.setSourceCode(source)
+    script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentCreation)
+    script.setWorldId(QWebEngineScript.ScriptWorldId.MainWorld)
+    script.setRunsOnSubFrames(False)
+    profile.scripts().insert(script)
+    return True
+
 
 def get_profile(settings: MapSettings) -> tuple[QWebEngineProfile, RequestPolicy, TileRequestInterceptor]:
     """The shared map profile (one per cache folder), updated with the current settings."""
@@ -144,6 +193,7 @@ def get_profile(settings: MapSettings) -> tuple[QWebEngineProfile, RequestPolicy
         policy = RequestPolicy(WEB_DIR)
         interceptor = TileRequestInterceptor(policy, profile)
         profile.setUrlRequestInterceptor(interceptor)
+        install_webchannel_script(profile)
         entry = (profile, policy, interceptor)
         _profiles[key] = entry
     profile, policy, interceptor = entry

@@ -6,7 +6,8 @@
 Each mode installs some event filters on the QApplication, then runs the map check
 of mapview._selftest ("smoke": loopback tiles, offscreen unless QT_QPA_PLATFORM is
 set). Modes: none, plain (an empty Python filter), activity, hover, table_filter,
-theme, window_interest, all, main_window (the real main window, shown). Prints one "MODE <name>: exit <code>" line per mode
+theme, window_interest, all, main_window (the real main window, shown); "_noquick"
+variants block the import of PySide6.QtQuick. Prints one "MODE <name>: exit <code>" line per mode
 (-11 / 139 = segmentation fault).
 """
 
@@ -18,13 +19,14 @@ import subprocess
 import sys
 
 MODES = ("none", "plain", "activity", "hover", "table_filter", "theme", "window_interest", "all",
-         "main_window")
+         "main_window", "plain_noquick", "main_window_noquick")
 
 
 def install(mode: str, app) -> list:
     from PySide6.QtCore import QObject
 
     keep = []
+    mode = mode.removesuffix("_noquick")
     if mode == "plain":
         class Plain(QObject):
             def eventFilter(self, obj, event):  # noqa: N802
@@ -69,6 +71,13 @@ def run_one(mode: str) -> int:
     faulthandler.enable(all_threads=True)
     from reversehire.gui import theme
 
+    if mode.endswith("_noquick"):
+        class _NoQuick:
+            def find_spec(self, name, path=None, target=None):
+                if name == "PySide6.QtQuick":
+                    raise ImportError("blocked by map_repro")
+                return None
+        sys.meta_path.insert(0, _NoQuick())
     app = theme.ensure_application([sys.argv[0]])
     keep = install(mode, app)  # noqa: F841 - the filters must stay alive
     from reversehire.mapview import _selftest
