@@ -46,7 +46,7 @@ jobs:
             platform: windows-x64
           - os: ubuntu-22.04        # glibc 2.35: runs on Ubuntu 22.04+, Debian 12+, Fedora 36+
             platform: linux-x86_64
-          - os: macos-14            # Apple Silicon
+          - os: macos-15            # Apple Silicon (arm64) only; no Intel build
             platform: macos-arm64
     defaults:
       run:
@@ -81,12 +81,15 @@ jobs:
             libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xinerama0 libxcb-xfixes0 libxcb-xkb1 \
             libxcb-glx0 libxcb-shm0 libxcb-sync1 libxcb-util1 libx11-xcb1 \
             libnss3 libnspr4 libxcomposite1 libxdamage1 libxrandr2 libxtst6 libxkbfile1 libxshmfence1 \
-            libgbm1 libdrm2 libasound2 libpulse0 libcups2
+            libgbm1 libdrm2 libasound2 libpulse0 libcups2 libgl1-mesa-dri libglx-mesa0
 
       - name: Install the project and PyInstaller
         run: |
           python -m pip install --upgrade pip
-          python -m pip install ".[mcp]" "pyinstaller>=6.16"
+          extra=""
+          # macOS: OpenCV 5.1 wheels need macOS 15; keep the build at macOS 14 like PySide6.
+          if [ "$RUNNER_OS" = "macOS" ]; then extra="opencv-python-headless<5.1"; fi
+          python -m pip install ".[mcp]" "pyinstaller>=6.16" $extra
           python -m pip list
 
       - name: Build with PyInstaller
@@ -100,11 +103,18 @@ jobs:
         if: runner.os == 'Linux'
         env:
           QT_QPA_PLATFORM: xcb
-        run: xvfb-run -a -s "-screen 0 1600x1000x24" python tools/packaging/smoke.py dist/ReverseHire/reversehire
+          LIBGL_ALWAYS_SOFTWARE: "1"   # the virtual X server has no GPU: Mesa's software renderer
+        run: |
+          echo "Highest glibc symbol version needed:"
+          find dist/ReverseHire -type f \( -name '*.so*' -o -name reversehire \) -exec objdump -T {} + 2>/dev/null \
+            | grep -o 'GLIBC_[0-9.]*' | sort -u -V | tail -1
+          xvfb-run -a -s "-screen 0 1600x1000x24 +extension GLX" python tools/packaging/smoke.py dist/ReverseHire/reversehire
 
       - name: Smoke test (macOS)
         if: runner.os == 'macOS'
-        run: python tools/packaging/smoke.py dist/ReverseHire.app/Contents/MacOS/ReverseHire --expect-program-folder none
+        run: |
+          python tools/packaging/macos_minos.py dist/ReverseHire.app --max 14.0
+          python tools/packaging/smoke.py dist/ReverseHire.app/Contents/MacOS/ReverseHire --expect-program-folder none
 
       - name: Package (Windows zip and installer)
         if: runner.os == 'Windows'

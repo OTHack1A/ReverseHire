@@ -159,20 +159,25 @@ def run(argv: list[str]) -> int:
         "qt_platform": os.environ.get("QT_QPA_PLATFORM"),
     }
     checks: dict = {}
-    _check(checks, "locales", _locales)
-    _check(checks, "onnx_models", _onnx_models)
-    _check(checks, "face_detector", _face_detector)
-    _check(checks, "ocr", _ocr)
-    _check(checks, "libraries", _libraries)
-    _check(checks, "web_map", _web_map)
-    _check(checks, "main_window", _main_window)
     results["checks"] = checks
-    results["ok"] = all(check["ok"] for check in checks.values())
-    text = json.dumps(results, indent=2, default=str)
     target = report_path(argv)
-    if target is not None:
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(text, encoding="utf-8")
+
+    def write_report() -> None:
+        if target is not None:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(json.dumps(results, indent=2, default=str), encoding="utf-8")
+
+    for name, function in (("locales", _locales), ("onnx_models", _onnx_models),
+                           ("face_detector", _face_detector), ("ocr", _ocr), ("libraries", _libraries),
+                           ("web_map", _web_map), ("main_window", _main_window)):
+        # Written before each check: after a crash the report names the check that was running.
+        results["running"] = name
+        results["ok"] = False
+        write_report()
+        _check(checks, name, function)
+    results.pop("running", None)
+    results["ok"] = all(check["ok"] for check in checks.values())
+    write_report()
     try:
         print("SELF-TEST " + json.dumps(results, default=str), flush=True)
     except (OSError, ValueError, AttributeError):

@@ -72,14 +72,14 @@ You do not have to follow the steps in order. A typical first session is: load t
 
 ### 2.1 Starting the program
 
-- **Windows, installed from the installation ISO**: double-click the **ReverseHire** icon that the installer put on the Desktop and in the Start menu (the installer can be told not to create them, so they may be missing on a PC set up that way).
+- **Ready-made builds** ([download](INSTALLATION.md#download-a-ready-made-build)): on Windows double-click `ReverseHire.exe` in the unpacked folder (or use the Start menu entry made by the installer); on Linux run `ReverseHire/reversehire`; on macOS open `ReverseHire.app` in Applications.
 - **Windows, from the source code**: double-click `start.bat` in the project folder.
 - **Linux**: run `bash start.sh` in the project folder.
 - **macOS**: double-click `start.command` in the project folder (if macOS refuses, run `chmod +x start.command start.sh` once in a terminal).
 
 The first start from the source code creates the program's own environment (the `.venv` folder) and installs what it needs: it needs the Internet and takes a few minutes, and the script stops with a message if Python 3.12 or later is missing. Later starts open the window at once, and no terminal window stays open (on Windows the program is started without a console). No administrator rights are needed. The details are in the [Installation guide](INSTALLATION.md). The launchers for Linux and macOS have **not** been tried on real machines (section 20).
 
-There is no welcome wizard and no account. The first thing you see is tab **1. CV and profile**, asking you to choose a CV. Some things are downloaded only the first time they are needed, each with its own message: the scoring model used when you search for companies (about 470 MB, unless it came with the installer or you copied it into a `models` folder) and, only if you use them, the optional advanced text reader, the translation models and the map data of a region.
+There is no welcome wizard and no account. The first thing you see is tab **1. CV and profile**, asking you to choose a CV. Some things are downloaded only the first time they are needed, each with its own message: the scoring model used when you search for companies (about 470 MB, unless you copied it into a `models` folder) and, only if you use them, the optional advanced text reader, the translation models and the map data of a region.
 
 **The program always starts in English.** The language chips (**EN**, **UK**, **IT**) change the language only until you close the program; the next start begins again in the **Start-up language** chosen in **Settings > General** (English unless you changed it, or **Language of the last session** if you prefer that behaviour). See section 14.
 
@@ -2103,7 +2103,7 @@ With the English interface the program shows no Italian or Ukrainian words in it
 
 At the top, **> THIS COMPUTER** lists information about your PC and the program: **User** (the user of the operating-system session, asked to the system), **Computer name**, **Operating system** (for Windows with its edition and feature update), **Time since start-up**, **Processor**, **Cores / logical processors**, **Installed RAM**, **Graphics card**, **Screen** (every screen, with its size and scale, the main one marked), **Disks** (each fixed disk with its total and free space, and which one holds the program and which the data), **Network connection** (**online** or **offline**), **Python**, **Qt / PySide6**, **ReverseHire version**, **OCR engine** and **MCP connection**. It is useful when you ask someone for help.
 
-**The version and the build.** **ReverseHire version** reads for example "**0.1.1 (build 1, built on 2026-11-18)**". The third number of the version is the **build number**: it grows by one every time the program is built (section 12 of the [Installation guide](INSTALLATION.md)). A copy run directly from the source code that was never built says "**source copy, not built**".
+**The version and the build.** **ReverseHire version** reads for example "**0.1.1 (build 1, built on 2026-11-18)**". The third number of the version is the **build number**: it grows by one every time the program is built (section 11.2 of the [Installation guide](INSTALLATION.md#112-building-the-disc), a maintainer procedure). A copy run directly from the source code that was never built says "**source copy, not built**".
 
 This information is **shown only on your screen**: "**Shown only here: this information is never saved, logged or sent anywhere.**" The **Copy** button copies it to the clipboard so that you can paste it into a message yourself; remember that it then includes your user name and computer name. At the bottom: the logo, "Developed by 0THack1A", the line "Слава Україні!", the version and the MIT licence. **Close** closes the window.
 

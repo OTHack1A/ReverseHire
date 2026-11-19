@@ -2,7 +2,7 @@
 ;   iscc /DAppVersion=<version> /DSourceDir=<folder with ReverseHire.exe> /DOutputDir=<out> reversehire.iss
 ; Per-user installation (no administrator rights) into
 ; %LOCALAPPDATA%\Programs\ReverseHire Standalone (not ...\ReverseHire, the folder of the
-; ISO installation, which holds a Python environment). The data goes to the "userdata"
+; offline-disc installation, which holds a Python environment). The data goes to the "userdata"
 ; folder inside it (the program folder is writable); uninstalling removes the program
 ; files and leaves "userdata" in place.
 
@@ -10,10 +10,10 @@
   #define AppVersion "0.0.0"
 #endif
 #ifndef SourceDir
-  #define SourceDir "..\..\dist\ReverseHire"
+  #define SourceDir "..\..\..\dist\ReverseHire"
 #endif
 #ifndef OutputDir
-  #define OutputDir "..\..\dist"
+  #define OutputDir "..\..\..\dist"
 #endif
 
 [Setup]
@@ -32,12 +32,12 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir={#OutputDir}
 OutputBaseFilename=ReverseHire-{#AppVersion}-setup
-SetupIconFile=..\..\src\reversehire\resources\icon.ico
+SetupIconFile=..\..\..\src\reversehire\resources\icon.ico
 UninstallDisplayIcon={app}\ReverseHire.exe
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
-LicenseFile=..\..\LICENSE
+LicenseFile=..\..\..\LICENSE
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

@@ -58,7 +58,7 @@ Python 3.12 or later is needed. No administrator rights are needed. The first st
 
 | System | How to start |
 |---|---|
-| Windows | Double-click `start.bat` (a Windows installation ISO that needs no internet can be built, see the [installation guide](docs/INSTALLATION.md)) |
+| Windows | Double-click `start.bat` (see the [installation guide](docs/INSTALLATION.md)) |
 | Linux | `bash start.sh` (on Debian or Ubuntu first `sudo apt install python3-venv`; the installation guide lists the Qt libraries) |
 | macOS | Double-click `start.command` (if macOS refuses: `chmod +x start.command start.sh` once) |
 
@@ -66,7 +66,7 @@ By hand, in the project folder: create a virtual environment, `pip install -r re
 
 ### What is created or downloaded, and how big
 
-None of this is in the repository; it is created on your PC at installation or on first use ([details](docs/INSTALLATION.md#13-first-run-and-what-is-recreated-or-downloaded)).
+None of this is in the repository; it is created on your PC at installation or on first use ([details](docs/INSTALLATION.md#10-first-run-and-what-is-recreated-or-downloaded)).
 
 | What | When | Size |
 |---|---|---|
@@ -85,7 +85,7 @@ None of this is in the repository; it is created on your PC at installation or o
 | Windows | Windows 10 version 1809 (build 17763) or later, or Windows 11; x64 only (no 32-bit, no ARM build) | Python 3.14 supports Windows 10 and newer; Qt 6.12 (PySide6 6.12) supports Windows 10 1809 or later. Tested on Windows 11 (developer's PC) and on GitHub's Windows Server runner. |
 | Linux | x86_64 only, glibc 2.35 or later (Ubuntu 22.04+, Debian 12+, Fedora 36+), X11 or Wayland desktop | The build is made on Ubuntu 22.04 (glibc 2.35); PySide6 6.12 itself needs glibc 2.34. Tested only on GitHub's Ubuntu 22.04 runner under a virtual X server. |
 | Linux libraries | `libegl1 libgl1 libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libnss3 libxcomposite1 libxdamage1 libxrandr2 libxtst6 libasound2` (Debian/Ubuntu names; `libasound2t64` on Ubuntu 24.04) | What Qt and Qt WebEngine load at start; a desktop installation normally has them. |
-| macOS | macOS 14 Sonoma or later, Apple Silicon (M1 and later) only | The PySide6 6.12 and onnxruntime wheels for Apple Silicon are built for macOS 14. Tested only on GitHub's macOS 14 runner. |
+| macOS | macOS 14 Sonoma or later, Apple Silicon (M1 and later) only | The PySide6 6.12 and onnxruntime wheels for Apple Silicon are built for macOS 14. Tested only on GitHub's macOS 15 runner (Apple Silicon). |
 | Python (from the sources) | 3.12 or later (`requires-python`); the ready-made builds and the tests use 3.14 | `pyproject.toml` |
 | Processor | 64-bit | all builds are 64-bit |
 | Memory | about 4 GB of free RAM for normal use (8 GB of RAM recommended); more while the advanced text recognition runs | installation guide, section 1 |
@@ -122,7 +122,7 @@ The project works but it is **not tuned on many real cases**. The manual has the
 ## Documentation
 
 - [User manual](docs/USER_MANUAL.md): how to use the app, step by step; also as a [PDF edition](docs/manual/reversehire_manual.pdf) (LaTeX).
-- [Installation guide](docs/INSTALLATION.md): Windows ISO, Linux, macOS, the data folder, first run, optional downloads, troubleshooting.
+- [Installation guide](docs/INSTALLATION.md): ready-made builds, installation from source on Windows, Linux and macOS, the data folder, first run, optional downloads, troubleshooting.
 - [Plan and progress](docs/PLAN.md): what each phase did, with its short decision tables.
 - [Interfaces](docs/INTERFACES.md): module contracts. [MCP](docs/MCP.md): using ReverseHire from Claude, Codex and Gemini.
 - [Publishing checklist](docs/PUBLISHING.md) and [attributions](ATTRIBUTIONS.md).
