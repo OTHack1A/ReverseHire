@@ -72,7 +72,7 @@ You do not have to follow the steps in order. A typical first session is: load t
 
 ### 2.1 Starting the program
 
-- **Ready-made builds** ([download](INSTALLATION.md#download-a-ready-made-build)): on Windows double-click `ReverseHire.exe` in the unpacked folder (or use the Start menu entry made by the installer); on Linux run `ReverseHire/reversehire`; on macOS open `ReverseHire.app` in Applications.
+- **Ready-made build** ([download](INSTALLATION.md#download-a-ready-made-build)): only the Windows build is published so far; double-click `ReverseHire.exe` in the unpacked folder (or use the Start menu entry made by the installer). Linux and macOS start from the sources, as in the next lines.
 - **Windows, from the source code**: double-click `start.bat` in the project folder.
 - **Linux**: run `bash start.sh` in the project folder.
 - **macOS**: double-click `start.command` in the project folder (if macOS refuses, run `chmod +x start.command start.sh` once in a terminal).

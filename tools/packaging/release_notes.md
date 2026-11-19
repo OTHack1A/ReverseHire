@@ -1,15 +1,16 @@
 ## How to install
 
-Ready-made builds of ReverseHire by 0THack1A: no Python needed. Pick the file for your system, check it against `SHA256SUMS.txt` if you like, unpack and start.
+This release contains the **Windows build only** (zip and installer). Pick the file, check it against `SHA256SUMS.txt` if you like, unpack and start. No Python needed.
 
-The builds contain third-party open-source components (Python, Qt/PySide6 under LGPL-3.0 with Chromium through Qt WebEngine, onnxruntime, OpenCV and others), each under its own licence. The notices are inside every package: `THIRD-PARTY-NOTICES.txt` and the `licenses` folder (in the macOS disk image next to the app, and inside the app under `Contents/Resources`). The Qt libraries are shipped unmodified as separate, replaceable shared libraries.
+**Linux and macOS builds are not published yet.** Their automatic start-up test crashes (segmentation fault) as soon as the web map (Qt WebEngine) starts with PySide6 6.12, also when run from the sources, so it is a bug of the app that is still to be fixed. Install from the sources on Linux and macOS for now (docs/INSTALLATION.md); on those systems the web map can crash the program, see README Limits.
+
+The build contains third-party open-source components (Python, Qt/PySide6 under LGPL-3.0 with Chromium through Qt WebEngine, onnxruntime, OpenCV and others), each under its own licence. The notices are inside the package: `THIRD-PARTY-NOTICES.txt` and the `licenses` folder. The Qt libraries are shipped unmodified as separate, replaceable shared libraries.
 
 | System | File | How to start |
 |---|---|---|
 | Windows 10/11, 64-bit | `ReverseHire-@VERSION@-windows-x64.zip` | Unpack the whole `ReverseHire` folder (for example into `Documents`, not into `C:\Program Files`), double-click `ReverseHire.exe`. |
 | Windows 10/11, 64-bit, installer | `ReverseHire-@VERSION@-setup.exe` (if present) | Run it: per-user installation into `%LOCALAPPDATA%\Programs\ReverseHire Standalone`, no administrator rights, with a Start menu entry. |
-| Linux x86_64, glibc 2.35 or later (Ubuntu 22.04+, Debian 12+, Fedora 36+) | `ReverseHire-@VERSION@-linux-x86_64.tar.gz` | `tar xzf ReverseHire-@VERSION@-linux-x86_64.tar.gz`, then `ReverseHire/reversehire`. `ReverseHire/install-desktop-entry.sh` adds it to the applications menu. |
-| macOS 14 Sonoma or later, Apple Silicon (M1 and later) | `ReverseHire-@VERSION@-macos-arm64.dmg` | Open the disk image, drag `ReverseHire.app` to `Applications`. |
+| Linux, macOS | not published yet | Install from the sources (docs/INSTALLATION.md). |
 
 **Intel Macs are not supported by the ready-made build** (only Apple Silicon is built; the ONNX runtime has no current release for Intel Macs).
 
@@ -18,33 +19,30 @@ The builds contain third-party open-source components (Python, Qt/PySide6 under 
 | | Minimum |
 |---|---|
 | Windows | Windows 10 version 1809 (build 17763) or later, or Windows 11; x64 only (Python 3.14: Windows 10+; Qt 6.12: Windows 10 1809+) |
-| Linux | x86_64, glibc 2.35 or later (built on Ubuntu 22.04; Ubuntu 22.04+, Debian 12+, Fedora 36+), X11 or Wayland desktop with the Qt libraries listed below |
-| macOS | macOS 14 Sonoma or later, Apple Silicon only (the PySide6 6.12 and onnxruntime arm64 wheels target macOS 14) |
-| From the sources | Python 3.12 or later; these builds carry Python 3.14 |
+| Linux | source installation only in this release (Python 3.12 or later, X11 or Wayland desktop with the Qt libraries; docs/INSTALLATION.md); ready-made build not published yet |
+| macOS | source installation only in this release: macOS 14 or later (PySide6 6.12 wheels), Apple Silicon; a future ready-made build: Qt 6.12 declares macOS 14.4, not verified on a real Mac |
+| From the sources | Python 3.12 or later; the Windows build carries Python 3.14 |
 | Processor, memory | 64-bit; about 4 GB of free RAM (8 GB of RAM recommended), more while the advanced text recognition runs |
 | Disk | about 1 GB for the unpacked program, about 470 MB for the scoring model, plus the optional downloads below |
 | Screen | 1366 × 768 or larger |
 | Internet | only for searches and first-time downloads |
 | Optional | Claude Code or Codex CLI (assistant strip, suggestions); classic or new Outlook for e-mail drafts on Windows |
 
-### The builds are not code-signed
+### The build is not code-signed
 
 - **Windows SmartScreen** says "Windows protected your PC" and "Unknown publisher": click **More info**, then **Run anyway**.
-- **Windows with Smart App Control on** blocks unsigned programs outright and offers no "run anyway": on such PCs install from the sources with `start.bat` instead (docs/INSTALLATION.md, section 5).
-- **macOS Gatekeeper** refuses the app the first time ("cannot be opened because Apple cannot check it"): right-click (Control-click) `ReverseHire.app` and choose **Open**, or open **System Settings > Privacy & Security** and click **Open Anyway** (on macOS 15 only the second way works). Alternative in Terminal: `xattr -dr com.apple.quarantine /Applications/ReverseHire.app`.
-- **Linux** needs the usual desktop libraries of Qt (X11/XCB or Wayland, EGL/OpenGL, fontconfig, NSS). On Debian/Ubuntu: `sudo apt install libegl1 libgl1 libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libnss3 libxcomposite1 libxdamage1 libxrandr2 libxtst6 libasound2` (`libasound2t64` on Ubuntu 24.04).
+- **Windows with Smart App Control on** blocks unsigned programs outright and offers no "run anyway": on such PCs install from the sources with `start.bat` instead (docs/INSTALLATION.md, section 3).
 
 ### Where the data goes
 
-- Windows and Linux (zip or tar.gz): the `userdata` folder next to the program, when that folder can be written; otherwise the per-user folder (`%LOCALAPPDATA%\ReverseHire`, `~/.local/share/reversehire`).
+- Windows zip: the `userdata` folder next to the program, when that folder can be written; otherwise the per-user folder (`%LOCALAPPDATA%\ReverseHire`).
 - Windows installer: `userdata` inside the installation folder.
-- macOS: `~/Library/Application Support/ReverseHire` (an app bundle is not a place for data).
 - `REVERSEHIRE_HOME` overrides all of them.
 
 ### Downloaded on first use (not in the download)
 
 The scoring model `intfloat/multilingual-e5-small` (about 470 MB, the first time the scoring needs it), and only on request: the advanced text recogniser (about 147 MB), the map data of a region (about 205 MB for Emilia-Romagna), the regional register (from several hundred MB to a few GB of raw files) and the translation models. They go into the data folder.
 
-### How these builds were checked
+### How this build was checked
 
-Each build was started on GitHub's machines (Windows Server, Ubuntu 22.04 under a virtual X server, macOS 15 on Apple Silicon) with `--self-test`: it loads the locales, the bundled ONNX models, the face detector, the text recognition, the web map (Qt WebEngine, tiles from a local test server), creates the main window offscreen and opens the database in a temporary folder; then the built-in MCP server answered an `initialize` request. **No person has run these builds yet** on a real Windows, Linux or macOS desktop; please report problems on the Issues page.
+The Windows build was started on GitHub's Windows Server runner with `--self-test`: it loads the locales, the bundled ONNX models, the face detector, the text recognition, creates the main window offscreen, opens the database in a temporary folder and shows the web map (Qt WebEngine) with tiles from a local test server; then its built-in MCP server answered an `initialize` request. **No person has run it yet** on a real desktop; please report problems on the Issues page.
