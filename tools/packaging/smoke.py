@@ -46,7 +46,12 @@ def self_test(executable: Path, expect_program_folder: str) -> bool:
     print(f"self-test exit code {completed.returncode} after {seconds:.1f} s")
     if completed.returncode != 0:
         print("--- stdout (end) ---\n" + completed.stdout[-6000:])
-        print("--- stderr (end) ---\n" + completed.stderr[-6000:])
+        stderr = completed.stderr
+        if "Fatal Python error" in stderr:  # faulthandler: the Python stacks come first
+            start = stderr.index("Fatal Python error")
+            print("--- stderr (crash report) ---\n" + stderr[start:start + 12000])
+        else:
+            print("--- stderr (end) ---\n" + stderr[-6000:])
     if not report.is_file():
         print("no self-test report was written")
         return False

@@ -114,7 +114,12 @@ jobs:
         if: failure() && runner.os == 'Linux'
         env:
           QT_QPA_PLATFORM: offscreen
-        run: python tools/packaging/smoke.py dist/ReverseHire/reversehire || true
+        run: |
+          python tools/packaging/smoke.py dist/ReverseHire/reversehire || true
+          echo "=== The same self-test from the installed sources (not frozen), under X11 ==="
+          QT_QPA_PLATFORM=xcb LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a -s "-screen 0 1600x1000x24 +extension GLX" \
+            python -X faulthandler -m reversehire --self-test --self-test-report source-selftest.json || true
+          cat source-selftest.json || true
 
       - name: Smoke test (macOS)
         if: runner.os == 'macOS'
