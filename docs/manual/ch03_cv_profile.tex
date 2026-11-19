@@ -1,0 +1,115 @@
+% Chapter 3 -- CV, OCR and profile. Update with cv/* (ocr.py, ocr_models.py, ocr_quality.py, reading.py,
+% ai_estimate.py, ai_signals.py), gui/ocr_reader.py, cv_library.py, gui/profile_panel.py,
+% gui/recruiter_panel.py, gui/cv_panel.py, gui/main_window.py (load_cv, autosave, undo, restore).
+\chapter{CV and profile}\label{ch:cv}
+
+\section{Reading the file}
+Accepted: \code{.pdf}, \code{.docx} and images (\code{.jpg .jpeg .png .bmp .tif .tiff .webp}).
+Text PDFs and DOCX are read directly; images and PDF pages without a text layer go
+through local OCR (section~\ref{sec:ocr}). The language (Italian, English, Ukrainian) is
+detected locally. The file is \textbf{loaded as soon as you choose or drop it}:
+\ui{File $>$ Open CV} (\code{Ctrl+O}), the \ui{Choose the CV} button of tab
+\ui{1. CV and profile}, or a drop \emph{anywhere on the window}; there is no separate ``load''
+step. The window switches to tab~1 and reads in the background (a newer reading cancels an older
+one); the progress bar shows ``step 3 of 10'' and, in OCR, ``page 2 of 5''. After a read an info
+bar offers to keep the CV as a version in tab \ui{My CV}.
+
+\section{Reading scans: OCR}\label{sec:ocr}
+OCR is local and offline (RapidOCR on onnxruntime), up to 10 pages per document at 200\,dpi.
+The program finds the text lines once and reads each with the Latin model; a probe of 12 lines
+with the small bundled Cyrillic recogniser (8\,MB) decides whether the page is Cyrillic, and if so
+every line is read again with it and look-alike letters of the two scripts are put back in one
+script. The boxes are rebuilt into rows; a page with a clear vertical gutter whose two sides are
+independent texts (a sidebar CV) is read \emph{column by column}, a ``date $|$ description''
+table row by row.
+
+\textbf{Advanced reader.} Photos, rotated and low-quality scans can defeat the small models. An
+optional second set (about 139\,MB from Hugging Face, Apache-2.0, pinned revisions, every file
+checked by SHA-256, resumable and cancellable, through the polite gateway) is \emph{downloaded on
+demand}. Settings, \ui{General}, chooses: \emph{ask once before downloading} (default), \emph{use it
+automatically} or \emph{never}; Tools $>$ \ui{Advanced reader (OCR)} has download, cancel and remove.
+Once installed it runs by itself after a normal reading that was at least partly OCR when one of five
+\emph{failure signals} fires: \textbf{A} mean confidence below 0.97; \textbf{B} a page with fewer
+than 400 useful characters; \textbf{C} no ``experience'' heading; \textbf{D} fewer than three
+section headings; \textbf{E} Cyrillic on a page not read with the Cyrillic model.
+
+A false alarm only costs time (about 6\,s a page on a CPU, at most 240\,s per document) because of
+the \textbf{``keep only if better'' rule}: the advanced text replaces the normal one only if it gives the
+profile \emph{more} (skills of the dictionary plus experiences, then headings, then confidence); on a
+tie, a stop, a timeout or a failure the normal reading stays. \ui{Read again with the advanced reader}
+forces the pass. On Windows the optional \code{gpu} package (DirectML) lets it use any DirectX 12
+card, with a fall-back to the CPU; settings show which one runs. CUDA is not used.
+
+\begin{infobox}
+\textbf{Deliberately not included.} Indra OCR: its weights carry a modified OpenRAIL-M
+licence that does not fit an MIT-licensed program. OCR with a vision-language model:
+minutes per page on a CPU and no working GPU path on the target hardware.
+\end{infobox}
+
+\section{From text to profile}
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Part} & \thead{How (rules only, no LLM)} \\
+\midrule
+Sections    & IT/EN/UK headings, also decorated (``// PROFILE'', ``01 EXPERIENCE''); page headers and footers removed first. \\
+Skills      & Every item of a skills section plus dictionary skills found elsewhere; value = English canonical name, CV wording kept as \emph{original}. \\
+Languages   & Name and level (e.g.\ CEFR), mapped to English. \\
+Experience  & Roles with period and employer, years without double counting, gaps, seniority. \\
+Mobility    & Business travel (declared / likely / excluded / unknown), relocation, driving licence, own car, home town. \\
+Occupation  & The role title is matched on the EU ESCO classification; only the cleaned title is sent. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{2pt}
+Every value carries the CV line it came from (\emph{evidence}). You can \textbf{check and correct}
+the profile in editable lists. Profile values are shown in English whatever the CV language: first
+deterministic tables (skills, languages, degrees, ESCO labels, job titles), then the local OPUS-MT
+model for free text; what cannot be translated stays as written, is listed as untranslated and, with
+the English interface, carries an ``(original language)'' marker. Nothing goes to an online translator.
+
+\section{No confirmation: autosave, undo, restore}\label{sec:autosave}
+There is no ``confirm profile'' step: the profile is valid as soon as a CV has been analysed. A line
+under the lists says where it stands (``No profile: choose a CV first'', ``Still needed for the search:
+job role (at least one is needed)'', ``Profile ready: every change is saved automatically'').
+\begin{itemize}
+  \item \textbf{Immediate autosave.} Every edit is saved 0.5\,s after the last keystroke, on a
+        worker thread (\emph{Saving\ldots}, then \emph{Saved} with the time); a fresh reading is saved too and
+        \ui{Start} saves a pending edit first.
+  \item \textbf{Undo.} \ui{Undo} (tab~1), \ui{CV $>$ Undo last profile change} or \code{Ctrl+Z} while tab~1 has
+        the focus: the last 30 states; an undo is saved again. The history is cleared when a new CV is
+        loaded and does not survive a restart.
+  \item \textbf{Restore at start-up.} The current profile lives in the store (\code{store.sqlite}) and is shown
+        again at the next start without reading the CV. \ui{Read again} analyses the file again and says so if
+        it has moved. \ui{Clear cache} does not delete the profile.
+\end{itemize}
+A search needs an analysed CV and at least one role: otherwise \ui{Start} does not run and a
+\emph{Profile needed} dialog has a button that jumps to tab~1. Nothing is invented.
+
+\section{Recruiter view and AI-writing estimate}\label{sec:aiestimate}
+Tab \ui{Recruiter view} shows how a recruiter and the applicant-tracking software would screen the CV in
+general. Six areas, each 100 minus the penalties of its findings: \emph{readability}, \emph{career},
+\emph{substance}, \emph{coverage} (ESCO essential skills of the occupation), \emph{personal} (data that
+invites bias) and \emph{hidden} (invisible text, keyword stuffing; caps the overall score). Each finding
+quotes the CV line and gives advice. (How \emph{specific} systems treat the CV for a given job is tab
+\ui{Recruiter analysis}, chapter~\ref{ch:analysis}.)
+
+The same tab shows the \textbf{estimated probability that the text was generated with AI}, always with its
+confidence band and a fixed caption. It comes from \emph{writing signals}: stock phrases, uniform bullets,
+generic lines, typographic habits, file metadata, similarity to template sentences. The score goes
+through a logistic curve and is kept between 3\,\% and 85\,\%; the band is at least $\pm 15$ points and
+widens for short texts, few signals or non-English text. The three strongest signals are listed with the
+sentences concerned and a suggested rewrite.
+
+\begin{warnbox}
+This is an \emph{estimate, not proof}. The cues are not calibrated against a labelled set of CVs; texts by
+non-native writers, translated texts, templates and career-service phrasing raise it. ReverseHire never says
+a CV ``was written by AI'': use the signals to make the text more personal.
+\end{warnbox}
+
+\section{Photo and My CV versions}
+The portrait photo is located with face \emph{detection} only (no recognition) and kept in memory. Tab
+\ui{My CV} keeps one CV in several language versions (English primary, Italian secondary, more allowed): each
+is a \emph{copy} under \code{<data>/cv/<language>/}, indexed in \code{cv/library.json}, with its photo, a
+built-in viewer and a consistency check between two versions.

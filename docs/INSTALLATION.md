@@ -1,0 +1,362 @@
+# ReverseHire — Installation Manual
+
+This manual explains how to install ReverseHire on Windows (including a brand-new PC with nothing installed), on Linux and on macOS. How to use the app is covered in the [User Manual](USER_MANUAL.md).
+
+There are three ways to install it:
+
+| Way | For whom | Internet needed to install |
+|---|---|---|
+| **A. Windows: from the installation ISO** (recommended on Windows) | Anyone. Everything needed is on the ISO. | No |
+| **B. Windows: from the source code** | Developers, or anyone who wants to change the code. | Yes |
+| **C. Linux and macOS: from the source code** | Anyone on Linux or macOS. | Yes |
+
+None of them needs administrator rights.
+
+## 1. Requirements
+
+| Item | Requirement |
+|---|---|
+| Operating system | Windows 10 or 11, 64-bit; Linux x86_64 or aarch64 with a graphical desktop (X11 or Wayland); macOS 13 or later (Apple silicon; Intel Macs see [section 8](#8-macos-from-the-source-code)) |
+| Python | Installed by the ISO on Windows. From source: Python 3.12 or later (tested with 3.14) |
+| Free disk space | About 3 GB (program 1.4 GB, of which about 150 MB for the local text recognition (OCR) of scanned CVs; embedding model 0.5 GB; Python 0.2 GB; working space), plus about 147 MB for the optional advanced reader of the text recognition (downloaded on request), plus about 205 MB for the map data of a region such as Emilia-Romagna (downloaded on request, together with the index built from it), the local translation models if you use them, and the files of the optional regional register (downloaded on request; the program shows the size before it downloads, and the developer's notes in the code put the largest files at between several hundred MB and a few GB: see [section 10](#10-where-everything-is)) |
+| Memory | 4 GB or more; 8 GB recommended |
+| Administrator rights | Not needed |
+| Internet | Not needed to install from the ISO. Needed to install from source, and when you run a search (maps, company websites). |
+
+ReverseHire is developed on Windows. Linux and macOS run the same code; the automatic tests run on all three systems (see `.github/workflows/tests.yml`).
+
+## 2. Where your data is
+
+ReverseHire keeps your settings (`config.json`, which also holds the text and details of your application e-mails and the assistant choice), saved searches, company cards and caches (`store.sqlite`, a local SQLite database), the log (`reversehire.log`, rolling, 100 MB at most in total, see the user manual), the downloaded map data and its index (`osm`), the regional register and the files downloaded for it (`registers`), the tracker of your applications and the exact copies of the CVs you sent (`applications`), the queue of the idle analysis (`idle_analysis.json`), the copies of your CV files (`cv`), the working folder of the assistant strip (`assistant`), the MCP usage counter (`mcp_usage.json`) and downloaded models (`models`) in one **data folder**. It is chosen when the app starts, with these rules (the first that applies wins):
+
+1. **`REVERSEHIRE_HOME`**: if this environment variable is set, that folder is used.
+2. **Portable**: if the program folder can be written, the data goes into a folder named **`userdata` inside the program folder**, next to the program. The program folder is the project folder when you run from the source code, or the installation folder (the one that contains `venv`) for the ISO installation. Nothing has to be configured: a writable program folder means portable. This is the normal case for every installation described here.
+3. **Per-user folder** of the operating system, when the program folder is read-only (for example a copy in a system folder):
+
+   | System | Folder |
+   |---|---|
+   | Windows | `%LOCALAPPDATA%\ReverseHire` (normally `C:\Users\<you>\AppData\Local\ReverseHire`) |
+   | Linux | `$XDG_DATA_HOME/reversehire`, normally `~/.local/share/reversehire` |
+   | macOS | `~/Library/Application Support/ReverseHire` |
+
+4. As a last resort, a folder in the system's temporary folder. The app writes a warning in the log and **Diagnostics** shows it: data there may be deleted by the system, so set `REVERSEHIRE_HOME`.
+
+The **?** menu, **Diagnostics…**, shows the data folder, which rule chose it and whether it can be written (the **About** window no longer lists it), and the log records it at every start.
+
+**Older versions** kept the data in `%APPDATA%\ReverseHire` (Windows) or `~/.reversehire` (Linux, macOS). On the first start with a new data folder that has no settings and no database yet, ReverseHire **copies** (never moves) the settings, the database and the log from the old folder, and writes `migrated_from.txt` to say so. The old folder is left as it was: delete it yourself once everything works. Models and map data are not copied: the app still finds a model in the old folder (it is the last of the folders searched, see [section 10](#10-where-everything-is)).
+
+**Cloud-synced folders.** Do not put the data folder inside OneDrive, Dropbox, Google Drive, iCloud Drive and similar: the sync client can upload or replace `store.sqlite` while the app writes it, which gives conflicting copies or lost searches. Diagnostics warns when it detects such a folder. If the program folder is inside one (for example a project cloned into a synced Documents folder), set `REVERSEHIRE_HOME` to a folder outside it.
+
+**Moving the data folder.** Close ReverseHire, move or copy the whole data folder where you want it, and set `REVERSEHIRE_HOME` to the new place:
+
+- Windows: **Settings > System > About > Advanced system settings > Environment Variables**, *User variables*, **New…**: name `REVERSEHIRE_HOME`, value the folder (or in a terminal: `setx REVERSEHIRE_HOME "D:\ReverseHire data"`). No administrator rights are needed for user variables.
+- Linux: add `export REVERSEHIRE_HOME="$HOME/ReverseHireData"` to `~/.profile` (or `~/.bashrc`), then log in again.
+- macOS: add the same line to `~/.zprofile`; for the app started from Finder with `start.command`, the Terminal reads it.
+
+To go back to the portable folder, remove the variable and move the files back into `userdata`.
+
+## 3. Windows: what is on the installation ISO
+
+The ISO contains every tool the program needs, so nothing has to be downloaded.
+
+| Folder or file | Content | Size |
+|---|---|---|
+| `install.bat` | Starts the installation. This is the only file you need to run. | — |
+| `README.txt` | Short instructions. | — |
+| `docs\` | This manual and the User Manual as PDF, the licence and the list of third-party components. | 2 MB |
+| `python\` | Official installer of Python 3.14.7 (64-bit), digitally signed by the Python Software Foundation. Used only if Python 3.14 is not already on the PC. | 32 MB |
+| `wheels\` | ReverseHire (the version printed by the build, see [section 12](#12-rebuilding-the-installation-iso)) and all the Python packages it uses (about 94 files). | 575 MB |
+| `models\` | The embedding model used for scoring, `intfloat/multilingual-e5-small`. | 465 MB |
+| `setup\` | Installation script, uninstaller and program icon. | — |
+| `redist\` (optional) | Microsoft's Visual C++ runtime, `vc_redist.x64.exe`, installed only on PCs where it is missing. If your ISO has no such folder and the installer reports the runtime as missing, download it from Microsoft (<https://aka.ms/vs/17/release/vc_redist.x64.exe>, about 25 MB) and run it, or copy the ISO content to a folder and put the file in a `redist` folder next to `install.bat` before installing. | 25 MB |
+
+Main components installed from `wheels\`:
+
+| Component | Version | Used for |
+|---|---|---|
+| PySide6 (Qt) | 6.12.0 | The window interface |
+| fastembed, onnxruntime | 0.9.1, 1.31.1 | Local embeddings for scoring |
+| httpx, trafilatura, lxml | 0.28.1, 2.3.1, 6.1.3 | Reading company websites |
+| pypdf, python-docx | 7.0.1, 1.2.0 | Reading the CV (PDF and DOCX) |
+| rapidocr (with opencv-python-headless, shapely, pyclipper, omegaconf) | 3.10.0 | Local text recognition (OCR) of CVs sent as images or scanned PDFs; its models are inside the package, and ReverseHire itself carries the 8 MB Cyrillic recogniser, so it works offline for Latin and Cyrillic text |
+| lingua-language-detector | 2.2.0 | Detecting the language of the CV |
+| rapidfuzz, numpy | 3.14.6, 2.5.4 | Text matching and calculations |
+| pywin32 | 312 | Windows only: opens a draft in classic Outlook with the PDF attached (application e-mail) |
+| mcp | 2.3.0 | Optional MCP server for Claude, Codex and Gemini, and the connection of the assistant strip (switched off in the app until you turn it on) |
+
+The licences of these components are listed in `docs\ATTRIBUTIONS.md`.
+
+## 4. Windows: installing from the ISO
+
+### 4.1 Open the ISO
+
+1. Copy the file `ReverseHire-<version>-Setup.iso` (the version is the one printed when the ISO was built, for example `0.1.2`) to the new PC (for example with a USB stick).
+2. Double-click it. Windows opens it as a new drive, like a DVD. If Windows asks for confirmation ("Do you want to open this file?"), choose **Open**.
+
+You can also burn the ISO to a DVD (right-click the file, **Burn disc image**) or copy its content to a USB stick: the installation works from any folder.
+
+### 4.2 Run the installation
+
+1. In the drive that opened, double-click **`install.bat`**.
+2. If Windows shows "Windows protected your PC", choose **More info** and then **Run anyway**. The message appears because the script is not published through the Microsoft Store.
+3. A black window shows the progress. Do not close it.
+
+The installation does the following, in this order:
+
+| Step | What happens | Where |
+|---|---|---|
+| 1 | Looks for Python 3.14. If it is missing, installs it for the current user only; a small progress window appears for a minute or two. | `%LOCALAPPDATA%\Programs\Python\Python314` |
+| 2 | Creates a private Python environment for ReverseHire, separate from anything else on the PC. | `%LOCALAPPDATA%\Programs\ReverseHire\venv` |
+| 3 | Installs ReverseHire and its packages from the `wheels\` folder, without using the internet. | same folder |
+| 4 | Copies the embedding model, so that the first search does not have to download it. | `%LOCALAPPDATA%\Programs\ReverseHire\models` |
+| 5 | Copies the manuals, the icon and the uninstaller, and creates the **ReverseHire** shortcuts on the Desktop and in the Start menu. Files copied from the ISO lose their read-only flag. | `%LOCALAPPDATA%\Programs\ReverseHire` |
+| 6 | If the Microsoft Visual C++ runtime is missing, installs it from `redist\` (Windows asks for permission), or tells you where to download it. | Windows |
+| 7 | **Self-test** with the installed program: loads the model from the copied folder without using the internet, computes one embedding and loads the text-recognition (OCR) engine. It prints `[PASS]` or `[FAIL]` for each check and a final `RESULT`. | — |
+
+4. When you read **"Installation completed"**, press any key to close the window. The whole process takes about 3 to 10 minutes, depending on the PC.
+   - **"Installation completed with a warning"** means that only the scoring model failed its self-test (the cause is printed just above, for example a missing Visual C++ runtime or Smart App Control). ReverseHire works anyway, with *reduced accuracy*, until the problem is solved; see [Troubleshooting](#11-troubleshooting).
+   - Everything the window shows is also saved in `%LOCALAPPDATA%\Programs\ReverseHire\install.log`. Send this file if you need help.
+5. You can now close the ISO drive (right-click it in File Explorer, **Eject**).
+
+The program folder is in your user profile and writable, so the app keeps your data in **`%LOCALAPPDATA%\Programs\ReverseHire\userdata`** (portable rule, [section 2](#2-where-your-data-is)). Unlike `%APPDATA%`, this folder is not redirected when ReverseHire or its MCP server is started from inside a packaged app (an app installed from the Microsoft Store), so every program sees the same data.
+
+`%LOCALAPPDATA%` is a folder inside your Windows user profile, normally `C:\Users\<your name>\AppData\Local`. You can type it as it is in the address bar of File Explorer.
+
+### 4.3 First start
+
+Double-click the **ReverseHire** icon on the Desktop. The main window opens in a few seconds, in English, with an empty data folder: no CV, no searches, no map data and no register yet (the scoring model is already there when you installed from the ISO). Nothing is downloaded at start-up. See [section 13](#13-first-run-and-what-is-recreated-or-downloaded) for what is created or downloaded later, and when. Continue with the [User Manual](USER_MANUAL.md); a PDF copy is in `%LOCALAPPDATA%\Programs\ReverseHire\docs`.
+
+Windows Firewall does not need any permission: the app only makes outgoing connections (a search, a company card, a map-data download, and the program you chose for the assistant strip, if you use it), and it opens no network port.
+
+### 4.4 Updating or reinstalling
+
+Run `install.bat` again from a newer ISO (or from the same one, to repair the installation). Only the Python environment is replaced; your data in `userdata` and the model in `models` are kept. If an older version kept your data in `%APPDATA%\ReverseHire`, the first start copies it into `userdata` ([section 2](#2-where-your-data-is)).
+
+### 4.5 Removing ReverseHire
+
+1. Close ReverseHire.
+2. Open `%LOCALAPPDATA%\Programs\ReverseHire` and double-click **`uninstall.bat`**.
+3. Answer **Y** to remove the program and its shortcuts.
+4. Answer the question about your data: **Y** deletes `userdata` with everything else; **N** removes the program but keeps the `userdata` folder (a new installation in the same folder uses it again).
+5. If an older version left a `%APPDATA%\ReverseHire` folder, a third question offers to delete it too.
+
+Python is left installed because other programs may use it. To remove it, open Windows **Settings > Apps > Installed apps** and uninstall "Python 3.14".
+
+## 5. Windows: from the source code
+
+Use this way if you want to read or change the code. It needs an internet connection.
+
+### 5.1 Tools needed
+
+| Tool | Version | Where to get it | Notes |
+|---|---|---|---|
+| Python | 3.12 or later (tested with 3.14), 64-bit | <https://www.python.org/downloads/windows/> | During setup, tick **Add python.exe to PATH**. The `py` launcher installed with it is enough. |
+| Git (optional) | any recent | <https://git-scm.com/download/win> | Only to clone the repository; you can download the ZIP from GitHub instead. |
+
+### 5.2 Steps
+
+Get the code (with Git, or by unpacking the ZIP from GitHub):
+
+```
+git clone https://github.com/OTHack1A/ReverseHire.git
+```
+
+Then double-click **`start.bat`** in the project folder. The first time it finds Python (3.14, 3.13 or 3.12 through the `py` launcher, else `python`), creates the environment `.venv`, installs the dependencies and the app (a few minutes), then starts ReverseHire. Later starts open the app at once. If something fails, delete `.venv` and run `start.bat` again.
+
+The same by hand, in a terminal opened in the project folder:
+
+```
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe -m pip install -e .
+.venv\Scripts\pythonw.exe -m reversehire
+```
+
+Your data goes to `userdata` in the project folder (ignored by Git). With this installation the embedding model (about 470 MB) is downloaded the first time a search reaches the scoring step, into `userdata\models`. The local translation models for non-English CVs and the map data of a region are separate downloads, described in [section 10](#10-where-everything-is). To avoid the download (for example without internet, or behind a proxy), copy the `models` folder of the ISO, or of another installation, into the project folder as `models\`: it is found there (see [Where everything is](#10-where-everything-is)). HTTPS connections, the model download included, trust the system certificate store (through the `truststore` package), so antivirus HTTPS scanning and company proxies with their own certificate work as in the browser.
+
+## 6. Linux and macOS: what is needed
+
+Both use the source code and the scripts in the project folder: **`start.sh`** on Linux, **`start.command`** on macOS (it runs `start.sh`). The first start finds Python 3.12 or later (`python3.14`, `python3.13`, `python3.12`, `python3`), creates `.venv`, installs the dependencies with `pip` (internet, a few minutes, about 1.5 GB) and starts the app; later starts open it at once. Your data goes to `userdata` in the project folder ([section 2](#2-where-your-data-is)). Nothing is installed outside the project folder and your home folder, so no administrator rights are needed — except, on Linux, for the system packages below if they are missing.
+
+All the Python packages have ready-made binary wheels for Linux x86_64 and aarch64 and for macOS on Apple silicon, for Python 3.12, 3.13 and 3.14: nothing is compiled.
+
+## 7. Linux: from the source code
+
+### 7.1 System packages
+
+Python 3.12 or later with the `venv` module, and the libraries Qt needs to open a window. Most desktop installations already have the libraries. If they are missing (the app stops with an error that mentions `xcb`, `EGL` or `libxkbcommon`), ask the administrator to install them, or install them yourself if you can:
+
+| Distribution | Command |
+|---|---|
+| Debian, Ubuntu, Mint | `sudo apt install python3 python3-venv libegl1 libgl1 libxkbcommon0 libxkbcommon-x11-0 libxcb-cursor0 libfontconfig1 libdbus-1-3` |
+| Fedora | `sudo dnf install python3 mesa-libEGL mesa-libGL libxkbcommon libxkbcommon-x11 xcb-util-cursor fontconfig dbus-libs` |
+| Arch, Manjaro | `sudo pacman -S python libglvnd libxkbcommon libxkbcommon-x11 xcb-util-cursor fontconfig` |
+
+On a distribution whose Python is older than 3.12, install a newer one without administrator rights with `uv` (<https://docs.astral.sh/uv/>, `uv python install 3.13`) or `pyenv`, and make sure `python3.13` is on the `PATH`.
+
+### 7.2 Steps
+
+```
+git clone https://github.com/OTHack1A/ReverseHire.git
+cd ReverseHire
+bash start.sh
+```
+
+(`./start.sh` works too when the file is executable: `chmod +x start.sh`.) To start it from the desktop menu, create `~/.local/share/applications/reversehire.desktop` with:
+
+```
+[Desktop Entry]
+Type=Application
+Name=ReverseHire
+Exec=/path/to/ReverseHire/start.sh
+Icon=/path/to/ReverseHire/src/reversehire/resources/icon_256.png
+Terminal=false
+StartupWMClass=reversehire
+```
+
+"Open log folder" opens the data folder with your desktop's file manager (`xdg-open`). The **system** theme follows GNOME's light/dark setting; on other desktops choose dark or light in the settings.
+
+## 8. macOS: from the source code
+
+### 8.1 Python
+
+Install Python 3.12 or later from <https://www.python.org/downloads/macos/> (installs for all users, asks for the password), or without administrator rights with Homebrew in your home folder or `uv python install 3.13`. Apple's `/usr/bin/python3` is too old.
+
+**Intel Macs:** `onnxruntime` (the scoring engine) has no build for Intel Macs after version 1.23.2, which supports Python up to 3.13. Use Python 3.12 or 3.13 there; with Python 3.14 the installation fails. Apple-silicon Macs have no such limit.
+
+### 8.2 Steps
+
+Download the code (ZIP from GitHub, or `git clone https://github.com/OTHack1A/ReverseHire.git`) and double-click **`start.command`** in Finder. A Terminal window shows the first-time setup, then the app opens.
+
+- If macOS says the file cannot be opened because it is from an unidentified developer, right-click it, choose **Open**, then **Open** again.
+- If it opens in a text editor or says it has no permission, run once in Terminal, in the project folder: `chmod +x start.command start.sh` (files unpacked from a ZIP lose this flag).
+
+"Open log folder" opens the data folder in Finder. The **system** theme follows the macOS appearance (light or dark).
+
+## 9. Optional components
+
+None of these is needed for normal use. On Linux and macOS replace `.venv\Scripts\python.exe` with `.venv/bin/python`.
+
+| Component | What it is for | How to add it |
+|---|---|---|
+| **MCP server** | Lets Claude (Code and Desktop), Codex or Gemini CLI use ReverseHire's functions. | Already installed by the ISO, but **off by default**: turn it on with the red "MCP off" dot at the top right of the app window. The same window shows the configuration to paste into each client; the program it names is `%LOCALAPPDATA%\Programs\ReverseHire\venv\Scripts\reversehire-mcp.exe` (from source: `.venv/bin/reversehire-mcp` or `.venv\Scripts\reversehire-mcp.exe`). It uses the same data folder as the app. See [MCP.md](MCP.md). From source: `pip install -e .[mcp]`. |
+| **Assistant strip** | Questions about your searches and companies, answered by **your own** Claude Code or Codex. | ReverseHire does not install those programs: install one of them and sign in (follow its own instructions), install the `mcp` package (already on the ISO; from source `pip install -e .[mcp]`), switch MCP on with the dot at the top right, and choose the assistant in **Settings > Assistant and MCP**. Questions count against your own plan. |
+| **Job boards** (experimental) | Also looks for hiring companies on Indeed and LinkedIn, through the JobSpy library. Automated access may violate those sites' terms of use and can be blocked: in a test on the development PC LinkedIn answered (without job descriptions) and Indeed failed with a certificate error. | Already installed by the ISO (from source: `pip install -e .[jobboards]`). To use it, tick **Also search job boards (Indeed/LinkedIn)** in the app's settings; it is off by default. |
+| **Playwright engine** | Reads websites that show their content only through JavaScript. | Needs internet and several hundred MB. In a terminal: `"%LOCALAPPDATA%\Programs\ReverseHire\venv\Scripts\python.exe" -m pip install playwright`, then `"%LOCALAPPDATA%\Programs\ReverseHire\venv\Scripts\python.exe" -m playwright install chromium` (on Linux also `-m playwright install-deps chromium`, which needs administrator rights). Then choose it in the app's settings. |
+| **Firecrawl engine** | External service that reads websites for you. | No installation: enter your own Firecrawl API key in the app's settings. |
+| **Advanced reader of the text recognition** | A more accurate (and slower) set of OCR models for photos and difficult scans. About 147 MB, from Hugging Face, checked against fixed fingerprints. | Nothing to install: the program offers it the first time a scan reads poorly, or use **Tools > Advanced reader (OCR) > Download the advanced reader** or the OCR part of **Settings > General**. It is stored in `models\ocr\advanced-v1` of the data folder (or of any model folder, see [section 10](#10-where-everything-is)). On a PC without internet, copy that folder from another installation. |
+| **GPU for the advanced reader** (Windows) | Runs the advanced reader on any DirectX 12 graphics card (about three times faster than the processor). Not installed by the ISO and not needed. | `onnxruntime-directml` replaces the files of `onnxruntime`, so swap them, do not add it: `"%LOCALAPPDATA%\Programs\ReverseHire\venv\Scripts\python.exe" -m pip uninstall -y onnxruntime`, then `"%LOCALAPPDATA%\Programs\ReverseHire\venv\Scripts\python.exe" -m pip install onnxruntime-directml==1.24.4` (from source: uninstall `onnxruntime`, then `pip install -e .[gpu]`). Detected at run time; without it, or if the test at start fails, the processor is used. **Diagnostics** warns when both packages are installed. |
+| **Overture Maps places** | An extra, optional source of companies on the location tab (off by default). | `pip install -e .[overture]` (installs `duckdb`), then tick the source on the location tab. |
+
+## 10. Where everything is
+
+| What | Windows (ISO) | From source (any system) |
+|---|---|---|
+| Program | `%LOCALAPPDATA%\Programs\ReverseHire` (Python environment `venv`, icon, manuals, uninstaller) | the project folder (environment `.venv`) |
+| Data folder: settings (`config.json`), saved searches (`store.sqlite`), log (`reversehire.log`) | `%LOCALAPPDATA%\Programs\ReverseHire\userdata` | `<project>/userdata` |
+| Embedding model | `%LOCALAPPDATA%\Programs\ReverseHire\models` | downloaded into `<project>/userdata/models`, or copied by you into `<project>/models` |
+| Local translation models (Italian and Ukrainian CVs into English) | `models\translation` in one of the model folders below | the same, `models/translation` |
+| Advanced reader of the text recognition (optional, about 147 MB) | `models\ocr\advanced-v1` in one of the model folders below | the same, `models/ocr/advanced-v1` |
+| Map data of a region and its index | `userdata\osm` | `<data folder>/osm` |
+| Regional register (database and downloaded source files, optional) | `userdata\registers` | `<data folder>/registers` |
+| Applications sent (records, cover letters, copies of the CVs sent) | `userdata\applications` | `<data folder>/applications` |
+| Queue of the idle analysis | `userdata\idle_analysis.json` | `<data folder>/idle_analysis.json` |
+| Caches of the job search and of the map tiles | `userdata\cache\jobsearch`, `userdata\cache\map` | `<data folder>/cache/...` |
+| Copies of your CV files ("My CV") | `userdata\cv` | `<data folder>/cv` |
+| Installation log | `%LOCALAPPDATA%\Programs\ReverseHire\install.log` | — |
+| Python | `%LOCALAPPDATA%\Programs\Python\Python314` | your Python |
+| Shortcuts | Desktop and Start menu | `start.bat`, `start.sh`, `start.command` |
+
+The data folder follows the rules of [section 2](#2-where-your-data-is): the table shows the normal (portable) case.
+
+The embedding model is looked for in these folders, in this order; the first one that holds a complete copy is used, read-only, without any internet access:
+
+1. `models` in the data folder (for example `userdata\models`);
+2. the folder named by the environment variable `REVERSEHIRE_MODELS`, if set;
+3. `models` in the project folder, when the app runs from the source code (`<project>/models`, ignored by Git);
+4. `models` next to the installed program (`%LOCALAPPDATA%\Programs\ReverseHire\models`, or next to the `venv` of the installation);
+5. `models` in the data folder of older versions (`%APPDATA%\ReverseHire\models`, `~/.reversehire/models`).
+
+The local translation models are looked for the same way: in `models/translation` of the data folder, or, when that folder does not exist, of the first of these folders that has one, or in the folder named by `REVERSEHIRE_TRANSLATION_MODELS`. They are not on the ISO; to get them run once, in the program's environment, `python -m reversehire.cv.translate download it uk` (internet needed; the files are checked against pinned SHA-256 values). Without them a non-English CV is translated only with the built-in tables and the rest stays in the original language, marked "(original language)".
+
+The map data is not looked for in the model folders: it lives in `osm` inside the data folder. It is downloaded only when you click **Download / refresh map data** on the location tab (about 205 MB for Emilia-Romagna, from `download.openstreetmap.fr`), indexed once, and reused for 30 days.
+
+A folder may contain the copy made by the installer (`models--intfloat--multilingual-e5-small\...`, as on the ISO) or a plain folder `multilingual-e5-small` with `onnx\model.onnx`, `tokenizer.json` and `tokenizer_config.json`. Only when no folder has the model is it downloaded (about 470 MB) into the first one. The **?** menu, **Diagnostics…**, shows which folder is used.
+
+**About the database file.** Every thread of the app has its own connection to `store.sqlite`, so the window never waits behind a background job: if the window itself has to wait for the file, it waits about 2 seconds at most and then shows a "database is busy" notice instead of freezing. On a normal local folder SQLite runs in WAL mode (`store.sqlite-wal` and `store.sqlite-shm` files appear next to the database while the app runs). Where WAL is unsafe - a network folder, a folder synchronised by OneDrive, Dropbox and similar, or a Windows packaged-app folder redirection - the classic rollback journal is used instead (a short-lived `store.sqlite-journal` file appears during a write), and the database stays one self-contained file. When the app and the MCP server write at the same time, a background writer waits up to 10 seconds for the other. If the folder becomes read-only (permissions, a full or disconnected drive), the error names the file and suggests moving the data folder with `REVERSEHIRE_HOME`. Copy or back up the database with the app closed.
+
+## 11. Troubleshooting
+
+| Problem | What to do |
+|---|---|
+| Double-clicking the ISO does nothing, or another program opens it. | Right-click the ISO and choose **Open with > Windows Explorer**. |
+| "Windows protected your PC" when starting `install.bat`. | Choose **More info**, then **Run anyway**. |
+| "The Python installer ended with code ...". | Run `python\python-3.14.7-amd64.exe` from the ISO by hand, choose **Install Now**, then run `install.bat` again. |
+| "The installation of the packages failed". | Check that there are at least 3 GB free on drive C: and that the antivirus is not blocking the installation, then run `install.bat` again. If you copied the ISO content to a folder, make sure the copy is complete (94 files in `wheels\`). |
+| The installation works but the icon does not start the app. | Open `%LOCALAPPDATA%\Programs\ReverseHire\userdata\reversehire.log` and read the last lines. Running `install.bat` again repairs a damaged installation. |
+| `start.bat`, `start.sh` or `start.command` stops during the first start. | Read the message: usually Python is missing or too old, there is no internet, or (Debian/Ubuntu) `python3-venv` is missing. Fix it, delete the `.venv` folder and start the script again. |
+| Linux: the app does not open and the terminal mentions `xcb`, `EGL`, `libxkbcommon` or "Could not load the Qt platform plugin". | Install the system packages of [section 7.1](#71-system-packages). On Wayland, `QT_QPA_PLATFORM=xcb bash start.sh` is a workaround if the window misbehaves. |
+| At the end the installer says the "Microsoft Visual C++ runtime was not found", or the self-test or the app says that "a Windows component is missing". | Download and install the runtime from Microsoft: <https://aka.ms/vs/17/release/vc_redist.x64.exe>, then start ReverseHire again. Most PCs already have it. |
+| The Results tab shows **"Reduced accuracy: the scoring model could not be loaded (…)"**. | The search goes on and gives results, but the scores are approximate. Click **Why?** next to the notice: it names the cause and what to do, and **Details** has the technical text to copy. Typical causes: *the model is not on this PC and could not be downloaded* (no internet, or a proxy: copy the `models` folder of the ISO into the data folder or the program folder, or connect and start a new search); *the secure connection was refused* (an antivirus that scans HTTPS connections, or a company proxy: allow ReverseHire or huggingface.co, or copy the model as above); *blocked by Windows security* (Smart App Control or the antivirus blocked a program file); *a Windows component is missing* (the Visual C++ runtime, see above). The model is tried again at every new search, so full accuracy comes back by itself once the problem is solved. |
+| A search keeps saying it is waiting for the online company sources, or the status line of a source says "not available". | Without downloaded map data the search falls back on the public Overpass service, which is often slow or busy. Click **Download / refresh map data** on the location tab once: the local data answers at once and Overpass is then not needed. **Cancel** stops a search at once. |
+| A search finds nothing. | The Results tab says why (no companies on the map within the radius, or none with a website while companies without one are excluded) and what to change: a larger radius, a province or region area, other sectors or categories, an imported company list, or the websites you know added by hand in tab 2. |
+| The app does not find your saved searches after an update. | **Diagnostics…** shows the data folder now used. Older versions used `%APPDATA%\ReverseHire` (Windows) or `~/.reversehire`: their data is copied automatically only when the new folder is still empty. Otherwise close the app and copy `config.json` and `store.sqlite` from the old folder into the data folder by hand. |
+| The app does not find the model, or your saved searches, although you are sure they exist (Windows). | Programs started from inside a packaged app (for example a terminal or an assistant opened from an app installed from the Microsoft Store) may see a *redirected* AppData folder: what they write in `%APPDATA%` or `%LOCALAPPDATA%` actually ends up in `%LOCALAPPDATA%\Packages\<app>\LocalCache\...`, which ReverseHire started normally does not see. The portable `userdata` folder avoids this for the data; **Diagnostics** lists such copies and says when ReverseHire itself runs inside a packaged app. Copy their `models` folder into the program folder, or set `REVERSEHIRE_MODELS` to it. |
+| Diagnostics warns that the data folder is synchronised by OneDrive, Dropbox, iCloud… | Move the data folder outside the synced folder and set `REVERSEHIRE_HOME` ([section 2](#2-where-your-data-is)). |
+| An error says "The ReverseHire database … cannot be used: the file or its folder is read-only". | The data folder cannot be written (permissions, read-only media, a full or disconnected disk). Fix it, or move the data folder with `REVERSEHIRE_HOME`. |
+| A CV that is a photo or a scan says that the text-recognition (OCR) engine is not installed. | The `rapidocr` package is missing from the program's environment (for example after a partial installation). Run `install.bat` again; from source, run `.venv\Scripts\python.exe -m pip install -r requirements.txt` (`.venv/bin/python` on Linux and macOS). The **?** menu, **About**, shows "OCR engine: available" when it is installed. |
+| The advanced reader cannot be downloaded, or the program says its files are damaged. | Check the internet connection (the site is `huggingface.co`) and start the download again from **Tools > Advanced reader (OCR)**: it resumes where it stopped. For damaged files choose **Remove the advanced reader…** and download it again. Without it the normal reading is used. |
+| The first search says it is loading the model and takes a long time. | Normal the first time (a few seconds when the model is on the PC). If no model folder has it, it is downloaded (about 470 MB): keep the connection active. Without a connection the search continues at once with reduced accuracy. |
+| The window stopped answering for a while. | The log (`reversehire.log`) records where it was stuck, after 5 seconds without an answer: send that part of the log. Keep the data folder outside synchronised folders. |
+| The assistant strip says it cannot answer. | The line under the strip says why: the assistant program is not installed or not found (install it, or set its path in **Settings > Assistant and MCP**), it is not signed in (run it once in a terminal and sign in), or MCP is off (click the red dot). **Check again** in the settings repeats the check. |
+| "Write e-mail…" opens nothing, or classic Outlook is not used. | On Windows classic Outlook is driven through the `pywin32` package, installed with the program; check that the Outlook program (not only new Outlook) is installed and has a mail profile, or choose another way in **Open with**. With the environment variable `REVERSEHIRE_MAIL_DRY_RUN=1` the program refuses to launch any mail program (it is meant for tests). |
+| You need to send information about a problem. | In the app: **?** menu, **Diagnostics…** runs the checks (data folder, scoring engine, model folders and offline load, OCR, Visual C++ runtime, Smart App Control, connection to the online services) and **Copy** puts the result on the clipboard; **?** menu, **Open log folder** opens the folder with `reversehire.log`. Send both, together with `install.log`. The log lines carry the name of your computer and the labels of what you clicked, never the text of your CV or e-mails. They contain folder paths and versions, never the text of your CV. Without starting the app: `"%LOCALAPPDATA%\Programs\ReverseHire\venv\Scripts\python.exe" -m reversehire.diagnostics` (from source: `.venv/bin/python -m reversehire.diagnostics`). |
+| You want to start again from scratch. | Windows ISO: run `uninstall.bat` answering **Y** to the questions, then install again. From source: delete `.venv` and `userdata`. |
+
+## 12. Rebuilding the installation ISO
+
+For maintainers. From the project folder, with the development environment in `.venv`:
+
+1. Build the program package: `.venv\Scripts\python.exe tools\build.py --out dist\iso_staging\wheels`. The script **raises the third number of the version** (the build number, for example 0.1.1 to 0.1.2) in `src\reversehire\_version.py`, writes the build date next to it, builds the wheel into that folder and prints the new version as its last line; the wheel and the ISO are named after it. If the wheel cannot be built the old version is written back, so a failed build does not use up a number. Options: `--dry-run` shows the next version without changing anything, `--no-wheel` only raises the number. The version file is a change in your working copy: commit it if you keep the numbering.
+2. Collect the dependencies as wheel files for Windows 64-bit and Python 3.14 into the same folder: `.venv\Scripts\python.exe -m pip download "dist\iso_staging\wheels\reversehire-<version>-py3-none-any.whl[mcp,jobboards]" -d dist\iso_staging\wheels --only-binary=:all:`
+3. Copy `tools\installer\install.bat` and `README.txt` to `dist\iso_staging\`, and `install.ps1`, `uninstall.bat` and `src\reversehire\resources\icon.ico` to `dist\iso_staging\setup\`.
+4. Put the official Python installer (`python-3.14.x-amd64.exe` from python.org) in `dist\iso_staging\python\`.
+5. Copy the folder `models--intfloat--multilingual-e5-small` from the data folder's `models` (for example `userdata\models`, after one real search) or from `models\` to `dist\iso_staging\models\`. **Optional:** to have the advanced reader of the text recognition on the ISO (about 147 MB more), also copy the folder `ocr\advanced-v1` from the same `models` folder (it exists after you download the reader once) to `dist\iso_staging\models\ocr\advanced-v1\`; the installer copies the whole `models` folder, and the program finds the reader next to the installed program. The GPU package (`onnxruntime-directml`) is **not** installed by the installer and stays optional (section 9).
+6. Create the PDF manuals with `python tools\build_manuals.py dist\iso_staging\docs` (needs the `markdown-it-py` package and Microsoft Edge), and copy `LICENSE` (as `LICENSE.txt`) and `ATTRIBUTIONS.md` to the same folder.
+7. Optionally put Microsoft's `vc_redist.x64.exe` (from <https://aka.ms/vs/17/release/vc_redist.x64.exe>) in `dist\iso_staging\redist\`: the installer runs it only on PCs where the runtime is missing.
+8. Create the image: `powershell -ExecutionPolicy Bypass -File tools\installer\make_iso.ps1 -Source dist\iso_staging -Output dist\ReverseHire-<version>-Setup.iso` (`<version>` is the version printed in step 1)
+
+The `dist\` folder is not part of the repository. The wheel list includes `pywin32` (a Windows-only dependency of the program).
+
+## 13. First run, and what is recreated or downloaded
+
+**None of the following is in the repository or on the ISO unless stated.** The repository holds only the source code, the documentation, the tests, the sample data with invented content and two small bundled model files (see `docs/PUBLISHING.md`). Everything else is created or downloaded on the PC where the program runs, at installation or on first use, and is listed in `.gitignore` where it could appear inside the project folder.
+
+### 13.1 What happens at the first start
+
+1. The data folder is chosen ([section 2](#2-where-your-data-is)) and created: `config.json` with the default settings, an empty `store.sqlite` (schema 5), `reversehire.log`.
+2. The window opens in English. Nothing is downloaded and no network request is made by the start itself, apart from the optional start-up check of the regional register, which does nothing while you have never downloaded the register.
+3. You choose a CV (tab **1. CV and profile**); it is read at once on your computer. If the CV is a scan or a photo, the built-in text recognition is used; the larger "advanced reader" is only offered, never downloaded without your answer.
+4. The first time the scoring needs the embedding model and no model folder has it, it is downloaded (about 470 MB). If you cannot download it, the program works with reduced accuracy and says so.
+
+### 13.2 Created or downloaded on a new PC
+
+| What | When | How big | Where it lives | In the repository? |
+|---|---|---|---|---|
+| Data folder: settings, saved searches, company cards, log, caches, copies of your CV, applications | created at the first start and as you work | grows with use (the log is capped at 100 MB) | `userdata` (or `REVERSEHIRE_HOME`) | No (`userdata/` is ignored) |
+| Python environment and packages | by `start.bat`, `start.sh`, `start.command` (from source) or by `install.bat` (ISO, without internet) | about 1.4 GB | `.venv` (from source) | No (`.venv/` is ignored) |
+| Scoring (embedding) model `intfloat/multilingual-e5-small` | first use, or copied from the ISO | about 470 MB | `models` | No (`models/` and `*.onnx` are ignored) |
+| Local translation models (Italian, Ukrainian CVs) | only on request: `python -m reversehire.cv.translate download it uk` | not stated in the program | `models/translation` | No |
+| Advanced reader of the text recognition | only when you accept the offer or use the menu | about 147 MB | `models/ocr/advanced-v1` | No |
+| Map data of a region (OpenStreetMap extract) and the index built from it | only when you click **Download / refresh map data**; reused for 30 days | about 205 MB for Emilia-Romagna | `osm` | No |
+| Map pictures (tiles) cache | when a map shows its background online | at most 200 MB | `cache/map` | No |
+| Regional register: files of the four official sources and the register database | only when you click **Download / update** in the Register manager; the program shows the size first | from several hundred MB to a few GB for the raw files (developer's estimate, not measured here); the register itself keeps only your chosen regions; **Delete downloaded files** frees the raw files | `registers` | No |
+| Job-search caches | during use | small, kept from hours to about a week | `cache/jobsearch` | No |
+| Optional Playwright browser | only if you install it | several hundred MB | the Playwright folder | No |
+
+Two small model files ARE in the repository on purpose, because the program needs them without any download: the face detector `face_detection_yunet_2023mar.onnx` and the Cyrillic text recogniser `ocr_cyrillic_rec.onnx` (with its key file), both in `src/reversehire/cv/data/` with their licence files (see `ATTRIBUTIONS.md`).
+
+### 13.3 Starting on another PC with your data
+
+Close the program and copy the whole data folder (and, if you wish to avoid new downloads, the `models` folder). Caches, the map index and search fingerprints are rebuilt when needed. The register can be copied with the data folder or downloaded again.
+

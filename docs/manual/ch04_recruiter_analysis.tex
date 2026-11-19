@@ -1,0 +1,130 @@
+% Chapter 4 -- recruiter analysis and "Match with my CV". Update with recruiter_sim/* (engine.py, match.py,
+% knockout.py, profiles.py, percent.py, data/profiles.json), gui/recruiter_analysis.py, gui/cv_match.py,
+% gui/window_features.py and the "Screening answers" page of gui/settings_extra.py.
+\chapter{Recruiter analysis: simulating the screening systems}\label{ch:analysis}
+
+Tab \ui{Recruiter analysis} answers one question: \emph{what would the software on the other side do
+with this CV for this job?} Many employers pass a CV through an applicant-tracking system (ATS) first: a
+parser fills a record, knock-out questions can end the application, recruiters search by keywords, a score
+orders the list. The tab runs your CV through a local simulation of such a system; nothing leaves the PC.
+
+\begin{warnbox}
+Every simulator is an \emph{approximation built from public documentation} (help pages, vendor pages).
+Each employer configures its own system and no vendor publishes its ranking: the result shows where a CV is
+at risk, not a prediction. A banner on the tab says so, with the profile's confidence and sources.
+\end{warnbox}
+
+\section{One engine, many profiles}
+There is a single engine (\code{recruiter\_sim/engine.py}). Each simulated system is a \emph{profile} in
+\code{recruiter\_sim/data/\allowbreak profiles.json} (reviewed 2026-11-18) that holds only parameters: the
+\textbf{parser} (reading order, header and footer, images, tables, text boxes, dates needing a month, file
+types, page limit), the \textbf{record} fields it fills, the \textbf{search} mode (literal, taxonomy with
+synonyms, semantic), the \textbf{score} presentation and whether recency counts, the \textbf{knock-out mode}
+(\emph{auto-disqualify}, \emph{manual review} or \emph{scored}), notes and its \emph{sources} with an evidence
+tag. Every profile states its \textbf{confidence}; in this version none is rated high:
+\emph{medium} for Zucchetti InRecruiting, the Textkernel family, Workday Recruiting with HiredScore, SAP
+SuccessFactors Recruiting, Ashby, Bullhorn Amplify and e-mail to HR with no ATS (7); \emph{low} for the other
+13, among them Greenhouse, Workable, Personio, Teamtailor, iCIMS, SmartRecruiters, Oracle/Taleo, a generic
+Italian staffing agency and a \emph{baseline literal ATS} (the worst plausible case, used when the system
+is unknown).
+
+\section{Choosing target and system}
+\textbf{Target}: \emph{a role} (title and optional skills, typed by you), \emph{a posting} (from Results, the
+job search or a pasted ad) or \emph{a company}; for a company its \emph{detected} selection system is
+preselected and the CV is screened against its posting, else against the first role of your CV.
+\ui{Simulate\ldots} buttons in Results, the job search and the company card open the tab already
+configured. \textbf{System}: the detected one, any profile, or \ui{Compare all systems}. \ui{Run analysis}
+works in the background (\ui{Stop analysis}).
+
+\section{The pipeline of checks}\label{sec:pipeline}
+For one system the tab shows eleven cards, each with what recruiters (and their software) do, what was found
+in \emph{this} CV with the line quoted, and the fix, with a status mark:
+\textcolor{othGreen}{ok}, \textcolor{othWarn}{warn}, \textcolor{othRed}{fail} or unknown.
+
+{\small
+\begin{longtable}{@{}c >{\raggedright\arraybackslash}p{0.26\textwidth} >{\raggedright\arraybackslash}p{0.60\textwidth}@{}}
+\toprule
+\hdr \thead{\#} & \thead{Check} & \thead{What it simulates} \\
+\midrule
+\endhead
+1  & Reading the file          & The profile's parser on the file: columns, tables, text boxes, header, images, dates. \\
+2  & Fields filled automatically & The candidate record created (\emph{what the recruiter sees}); lost fields are flagged. \\
+3  & Knock-out questions       & Inferred from the posting, answered from your saved answers, else the CV. \\
+4  & Findability               & Up to 10 boolean searches a recruiter would type, on the parsed text. \\
+5  & Match with the role       & Skills of the posting against the CV (section~\ref{sec:match}), in the profile's mode. \\
+6  & Timeline                  & Months without double counting, gaps, no recent job, short stints. \\
+7  & Seniority and recency     & Months of dated jobs naming each skill, and when last used. \\
+8  & Languages, degrees, certs & What the posting asks, what the CV states. \\
+9  & Format for this system    & File type accepted; deduplication, blind screening, retention. \\
+10 & Generated-text estimate   & The estimate of section~\ref{sec:aiestimate}, as a finding. \\
+11 & Simulated ATS score       & The explainable score below. \\
+\bottomrule
+\end{longtable}
+}
+
+\section{The simulated score}\label{sec:simscore}
+A weighted mean of up to five components, each 0--100; one that could not be assessed is left out and the
+weights renormalised.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l c Y@{}}
+\toprule
+\hdr \thead{Component} & \thead{Weight} & \thead{Made of} \\
+\midrule
+Parse       & 0.20 & 0.6 parse quality (check 1) + 0.4 record round trip (check 2). \\
+Findability & 0.25 & Share of the recruiter searches that find the CV (check 4). \\
+Match       & 0.35 & $100\,(0.8\,\mathrm{AdFit}+0.2\,\mathrm{CvUse})$ of section~\ref{sec:match}; recency only if the profile says so. \\
+Timeline    & 0.10 & Penalties of the experience summary. \\
+Credentials & 0.10 & Languages, degree, certifications asked. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{2pt}
+\textbf{Knock-out cap.} When a screening question fails, the profile decides: \emph{auto-disqualify} shows the
+application as \emph{rejected}, \emph{manual review} as \emph{at risk}; in both the score is capped (20 by
+default), because a knock-out rejects before any score is read. In \emph{scored} mode (Bullhorn) the answers
+count for 50\,\% instead.
+
+\textbf{Every score as a percentage.}\label{sec:percent} The engine computes one score per system, 0--100, and the
+tab always shows it first as a percentage with a band (top 70 or more, middle 45 or more, else bottom). What
+the system itself would show a recruiter is the second column, \textbf{``How this system shows you''}, with a
+tooltip that explains the scale; fixed rules relate them (\code{recruiter\_sim/percent.py}): a percentage is
+kept as is, rating points count 20 per point, grades A to D the middle of their band (87.5, 65, 45, 17.5), high,
+medium, low are 85, 55 and 20, and ``criteria met'' or ``no score'' is met over must-haves times 100. In
+\ui{Compare all systems} the columns are \emph{System}, \emph{Simulated score} (it sorts by number),
+\emph{How this system shows you}, \emph{Rank band}, \emph{Parse losses} and \emph{Profile confidence}; a
+\ui{?} (also \ui{CV $>$ Recruiter analysis}) opens ``What the two score columns mean''. The note under the
+score always says it is an estimate, not the employer's real ranking.
+
+\section{Top fixes and my screening answers}
+The tab lists the \textbf{top fixes}: edits with the points each would add to the (uncapped) score, best five
+first (the posting's word next to yours, months in dates, contacts at the top). A skill the CV does not show is
+only \emph{conditional} (``if you have it, state it''); wording cannot fix a failed knock-out.
+
+Silence is never a failure: an unanswered topic is \emph{unknown}, with the advice to save an answer.
+\ui{My screening answers\ldots} (also Settings) stores your \emph{truthful} answers in \code{config.json}: right
+to work and sponsorship, commute, relocation, notice, minimum gross salary, licence, own car, travel, shifts;
+blank means ``prefer not to say''. Questions come from the posting's typed requirements, up to three must-have
+skills and the usual topics, each quoting its posting line. \ui{Compare all systems} runs every profile on the
+same CV: use it to find what hurts the CV \emph{everywhere}.
+
+\section{Match with my CV}\label{sec:match}
+Wherever postings are listed (Results detail, job search, company card) a badge shows the \textbf{match score}
+of the posting against your CV (\code{recruiter\_sim/match.py}), computed in the background, deterministic, with
+a tooltip of common, partial and missing skills.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Part} & \thead{Rule} \\
+\midrule
+Weight $w$   & Each skill of the posting is an item: 5 if \emph{must}, 3 if \emph{nice}, 1 if context; a duty one more. \\
+Credit $c$   & By CV evidence: named in a dated job 1.00; named elsewhere 0.85; adjacent (same family) 0.50; weak 0.20; absent 0. Years: min(1, CV years / years asked). \\
+Recency $r$  & 1 if last used up to 24 months ago, then decaying (not below 0.6); only listed 0.8. \\
+AdFit        & $\sum w\,c\,r\,/\,\sum w$: the share of the ad that the CV covers. \\
+CvUse        & Share of the CV's skills the posting uses (core skills weigh 2, others 1; same family counts half). \\
+Score        & $100\,(0.8\,\mathrm{AdFit}+0.2\,\mathrm{CvUse})$; a hard must-have (language, licence, car, travel) \emph{contradicted} by the CV caps it at 20. \\
+\bottomrule
+\end{tabularx}
+}

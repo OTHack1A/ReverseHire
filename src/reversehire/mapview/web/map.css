@@ -1,0 +1,56 @@
+:root {
+  --rh-bg: #1e2229;
+  --rh-fg: #e6e9ee;
+  --rh-accent: #4da3ff;
+  --rh-grid: #2b313b;
+}
+html, body, #map { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; }
+#map { background: var(--rh-bg); font: 12px/1.4 "Segoe UI", system-ui, sans-serif; outline: none; }
+.leaflet-container { background: var(--rh-bg); color: var(--rh-fg); }
+
+/* Offline mode: no tiles, a faint grid so panning and zooming stay visible. */
+#map.rh-offline {
+  background-image:
+    linear-gradient(var(--rh-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rh-grid) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Dark theme: tiles are inverted (the markers live in other panes and keep their colours). */
+#map.rh-dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.88) saturate(0.7);
+}
+
+.rh-attribution {
+  background: rgba(255, 255, 255, 0.82);
+  color: #333;
+  padding: 1px 6px;
+  font-size: 11px;
+  border-radius: 3px 0 0 0;
+}
+.rh-attribution a { color: #0b5cad; text-decoration: none; }
+.rh-attribution a:hover { text-decoration: underline; }
+#map.rh-dark .rh-attribution { background: rgba(30, 34, 41, 0.85); color: #cfd5de; }
+#map.rh-dark .rh-attribution a { color: #8ec5ff; }
+
+.rh-notice {
+  background: rgba(30, 34, 41, 0.78);
+  color: #e6e9ee;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-style: italic;
+}
+
+.leaflet-tooltip.rh-tooltip { max-width: 280px; white-space: normal; }
+.rh-tooltip .rh-title { font-weight: 600; }
+.rh-tooltip .rh-body { opacity: 0.85; }
+
+/* Cluster bubbles follow the theme accent instead of the default traffic-light colours. */
+.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+  background-color: color-mix(in srgb, var(--rh-accent) 35%, transparent);
+}
+.marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+  background-color: color-mix(in srgb, var(--rh-accent) 80%, transparent);
+  color: #fff;
+  font-weight: 600;
+}

@@ -1,0 +1,126 @@
+% Chapter 11 -- company card. Update with companies.py, web/identity.py, web/profile.py,
+% web/people.py, web/products.py, web/screening.py, web/social.py, registry/*, financials/* (trend.py, paste.py,
+% info_sites.py), gui/company_card.py, gui/social_links.py, gui/financials_paste.py, gui/companies_panel.py,
+% gui/affinity_box.py, applications/detail_widgets.py, jobsearch/employers.py (seed of a card from a posting).
+\chapter{Company card}\label{ch:card}
+
+A card is created when you \textbf{star} a company in Results (it becomes a \emph{favourite}), save it by hand,
+import it, or press \ui{Create company card} on a posting (chapter~\ref{ch:jobs}). There is one card per company; a
+new search updates the search data on it and \emph{never} touches your own fields (status: interesting / applied /
+interview / offer / closed, notes, contacts, tags). Saving a result never uses the network: everything below runs
+only when you ask. Above the sections the card shows the \textbf{affinity box} (chapter~\ref{ch:affinity}); below
+them the box \emph{Applications to this company} (chapter~\ref{ch:tracker}).
+
+\section{The nine sections}
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Section} & \thead{Content and origin} \\
+\midrule
+1. Header          & Name, legal name, REA, ATECO, tax code, VAT number. \\
+2. Registry data   & Legal form, registered office, sites, PEC, phone, e-mail, share capital, founding year, size hints, LEI, own website. \\
+3. Profiles sought & Careers snapshot: postings with attributes, open-application channel, date checked. \\
+4. Products and services & From the home page, with source URLs. \\
+5. Selection system & ATS and what the \emph{platform} offers, per its vendor. \\
+6. CV screening    & Explicit statements on the employer's own pages (automated decisions, AI), quoted with URL. \\
+7. Presentation and history & Sentences from the company's own pages. \\
+8. People and contacts & Role mailboxes and named people, HR first. \\
+9. Financials      & Revenue and net profit per year, chart and revenue trend; always shown, with the reason when empty. \\
+\bottomrule
+\end{tabularx}
+}
+
+\section{Links of the company}\label{sec:links}
+A row of buttons beside the name opens the website and the profiles, in this order when known: Website, LinkedIn,
+Facebook, Instagram, X, YouTube, TikTok, GitHub, XING, Glassdoor, Indeed, Wikipedia, Wikidata, Google Maps (also
+\ui{Links of this company} in the Results and Companies menus). \textbf{A profile address is never guessed}: it
+appears only if the company's own site, OpenStreetMap, Wikidata or the card names it; share and personal links are
+rejected. With no LinkedIn page known, \ui{LinkedIn (search)} is offered, and \ui{Google Maps (search)} always,
+drawn dashed: they only open a search in \emph{your} browser. Every tooltip says where the link was found.
+
+\section{Building a card}
+\ui{Create full card} (\ui{Refresh full card} once built), \ui{Stop} and \ui{More $>$ Refresh section} run in the
+background; every step is \emph{saved when done} and \ui{Stop} keeps what was read. Steps: website; legal, contacts,
+about and careers pages; registers (VIES, GLEIF, Wikidata); presentation and history; people; financial figures;
+selection system and privacy notices; products. All is polite (shared fetcher, at most one VIES or GLEIF request per
+2\,s per host, answers cached 30 days). \textbf{Batch:} \ui{Full cards for selected} and \ui{Full cards for all
+favourites} build one card after the other with a small ``3/12'' bar; a failure is logged and skipped.
+
+\section{Identity from the website, and the cross-check}
+Legal identifiers are read from the company's \emph{own} site: the home page plus up to six pages chosen by link text
+and path (legal notice, contacts, about, history, careers, team, privacy). Extracted: VAT number and tax code (check
+digit verified, a wrong one discarded), REA, share capital, PEC, e-mail, phone, registered office, sites, founding
+year, size hints, schema.org data. Every value keeps its \emph{provenance}: page URL, place on the page, date. The
+identifiers are compared with \textbf{VIES} (``not valid'' only means ``not enabled for intra-EU trade''),
+\textbf{GLEIF} and \textbf{Wikidata}, searched \emph{only by an identifier}, never by name; register data you enter or
+import is a further source.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Status} & \thead{When} \\
+\midrule
+\textcolor{othGreen}{\textbf{CONFIRMED}}  & A checksum-valid VAT/tax code on the site equals one in an independent register, the names agree, and the town when the site states it. \\
+\textcolor{othBlue}{\textbf{PROBABLE}}    & Valid site identifier but no register hit, or a register match by name only, or a candidate that failed one check. \\
+\textcolor{othGray}{\textbf{UNVERIFIED}}  & No identifier found. \\
+\textcolor{othRed}{\textbf{CONFLICT}}     & The same kind of identifier differs between sources. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{2pt}
+\ui{Why?} shows ``Agreement between sources''. When sources give \emph{different values} for REA, share capital, PEC,
+founding year, legal form, registered office or LEI, all are kept and shown as a conflict. In section 5 the link
+\ui{Simulate this system on my CV} opens tab \ui{Recruiter analysis} with this company and its system preselected
+(chapter~\ref{ch:analysis}).
+
+\section{Presentation, history, people, blanks}
+\textbf{Presentation and history} are sentences copied from the company's own pages, cut at a sentence end, never
+rewritten. \textbf{People and contacts}: role mailboxes sorted into \emph{HR} (first), \emph{management},
+\emph{general} and \emph{privacy} (never proposed for an application); named people only when a page states name
+and role together; the chief executive from Wikidata. An address is \emph{never guessed}; contacts stay on this
+computer and can be deleted. \textbf{Blanks stay blank}: a value not found shows ``---'' with a hint on where to
+get it free by hand. \ui{More $>$ Open Registro Imprese} opens the free search and copies the best query;
+\ui{Enter data from Registro Imprese\ldots} takes ATECO, PEC, REA, tax code, legal form and registered office,
+checked first (checksums, REA format, ATECO against the 2025 table) and stored as ``Registro Imprese (entered by
+hand)'' with the date. With a provider and \emph{your own key}, \ui{Fetch from paid register} makes \emph{one}
+lookup after showing the cost and asking you to confirm; no build or batch ever uses it.
+
+\begin{warnbox}
+The paid-provider adapter was written from the provider's documentation and tested only with invented answers: it has
+\emph{not} been tried against the live service. Check the first result by hand.
+\end{warnbox}
+
+\section{Financials}
+Section 9 \emph{is always shown}. With no figures it says why (``Not checked yet: use Create full card'', or the
+reason of the last attempt) and where the numbers are: the balance sheet a non-listed Italian company files with the
+Registro Imprese (about 2.50\,EUR a year there; public sites often show ranges). With figures it charts revenue and
+net profit per fiscal year (a loss is hatched) and employees, with source, year, currency and scope for each.
+\textbf{Free figures exist only for some companies:} listed companies (ESEF reports on \code{filings.xbrl.org},
+by LEI, consolidated) and, rarely, Wikidata. Otherwise: \ui{Open company-information sites} (a web search the
+program never reads), \ui{Paste figures\ldots}, \ui{Import balance-sheet CSV\ldots} (an ambiguous ``1.234'' is
+rejected, not guessed) or \ui{Add figures by hand\ldots}. Hand-typed figures win over ESEF, then the paid provider,
+then Wikidata; a disagreeing source is kept and flagged; \emph{consolidated} and \emph{separate} figures are never
+mixed; no currency is converted.
+
+\textbf{Paste figures.} Copy the figures from a page, paste them and press \ui{Read the figures}: a grid (Year,
+Revenue, Net profit, Employees) appears for you to correct. Understood: Italian and English labels (\emph{Fatturato,
+Ricavi, Revenue, Turnover}; \emph{Utile, Perdita}; \emph{Dipendenti, Addetti}), one figure per line or a table with
+years in its header, amounts such as ``1.234.567'', ``1,2 mln'', ``850 mila'', ``(120)'' as negative; a \emph{range}
+(``10--50 milioni'') stays a range. A number followed by \% is a rate, never an amount, and is ignored. The grid shows amounts with the thousands separators of the interface language (``12,345,678'' in English). A source text is required, nothing is saved until you confirm, and figures are
+stored as ``pasted and reviewed''.
+
+\textbf{Revenue trend.}\label{sec:trend} The rule is the yearly growth rate (CAGR) of revenue between the first and
+the last year with revenue, for one scope and currency:
+$\bigl(R_{\mathrm{last}}/R_{\mathrm{first}}\bigr)^{1/(\mathrm{last}-\mathrm{first})}-1$ over the latest ten years,
+\emph{only with at least three yearly values} and both ends above zero; otherwise ``not enough data (at least 3 years
+needed)''. From $+2$\,\%/year the revenue is \emph{growing}, at $-2$\,\% or less \emph{declining}, in between
+\emph{stable}. It appears as a badge and as the \ui{Revenue trend} column, from stored figures only; a growing revenue
+earns the small ranking bonus of chapter~\ref{ch:discovery}.
+
+\section{Favourites and export}
+The star in Results, the menu-bar star and \ui{File $>$ Favourites} (\code{Ctrl+Shift+F}) open the favourites window.
+\ui{My companies} has filters, search by meaning, similar companies and hand-added companies. \ui{File $>$ Export CSV}
+writes the Results table plus site, careers page, postings, workplace, origin, travel, spontaneous, blocked, favourite
+and \emph{why selected}. A card can be copied as text, exported as Markdown, or printed / saved with a preview
+(chapter~\ref{ch:apply}).

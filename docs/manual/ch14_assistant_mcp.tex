@@ -1,0 +1,114 @@
+% Chapter 10 -- assistant strip and MCP server. Update with chat/*, gui/chat_panel.py,
+% gui/settings_pages.py (AssistantPage), mcp_server.py (TOOLS), gui/mcp_dialog.py,
+% config.py (mcp_enabled, assistant), suggest/runner.py (the tool-less start) and .mcp.json.example.
+\chapter{Assistant and MCP}\label{ch:mcp}
+
+Two features let an AI assistant work with your ReverseHire data, and both run through the
+same door: the \emph{MCP server}. It is \textbf{off by default}, and nothing in
+ReverseHire needs it.
+\begin{itemize}
+  \item The \textbf{assistant strip} at the bottom of the window: you ask a question and
+        your own Claude Code or Codex answers from your data.
+  \item The \textbf{MCP server} for any other AI client (Claude, Codex, Gemini) that you
+        configure yourself.
+\end{itemize}
+
+\section{The assistant strip}
+It is always visible at the bottom of the main window: one row with the toggle that shows
+the conversation, the choice of assistant (\emph{Claude Code} or \emph{Codex}), the
+question field, \ui{Send}, \ui{Stop}, \ui{New conversation} and the assistant settings,
+and under it a status line. Opening the conversation shows your questions, the answer as
+it arrives and a small notice each time a ReverseHire tool is used. Its buttons are
+also in \ui{Tools $>$ Assistant}.
+
+\textbf{It does not contain a model.} Each question starts one process of the CLI you have
+installed (\code{claude} or \code{codex}), which reads the app's data through the
+ReverseHire MCP server; follow-up questions resume the same conversation. Therefore:
+\begin{itemize}
+  \item \textbf{MCP must be on} (the dot at the top right). When it is off the strip says
+        so and how to switch it on; the assistant cannot read anything meanwhile.
+  \item \textbf{The CLI must be installed and signed in.} The app only runs
+        \code{-{}-version} and the CLI's own sign-in check; it never makes a model call to
+        test, and never keeps, logs or shows the account name. The settings page shows
+        found / version / signed in for each, with \ui{Check again}, and lets you give an
+        explicit path.
+  \item \textbf{Usage counts against your own plan} with that provider; a notice says so
+        once.
+\end{itemize}
+
+\textbf{Locked down.} The CLI is started so that only ReverseHire's tools can run: with
+Claude Code your own settings, hooks and plugins are ignored, no built-in tool is
+available and anything outside the ReverseHire server is refused without asking; with
+Codex your own configuration is ignored, the sandbox is read-only and shell, web and
+browser features are off. The question travels on standard input, never on the command
+line; the process runs in an empty folder owned by the app. The reply language is the
+interface language, and the assistant is told not to invent facts and to say plainly when a
+tool returns nothing.
+
+\begin{infobox}
+If the strip reports that the MCP server ``did not start'' or that the assistant is
+``not signed in'', the message names the fix: install the \code{mcp} package for the
+Python that runs the app, or run the CLI's login command in a terminal and sign in.
+\end{infobox}
+
+\begin{infobox}
+The same CLI is started a second time, \emph{without} any ReverseHire tool, when you ask for company suggestions
+(chapter~\ref{ch:interest}): then it receives only the anonymised brief, in an empty folder, and cannot read your data.
+\end{infobox}
+
+\section{The MCP server}
+\code{mcp\_server.py} offers the app's functions over the Model Context Protocol, on
+stdio. It needs the optional \code{mcp} package (\code{pip install mcp}, or the \code{mcp}
+extra). Each tool is a plain function that returns a JSON dictionary; an expected error
+becomes \code{\{"error": "..."\}}, never a traceback. Logs go to stderr, only the protocol
+to stdout.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Tool} & \thead{What it returns} \\
+\midrule
+\code{analyze\_cv}          & Profile of a CV file: roles, skills, languages, degrees, experience, gaps, mobility, sectors. \\
+\code{geocode}             & Latitude/longitude of an address, town or coordinates. \\
+\code{list\_sectors}        & Sector keys with Italian and English names. \\
+\code{find\_companies}      & Companies around a place (radius 0.1--50\,km, 1--100 companies), ranked, with source statuses and attribution. \\
+\code{analyze\_company}     & One website: hiring status, careers page, postings; with a CV also all scores, requirements and the gate. \\
+\code{saved\_searches}      & Searches saved by the app, newest first, with their id. \\
+\code{search\_results}      & Results of a saved search, hiring first then by match; optional \emph{hiring only}. \\
+\code{company\_card}        & A saved card by name or URL (identity status, provenance, blanks); \code{build=True} builds it first. \\
+\code{list\_company\_cards}  & All saved cards: name, website, identity status, VAT, REA, ATECO, hiring status. \\
+\bottomrule
+\end{tabularx}
+}
+
+\section{The on/off switch}
+The dot at the top right of the window shows the state (red ``MCP off'', green ``MCP on'');
+clicking it, or \ui{Tools $>$ MCP server\ldots}, opens the MCP dialog with the switch, the
+last use and ready-made snippets for Claude, Codex and Gemini built from the Python that
+runs the app. The same switch sits on the Settings page \ui{Assistant and MCP}. It is
+\code{mcp\_enabled} in \code{config.json}; it applies from the next tool call, no restart.
+While off, the server still starts and lists its tools, but every call answers with how
+to turn it on. Each served call records only the time and a counter in
+\code{mcp\_usage.json}, never data.
+
+\section{Connecting another client}
+Copy \code{.mcp.json.example} to your client's configuration and replace
+\code{<PROJECT\_PATH>} with the repository folder (on Linux/macOS use
+\code{.venv/bin/python}). The app never edits other programs' files; the strip needs no
+such configuration, because it starts the server itself.
+\begin{lstlisting}
+{ "mcpServers": { "reversehire": {
+    "command": "<PROJECT_PATH>\\.venv\\Scripts\\python.exe",
+    "args": ["-m", "reversehire.mcp_server"],
+    "timeout": 600000 } } }
+\end{lstlisting}
+The long timeout matters: the first assessment may download the scoring model and a
+card build reads a site slowly.
+
+\begin{warnbox}
+With MCP on, what the tools return (profile values, companies, scores, saved searches)
+reaches the cloud model you use, in the strip as well as in any client. By default the
+CV text, evidence lines, file path, name, contacts and home town are \emph{not} returned;
+\code{include\_personal\_data=True} adds them. Your notes, contacts and tags on cards are
+never returned. Switch MCP off when you are not using it.
+\end{warnbox}

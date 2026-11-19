@@ -1,0 +1,77 @@
+% Glossary -- unnumbered. Keep alphabetical; add a term when a chapter introduces one.
+\chapter*{Glossary}\markright{Glossary}\addcontentsline{toc}{chapter}{Glossary}
+
+\begin{description}[style=unboxed, leftmargin=1.2em, itemsep=2pt, font=\normalfont\bfseries\color{othDark}]
+\item[Advanced reader] Optional second OCR engine (about 139\,MB, downloaded on request) used when the normal reading shows failure signals; kept only if it reads better (section~\ref{sec:ocr}).
+\item[Affinity] 0--100\,\% estimate of how well the CV fits what a company needs, with confidence and a verdict (chapter~\ref{ch:affinity}).
+\item[AI-writing estimate] Probability, with a band and a caption, that a text was generated with AI, from writing signals; an estimate, not proof (section~\ref{sec:aiestimate}).
+\item[Anonymised brief] The text sent to your assistant to suggest companies: roles, skills, years, no name, contacts or employers; shown to you first (section~\ref{sec:suggest}).
+\item[Applications sent] The tab that keeps what you sent: letter, CV as sent, status, follow-ups, appointments (chapter~\ref{ch:tracker}).
+\item[Area mode] How far the discovery reaches: radius around a point, whole province or whole region.
+\item[Assistant strip] Bottom row where your own Claude Code or Codex answers from your data through MCP, on your plan.
+\item[ATECO 2025] Italian edition of the NACE classification of economic activities (ISTAT). Used as \emph{categories of interest}; a company's own code only comes from a register.
+\item[ATS] Applicant-tracking system: the platform that publishes postings and collects applications (Greenhouse, Workday\ldots).
+\item[Blocking gate] Rule that marks a posting \emph{blocked} when a hard must-have (language, licence, own car, travel) is explicitly contradicted by the CV.
+\item[Build number] Third number of the version, raised by one at every build (\code{tools/build.py}).
+\item[Calibration] Small adjustment of the affinity weights and thresholds from your Agree / Disagree judgements, from eight onwards (chapter~\ref{ch:affinity}).
+\item[Company card] Saved record of one company: nine sections, identity status, provenance, your own notes (chapter~\ref{ch:card}).
+\item[Confidence] For a company 0--1, how much was actually read; for the affinity low, medium or high from its coverage.
+\item[Coverage] Share of the possible affinity weight that rests on evidence; below 0.45 there is ``not enough data''.
+\item[Data folder] Where settings, store, log, map data, register and models live (chapter~\ref{ch:start}).
+\item[Deep analysis] Building the full card and the affinity of the best companies of the pre-screen, now or when the PC is idle (chapter~\ref{ch:interest}).
+\item[Demand] What a company asks for or plausibly needs: posting requirements, stated and inferred skills, roles, sectors (chapter~\ref{ch:affinity}).
+\item[Desirability] Score of how well a posting or company matches your preferences.
+\item[Direction] A kind of career (e.g.\ industrial automation) made of role words and skill families; the affinity is scored per direction.
+\item[Draft] An e-mail opened in your mail program with text and PDF ready; ReverseHire never sends it.
+\item[Elenco] The paid complete list of companies of the Registro Imprese, which you can buy and import.
+\item[Embedding model] Local multilingual model that turns texts into vectors for semantic similarity.
+\item[ESCO] EU classification of occupations and skills; used to normalise the role title.
+\item[ESEF] European electronic format of listed companies' annual reports; the free source of financial figures.
+\item[Failure signals] The five checks A--E on a normal OCR reading that trigger the advanced reader.
+\item[Findability] Whether the keyword searches a recruiter would type find the CV in an archive.
+\item[Fit] Score of the best posting against the CV.
+\item[Follow-up] Reminder that an application sent has had no answer for 10 working days, or on a date you set.
+\item[GLEIF] Global register of Legal Entity Identifiers (LEI). With RNA (state aid), OpenCoesione (cohesion funds) and AGCM (legality rating) it is one of the register's four sources.
+\item[Hidden employer] The client of a staffing agency whose ad does not name it; only ever an \emph{unverified hypothesis} (section~\ref{sec:employers}).
+\item[Hybrid ranking] Search that ranks exact phrase, all words and meaning in tiers, so exact hits never rank below meaning-only ones (section~\ref{sec:tables}).
+\item[Identity status] CONFIRMED, PROBABLE, UNVERIFIED or CONFLICT for a card.
+\item[Idle analysis] Background building of cards for queued companies while you do not use the PC, within a daily request budget (chapter~\ref{ch:interest}).
+\item[Inferred need] A need guessed from a company's products or type; low weight, never presented as a requirement (section~\ref{sec:knowledge}).
+\item[Job source] A place postings are read from, with a terms verdict: enabled, never enabled or own key (section~\ref{sec:jobsources}).
+\item[Knock-out question] Screening question (right to work, licence, notice, salary\ldots) whose wrong answer can end an application before any score.
+\item[Knowledge table] The small hand-made table behind inferred needs, company types and sector closeness (section~\ref{sec:knowledge}).
+\item[LEI] Legal Entity Identifier, 20 characters; found through GLEIF or the site, needed to look up ESEF reports.
+\item[Lock] A register value you changed: a refresh never overwrites it until you unlock it (chapter~\ref{ch:register}).
+\item[Match] The sorting value of Results, combining fit, desirability, relevance and confidence.
+\item[Match with my CV] Score of one posting against the CV: $100\,(0.8\,\mathrm{AdFit}+0.2\,\mathrm{CvUse})$ (section~\ref{sec:match}).
+\item[MCP] Model Context Protocol: lets an AI client, or the assistant strip, call ReverseHire's tools; off by default (chapter~\ref{ch:mcp}).
+\item[OCR] Optical character recognition; reads image or scanned CVs locally.
+\item[Overpass] Online query service for OpenStreetMap; used only as a fallback.
+\item[Paste and review] Pasting a page copied by hand into a review form, for sites the program must not read; also for financial figures.
+\item[Polite gateway] The single HTTP path of discovery: pauses, caching, back-off on 429.
+\item[Pre-screen] The fast, offline ordering of every known company by the profile, before any analysis (section~\ref{sec:prescreen}).
+\item[Presumed province] A province read from the tax office code of the company's tax code, flagged as approximate.
+\item[Private appendix] The card added after the CV in an application export, ``not to be sent''.
+\item[Provenance] Source, URL and date kept for each card or register value.
+\item[REA] Italian economic and administrative register number, written like ``BO-123456''.
+\item[Regional register] The one local list of companies: free official lists, your imported or bought lists, your corrections (chapter~\ref{ch:register}).
+\item[Registro Imprese] Italian business register; searched by hand, values entered on the card.
+\item[Relevance] Score of how close a company's activity is to the profile.
+\item[Revenue trend] Yearly growth rate of revenue from at least three stored years (section~\ref{sec:trend}).
+\item[Scope] Financial figures are consolidated (group) or separate (single company); never mixed.
+\item[Screening answers] Your truthful answers to the usual knock-out questions, used by the simulators and the affinity.
+\item[Simulated score] Weighted mean of parse, findability, match, timeline and credentials, capped by a failed knock-out, shown as a percentage (section~\ref{sec:simscore}).
+\item[Simulator profile] The parameters of one screening system (parser, search, score, knock-out mode, confidence, sources); an approximation from public documentation.
+\item[Spontaneous application] Applying to a relevant company that publishes no posting.
+\item[Start-up language] The language every start begins with; English unless set otherwise.
+\item[Terms verdict] What a source's terms of use say about automated reading: allowed, not addressed, only harmful automation, forbidden, or API terms.
+\item[Tile] A 256-pixel square of map image; the map asks only for those in view, under the OpenStreetMap tile policy (section~\ref{sec:map}).
+\item[Top fixes] The CV edits that would add most to the simulated score, with their points.
+\item[Unverified hypothesis] Fixed label on every hidden-employer guess: public data suggests it, nothing confirms it.
+\item[Verdict] The affinity's advice: Apply, Spontaneous application, Keep an eye on it, Not a fit, Not enough data.
+\item[Verification status] Verified, Partly verified, Not verified or Rejected: what the app could confirm about a suggested company (section~\ref{sec:suggest}).
+\item[VIES] EU service that checks VAT numbers of intra-EU traders.
+\item[Watchdog] Thread that logs the stack of the window when it has not answered for 5\,s.
+\item[Why selected] Short reasons a company was ranked high before any site was read.
+\item[Workplace] Where the job is: the best posting's location, else the company's town.
+\end{description}

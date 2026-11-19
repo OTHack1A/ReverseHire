@@ -1,0 +1,81 @@
+% Chapter 2 -- start scripts, data folder, start-up language, version. Update with start.*, config.py,
+% _version.py, tools/build.py, scoring/embedding.py (model folders), cv/translate.py, cv/ocr_models.py,
+% mapview/settings.py (cache), applog.py (log files), registers/manager.py, applications/service.py,
+% background/scheduler.py (idle_analysis.json) and suggest/runner.py (assistant folder).
+\chapter{Start and data folder}\label{ch:start}
+
+\section{Starting the program}
+Three launchers sit in the repository root. On the first run each creates a virtual
+environment \code{.venv}, installs \code{requirements.txt} and the package itself
+(Internet needed, a few minutes), then starts the app. Python 3.12 or later is required.
+\textbf{No administrator rights} are needed at any point.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\toprule
+\hdr \thead{System} & \thead{Launcher} & \thead{Notes} \\
+\midrule
+Windows & \code{start.bat}     & Uses \code{py -3.14/3.13/3.12} or \code{python}; starts with \code{pythonw} (no console). \\
+Linux   & \code{start.sh}      & Tries \code{python3.14} \ldots\ \code{python}; on Debian/Ubuntu \code{python3-venv} may be needed. \\
+macOS   & \code{start.command} & Double-click in Finder; it runs \code{start.sh}. If refused: right-click, Open. \\
+\bottomrule
+\end{tabularx}
+}
+
+Command line: \code{python -m reversehire} (window), \code{.mcp\_server}, \code{.diagnostics}.
+
+\section{Where the data goes}
+\code{config.resolve\_data\_location} picks the data folder; \emph{first match wins}. It holds
+\code{config.json}, the SQLite store \code{store.sqlite} (searches, cards, the current profile, cached meaning
+vectors, affinity results), the log \code{reversehire.log} (section~\ref{sec:robust}), \code{mcp\_usage.json},
+the CV library \code{cv/}, map data \code{osm/}, map-tile cache \code{cache/map/}, models \code{models/}, and
+for the newer features the regional register \code{registers/} (chapter~\ref{ch:register}), the tracker
+\code{applications/} (chapter~\ref{ch:tracker}), the idle queue \code{idle\_analysis.json}
+(chapter~\ref{ch:interest}) and an empty working folder \code{assistant/}.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}c l Y@{}}
+\toprule
+\hdr \thead{\#} & \thead{Mode} & \thead{Folder} \\
+\midrule
+1 & env      & \code{REVERSEHIRE\_HOME}, when set (always used). \\
+2 & portable & \code{<program folder>/userdata} if writable (checkout root, or install root with \code{venv}). \\
+3 & user     & Windows \code{\%LOCALAPPDATA\%\textbackslash ReverseHire}; Linux \code{\$XDG\_DATA\_HOME/reversehire} or \code{\textasciitilde/.local/share/reversehire}; macOS \code{\textasciitilde/Library/Application Support/ReverseHire}. \\
+4 & temp     & A folder under the system temp folder; logged as a warning (may be wiped). \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{2pt}
+Data of an older version is \emph{copied}, never moved, on the first start. The log warns when the folder is
+cloud-synced or the app runs inside a packaged Windows app: keep the program in a folder you own.
+
+\section{Models folder}
+\textbf{Scoring model} (multilingual-e5-small, about 470\,MB): looked for in \code{<data>/models},
+\code{REVERSEHIRE\_MODELS}, \code{<repo>/models}, \code{models} next to the program, old data folders; downloaded
+only when none has it. \textbf{Translation models} (OPUS-MT in ONNX): \code{<data>/models/translation/it-en} and
+\code{.../uk-en} (or \code{REVERSEHIRE\_TRANSLATION\_MODELS}), fetched once on request, never during an analysis.
+\textbf{Advanced OCR reader} (about 139\,MB, optional): \code{<data>/models/ocr/advanced-v1}, only by your choice
+(section~\ref{sec:ocr}).
+
+\section{Start-up language and version}
+\textbf{Every start begins in English.} The setting \ui{Start-up language} (Settings, \ui{General}) can name English,
+Ukrainian, Italian or ``language of the last session''; the \ui{EN}, \ui{UK}, \ui{IT} chips switch language at once,
+but only until the program is closed. The version, \textbf{0.1.3} in this manual, is kept only in
+\code{\_version.py}; its third number is the \emph{build number}, raised at every build by \code{tools/build.py};
+\ui{About} shows it with the build date.
+
+\section{What works offline}
+{\small
+\begin{tabularx}{\textwidth}{@{}Y Y@{}}
+\toprule
+\hdr \thead{Offline (once the files are on disk)} & \thead{Needs the Internet} \\
+\midrule
+CV reading, OCR, profile, recruiter view and analysis; translation; scoring and affinity; downloaded map data and
+register; imported lists; saved searches, postings, cards and applications; the pre-screen; the map without tiles.
+&
+First setup (pip); Nominatim; ESCO; Overpass, Wikidata, Overture; company sites and ATS APIs; job sources; VIES,
+GLEIF, ESEF; map tiles; model, map-data and register downloads; the assistant strip and suggestions. \\
+\bottomrule
+\end{tabularx}
+}

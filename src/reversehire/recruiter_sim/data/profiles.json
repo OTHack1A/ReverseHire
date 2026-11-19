@@ -1,0 +1,528 @@
+{
+  "_note": "Simulator profiles of screening systems (fonti/RECRUITER_STUDY.md §1.9). Every profile is an approximation built from public documentation; the real system can be configured differently by each employer. Enumerations and required keys are checked by recruiter_sim.profiles.validate_profile. Texts: each {key, en} pair is an i18n key with its English default. Evidence tags: V = verified by reading the page, D = vendor/third-party documentation, M = from memory (to re-check), S = sources study.",
+  "schema_version": 1,
+  "reviewed": "2026-11-18",
+  "profiles": [
+    {
+      "key": "allibo",
+      "name": "Allibo Recruit",
+      "kind": "ats",
+      "platforms": ["allibo"],
+      "hosts": ["joblink.allibo.com", "allibo.com"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.allibo.confidence", "en": "The parsing engine is not documented publicly: the simulation assumes the worst plausible case (linear reading, header and footer dropped, images lost, months required)."},
+      "parser": {"reading_order": "linear", "header_footer": "drop", "images": "lost", "tables": "flatten", "text_boxes": "lost", "date_precision": "month_required", "headings": "strict", "file_types": ["pdf", "doc", "docx", "rtf", "odt", "txt"], "max_pages": null},
+      "record_fields": ["name", "email", "file", "area"],
+      "search": {"keyword_mode": "literal", "boolean": null, "fields_searched": ["full_text"]},
+      "score": {"kind": "none", "method": "keyword_share", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": true,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["first_name", "last_name", "email", "cv_file", "professional_area_max_2", "privacy_consent"],
+      "retention": {"key": "rsim.profile.allibo.retention", "en": "Retention is set by each employer; one employer's privacy notice read in November 2026 states 6 months, extendable to 24 months, and says public LinkedIn profiles may also be read."},
+      "notes": [
+        {"key": "rsim.profile.allibo.note.form", "en": "The spontaneous-application form asks only name, e-mail, the CV file and up to two professional areas: the file is all the recruiter has."},
+        {"key": "rsim.profile.allibo.note.dedup", "en": "Allibo documents CV deduplication: send one updated file per company, not variants under different e-mail addresses."},
+        {"key": "rsim.profile.allibo.note.search", "en": "Recruiters search the archive with advanced keyword searches: put the role words of the area you choose and the exact technologies in the text."},
+        {"key": "rsim.profile.allibo.note.ai", "en": "No AI ranking or semantic matching is documented publicly; 'screening support' against requirements, questionnaires, tests and video interviews are."}
+      ],
+      "sources": [
+        {"title": "Allibo ATS recruiting software page", "url": "https://allibo.com/ats-recruiting-software/", "evidence": "D"},
+        {"title": "An employer's Allibo application form (fields read, not submitted)", "url": "https://joblink.allibo.com/ats5/application.aspx", "evidence": "V"}
+      ]
+    },
+    {
+      "key": "inrecruiting",
+      "name": "Zucchetti InRecruiting (Inda)",
+      "kind": "ats",
+      "platforms": ["inrecruiting"],
+      "hosts": ["intervieweb.it", "inrecruiting.com", "in-recruiting.com"],
+      "confidence": "medium",
+      "confidence_note": {"key": "rsim.profile.inrecruiting.confidence", "en": "Job Matching percentages, tag-based suggested candidates and anonymised CVs are documented in the help pages; the layout handling of the parser is not, so reading is simulated as linear."},
+      "parser": {"reading_order": "linear", "header_footer": "keep", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "month_required", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "languages", "skills"],
+      "search": {"keyword_mode": "taxonomy", "boolean": true, "fields_searched": ["title", "skills", "full_text"]},
+      "score": {"kind": "percent", "method": "taxonomy_match", "recency": true, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": true,
+      "auto_advance": false,
+      "form_fields": ["parsed_profile_autofill", "custom_questions"],
+      "retention": {"key": "rsim.profile.inrecruiting.retention", "en": "Retention depends on the employer; your profile stays in your InRecruiting candidate area."},
+      "notes": [
+        {"key": "rsim.profile.inrecruiting.note.tags", "en": "Inda parses the CV, fills the form and computes a match percentage from the vacancy tags: use the vacancy's own words."},
+        {"key": "rsim.profile.inrecruiting.note.suggested", "en": "Candidates can be found later through 'Suggested Candidates': keep the profile in your candidate area up to date."},
+        {"key": "rsim.profile.inrecruiting.note.blind", "en": "Blind selection may hide personal data from the recruiter."}
+      ],
+      "sources": [
+        {"title": "InRecruiting help articles 14000150236, 14000150224, 14000155972", "url": "https://inrecruiting.freshdesk.com", "evidence": "D"},
+        {"title": "InRecruiting site", "url": "https://www.in-recruiting.com", "evidence": "S"}
+      ]
+    },
+    {
+      "key": "textkernel",
+      "name": "Textkernel family (e.g. Altamira, SuccessFactors partners, agencies)",
+      "kind": "parser",
+      "platforms": ["altamira"],
+      "hosts": ["altamiraweb.net", "altamirahrm.com"],
+      "confidence": "medium",
+      "confidence_note": {"key": "rsim.profile.textkernel.confidence", "en": "The parser output and its Resume Quality codes are documented in detail; which employer uses which settings is not."},
+      "parser": {"reading_order": "layout", "header_footer": "drop", "images": "ocr", "tables": "flatten", "text_boxes": "keep", "date_precision": "month_required", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx", "rtf", "odt", "txt", "png", "jpg"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "languages", "skills"],
+      "search": {"keyword_mode": "taxonomy", "boolean": true, "fields_searched": ["title", "skills", "full_text"]},
+      "score": {"kind": "percent", "method": "taxonomy_match", "recency": true, "months_per_skill": true, "weights": null},
+      "knockout": {"mode": "auto_disqualify", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["parsed_profile_autofill", "killer_questions"],
+      "retention": {"key": "rsim.profile.textkernel.retention", "en": "Retention depends on the employer using the parser."},
+      "notes": [
+        {"key": "rsim.profile.textkernel.note.columns", "en": "Columnar layouts are a fatal quality code (433): use one column."},
+        {"key": "rsim.profile.textkernel.note.months", "en": "The parser computes months of experience without double counting, average months per employer, and months plus last-used date per skill."},
+        {"key": "rsim.profile.textkernel.note.contact", "en": "Contact details not at the top (311), missing job dates (419) and vertical date ranges (418) are quality codes."}
+      ],
+      "sources": [
+        {"title": "Textkernel Tx Platform v10 parser output and Resume Quality codes", "url": "https://developer.textkernel.com/tx-platform/v10/resume-parser/overview/parser-output/", "evidence": "D"},
+        {"title": "Altamira (parser reported to be Textkernel, killer questions)", "url": "https://altamirahrm.com", "evidence": "D"}
+      ]
+    },
+    {
+      "key": "rchilli",
+      "name": "RChilli family",
+      "kind": "parser",
+      "platforms": [],
+      "hosts": [],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.rchilli.confidence", "en": "The help pages contradict each other on where per-skill months come from; the simulation counts months only when the CV states the skill inside a dated job."},
+      "parser": {"reading_order": "layout", "header_footer": "keep", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "month_required", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx", "rtf", "txt"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "languages", "skills"],
+      "search": {"keyword_mode": "taxonomy", "boolean": true, "fields_searched": ["title", "skills", "full_text"]},
+      "score": {"kind": "percent", "method": "taxonomy_match", "recency": true, "months_per_skill": true, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["parsed_profile_autofill"],
+      "retention": {"key": "rsim.profile.rchilli.retention", "en": "Retention depends on the employer using the parser."},
+      "notes": [
+        {"key": "rsim.profile.rchilli.note.skills", "en": "Search & Match weighs skill frequency, duration and recency: name each skill inside the job where you used it."}
+      ],
+      "sources": [
+        {"title": "RChilli help and API documentation", "url": "https://docs.rchilli.com", "evidence": "D"},
+        {"title": "RChilli help centre", "url": "https://help.rchilli.com", "evidence": "D"}
+      ]
+    },
+    {
+      "key": "workday",
+      "name": "Workday Recruiting with HiredScore",
+      "kind": "ats",
+      "platforms": ["workday"],
+      "hosts": ["myworkdayjobs.com", "myworkdaysite.com", "myworkday.com"],
+      "confidence": "medium",
+      "confidence_note": {"key": "rsim.profile.workday.confidence", "en": "The A-D grade with fit and gap per requirement is documented by the vendor; the grading model itself is not public, so our embedder stands in for it."},
+      "parser": {"reading_order": "layout", "header_footer": "drop", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "month_required", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "languages", "skills"],
+      "search": {"keyword_mode": "semantic", "boolean": true, "fields_searched": ["title", "skills", "full_text"]},
+      "score": {"kind": "grade_AD", "method": "semantic", "recency": true, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": true,
+      "form_fields": ["parsed_profile_autofill", "questionnaire"],
+      "retention": {"key": "rsim.profile.workday.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.workday.note.manual", "en": "Prefer 'Apply manually' and check every auto-filled field before submitting."},
+        {"key": "rsim.profile.workday.note.grade", "en": "Top grades can be fast-tracked by the employer."}
+      ],
+      "sources": [
+        {"title": "Workday documentation", "url": "https://doc.workday.com", "evidence": "S"},
+        {"title": "Workday site (HiredScore)", "url": "https://www.workday.com", "evidence": "S"}
+      ]
+    },
+    {
+      "key": "successfactors",
+      "name": "SAP SuccessFactors Recruiting",
+      "kind": "ats",
+      "platforms": ["successfactors"],
+      "hosts": ["successfactors.com", "successfactors.eu", "sapsf.eu", "sapsf.com"],
+      "confidence": "medium",
+      "confidence_note": {"key": "rsim.profile.successfactors.confidence", "en": "Required, scored and disqualifier prescreening questions are documented in SAP knowledge-base articles; the parser is a partner product."},
+      "parser": {"reading_order": "layout", "header_footer": "drop", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "month_required", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "languages", "skills"],
+      "search": {"keyword_mode": "literal", "boolean": true, "fields_searched": ["full_text"]},
+      "score": {"kind": "rating_points", "method": "keyword_share", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "auto_disqualify", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["parsed_profile_autofill", "prescreening_questions"],
+      "retention": {"key": "rsim.profile.successfactors.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.successfactors.note.disqualifier", "en": "A question flagged 'disqualifier' rejects a wrong answer automatically; scored answers feed the candidate rating. Answer truthfully."}
+      ],
+      "sources": [
+        {"title": "SAP knowledge-base articles 2272147 and 2204476 (prescreening questions)", "url": null, "evidence": "D"},
+        {"title": "SAP use case: assessing candidate applications", "url": "https://www.sap.com/use-cases/reduce-time-spent-assessing-candidate-applications", "evidence": "S"}
+      ]
+    },
+    {
+      "key": "oracle",
+      "name": "Oracle Recruiting Cloud / Taleo",
+      "kind": "ats",
+      "platforms": ["oracle"],
+      "hosts": ["taleo.net", "oraclecloud.com"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.oracle.confidence", "en": "Only the titles of the documentation pages on disqualification and prescreening questions were read."},
+      "parser": {"reading_order": "linear", "header_footer": "drop", "images": "lost", "tables": "flatten", "text_boxes": "lost", "date_precision": "month_required", "headings": "strict", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "languages", "skills"],
+      "search": {"keyword_mode": "literal", "boolean": true, "fields_searched": ["full_text"]},
+      "score": {"kind": "rating_points", "method": "keyword_share", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "auto_disqualify", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["parsed_profile_autofill", "prescreening_questions", "disqualification_questions"],
+      "retention": {"key": "rsim.profile.oracle.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.oracle.note.questions", "en": "Disqualification questions can reject automatically; prescreening answers can be scored."}
+      ],
+      "sources": [
+        {"title": "Oracle Recruiting Cloud documentation: Disqualification Question, Prescreening Question, Guidelines for Scoring Questions (titles)", "url": "https://docs.oracle.com", "evidence": "D"}
+      ]
+    },
+    {
+      "key": "smartrecruiters",
+      "name": "SmartRecruiters (Winston Match)",
+      "kind": "ats",
+      "platforms": ["smartrecruiters"],
+      "hosts": ["smartrecruiters.com"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.smartrecruiters.confidence", "en": "Only the High/Medium/Low match label is documented; parsing and search details are not."},
+      "parser": {"reading_order": "layout", "header_footer": "drop", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "languages", "skills"],
+      "search": {"keyword_mode": "semantic", "boolean": true, "fields_searched": ["title", "skills", "full_text"]},
+      "score": {"kind": "high_med_low", "method": "semantic", "recency": true, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["parsed_profile_autofill", "screening_questions"],
+      "retention": {"key": "rsim.profile.smartrecruiters.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.smartrecruiters.note.winston", "en": "Winston Match shows recruiters a High/Medium/Low label in the applicant list."}
+      ],
+      "sources": [
+        {"title": "SmartRecruiters Winston Match", "url": "https://www.smartrecruiters.com/de/recruiting-software/winston-match/", "evidence": "S"}
+      ]
+    },
+    {
+      "key": "greenhouse",
+      "name": "Greenhouse (Talent Matching)",
+      "kind": "ats",
+      "platforms": ["greenhouse"],
+      "hosts": ["greenhouse.io"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.greenhouse.confidence", "en": "The match-score add-on is documented; the vendor says it does not reject automatically. Parsing details are not documented."},
+      "parser": {"reading_order": "layout", "header_footer": "keep", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx", "txt", "rtf"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "skills"],
+      "search": {"keyword_mode": "literal", "boolean": true, "fields_searched": ["full_text"]},
+      "score": {"kind": "percent", "method": "semantic", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["first_name", "last_name", "email", "phone", "cv_file", "custom_questions"],
+      "retention": {"key": "rsim.profile.greenhouse.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.greenhouse.note.reject", "en": "The vendor states that Talent Matching does not advance or reject candidates by itself."}
+      ],
+      "sources": [
+        {"title": "Greenhouse support article on Talent Matching", "url": "https://support.greenhouse.io/hc/en-us/articles/41396009937307", "evidence": "S"},
+        {"title": "Greenhouse AI recruiting page", "url": "https://www.greenhouse.com/ai-recruiting", "evidence": "S"}
+      ]
+    },
+    {
+      "key": "ashby",
+      "name": "Ashby (AI-assisted application review)",
+      "kind": "ats",
+      "platforms": ["ashby"],
+      "hosts": ["ashbyhq.com"],
+      "confidence": "medium",
+      "confidence_note": {"key": "rsim.profile.ashby.confidence", "en": "The review marks each recruiter criterion as met or not met, with citations; decisions stay with humans per the vendor."},
+      "parser": {"reading_order": "layout", "header_footer": "keep", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "skills"],
+      "search": {"keyword_mode": "semantic", "boolean": true, "fields_searched": ["full_text"]},
+      "score": {"kind": "criteria_met", "method": "semantic", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["first_name", "last_name", "email", "cv_file", "custom_questions"],
+      "retention": {"key": "rsim.profile.ashby.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.ashby.note.criteria", "en": "Each criterion the recruiter sets is marked 'meets' or 'does not meet' with a quote from your CV: state each requirement you meet in plain words."}
+      ],
+      "sources": [
+        {"title": "Ashby blog: AI-assisted application review", "url": "https://www.ashbyhq.com/blog/product/ai-assisted-application-review", "evidence": "S"},
+        {"title": "Ashby documentation: AI-assisted application review", "url": "https://docs.ashbyhq.com/ai-assisted-application-review", "evidence": "S"}
+      ]
+    },
+    {
+      "key": "workable",
+      "name": "Workable",
+      "kind": "ats",
+      "platforms": ["workable"],
+      "hosts": ["workable.com"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.workable.confidence", "en": "A match score and requirement checklist per candidate are documented; their method is not."},
+      "parser": {"reading_order": "layout", "header_footer": "keep", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx", "odt", "rtf"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "skills"],
+      "search": {"keyword_mode": "semantic", "boolean": true, "fields_searched": ["full_text"]},
+      "score": {"kind": "percent", "method": "semantic", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["first_name", "last_name", "email", "phone", "cv_file", "custom_questions"],
+      "retention": {"key": "rsim.profile.workable.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.workable.note.score", "en": "Recruiters see a match score and a requirement checklist next to your name."}
+      ],
+      "sources": [
+        {"title": "Workable resources", "url": "https://resources.workable.com", "evidence": "S"}
+      ]
+    },
+    {
+      "key": "personio",
+      "name": "Personio (Talent Screening Agent)",
+      "kind": "ats",
+      "platforms": ["personio"],
+      "hosts": ["jobs.personio.de", "jobs.personio.com"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.personio.confidence", "en": "The screening agent and its 'AI signals' are documented; how they are computed is not."},
+      "parser": {"reading_order": "layout", "header_footer": "keep", "images": "ocr", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx", "png", "jpg"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "skills"],
+      "search": {"keyword_mode": "semantic", "boolean": false, "fields_searched": ["full_text"]},
+      "score": {"kind": "criteria_met", "method": "semantic", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["first_name", "last_name", "email", "cv_file", "custom_questions"],
+      "retention": {"key": "rsim.profile.personio.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.personio.note.format", "en": "The AI screening needs the CV as a PDF, an image or a Word file."}
+      ],
+      "sources": [
+        {"title": "Personio support article on the Talent Screening Agent", "url": "https://support.personio.de/hc/en-us/articles/37951608749981", "evidence": "S"},
+        {"title": "Personio Talent Screening Agent", "url": "https://www.personio.com/feature/talent-screening-agent/", "evidence": "S"}
+      ]
+    },
+    {
+      "key": "teamtailor",
+      "name": "Teamtailor (Co-pilot)",
+      "kind": "ats",
+      "platforms": ["teamtailor"],
+      "hosts": ["teamtailor.com"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.teamtailor.confidence", "en": "A CV summary matched against the job description and screening by criteria are documented; the method is not."},
+      "parser": {"reading_order": "layout", "header_footer": "keep", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "skills"],
+      "search": {"keyword_mode": "semantic", "boolean": false, "fields_searched": ["full_text"]},
+      "score": {"kind": "criteria_met", "method": "semantic", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": true,
+      "auto_advance": false,
+      "form_fields": ["first_name", "last_name", "email", "cv_file", "custom_questions"],
+      "retention": {"key": "rsim.profile.teamtailor.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.teamtailor.note.summary", "en": "Recruiters may read an automatic summary of your CV next to the job description: make the first lines state your role and main skills."}
+      ],
+      "sources": [
+        {"title": "Teamtailor support article 8403177", "url": "https://support.teamtailor.com/en/articles/8403177", "evidence": "S"},
+        {"title": "Teamtailor AI recruiting software", "url": "https://www.teamtailor.com/en/ai-recruiting-software/", "evidence": "S"}
+      ]
+    },
+    {
+      "key": "icims",
+      "name": "iCIMS (Talent Cloud AI)",
+      "kind": "ats",
+      "platforms": ["icims"],
+      "hosts": ["icims.com"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.icims.confidence", "en": "Candidate ranking with Job Fit tiers is documented as an add-on; the method is not."},
+      "parser": {"reading_order": "layout", "header_footer": "drop", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "month_required", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "skills"],
+      "search": {"keyword_mode": "semantic", "boolean": true, "fields_searched": ["title", "skills", "full_text"]},
+      "score": {"kind": "high_med_low", "method": "semantic", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["parsed_profile_autofill", "screening_questions"],
+      "retention": {"key": "rsim.profile.icims.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.icims.note.fit", "en": "Recruiters may see a Job Fit tier: the requirement words of the posting count."}
+      ],
+      "sources": [
+        {"title": "iCIMS community", "url": "https://community.icims.com", "evidence": "S"}
+      ]
+    },
+    {
+      "key": "recruitee",
+      "name": "Recruitee (Tellent)",
+      "kind": "ats",
+      "platforms": ["recruitee"],
+      "hosts": ["recruitee.com"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.recruitee.confidence", "en": "A 'Matching Assistant' is named by the vendor; nothing about its method was read."},
+      "parser": {"reading_order": "layout", "header_footer": "keep", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "title", "employer", "dates", "skills"],
+      "search": {"keyword_mode": "taxonomy", "boolean": true, "fields_searched": ["full_text"]},
+      "score": {"kind": "percent", "method": "taxonomy_match", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["first_name", "last_name", "email", "phone", "cv_file", "custom_questions"],
+      "retention": {"key": "rsim.profile.recruitee.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.recruitee.note.matching", "en": "The matching assistant compares your CV with the job: use the posting's own words for the skills you have."}
+      ],
+      "sources": [
+        {"title": "Vendor pages found through search (sources study §D)", "url": null, "evidence": "S"}
+      ]
+    },
+    {
+      "key": "bullhorn",
+      "name": "Bullhorn Amplify (staffing agencies)",
+      "kind": "agency",
+      "platforms": ["bullhorn"],
+      "hosts": ["bullhorn.com", "bullhornstaffing.com"],
+      "confidence": "medium",
+      "confidence_note": {"key": "rsim.profile.bullhorn.confidence", "en": "Release notes document ranked recommendations from the agency database and a configurable weighting of screening answers against resume match (50/50 by default)."},
+      "parser": {"reading_order": "layout", "header_footer": "keep", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "skills"],
+      "search": {"keyword_mode": "semantic", "boolean": true, "fields_searched": ["title", "skills", "full_text"]},
+      "score": {"kind": "percent", "method": "semantic", "recency": true, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "scored", "cap_on_fail": null, "screening_weight": 0.5},
+      "dedup": true,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["cv_file", "chat_or_voice_screening"],
+      "retention": {"key": "rsim.profile.bullhorn.retention", "en": "The agency keeps you in its database and may present you for later jobs."},
+      "notes": [
+        {"key": "rsim.profile.bullhorn.note.screen", "en": "The agency may screen you by chat or voice; screening answers and resume match are weighted together."},
+        {"key": "rsim.profile.bullhorn.note.client", "en": "Ask which client the ad is for before agreeing to be presented."}
+      ],
+      "sources": [
+        {"title": "Bullhorn knowledge base, release notes 2026_4", "url": "https://kb.bullhorn.com", "evidence": "D"}
+      ]
+    },
+    {
+      "key": "staffing_agency_it",
+      "name": "Italian staffing agency (back office not documented)",
+      "kind": "agency",
+      "platforms": ["adecco", "randstad", "gigroup", "manpower", "umana", "synergie", "openjobmetis", "orienta", "etjca"],
+      "hosts": ["adecco.com", "adecco.it", "randstad.it", "gigroup.it", "manpower.it", "umana.it", "synergie-italia.it", "openjobmetis.it", "orienta.net", "etjca.it"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.staffing_agency_it.confidence", "en": "The agencies' back-office systems are not documented publicly; the simulation assumes a keyword search of the agency database and a phone screening."},
+      "parser": {"reading_order": "linear", "header_footer": "keep", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "skills"],
+      "search": {"keyword_mode": "literal", "boolean": true, "fields_searched": ["title", "skills", "full_text"]},
+      "score": {"kind": "none", "method": "keyword_share", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": true,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["first_name", "last_name", "email", "phone", "town", "cv_file", "privacy_consent"],
+      "retention": {"key": "rsim.profile.staffing_agency_it.retention", "en": "Agencies keep candidates in their own database for later searches."},
+      "notes": [
+        {"key": "rsim.profile.staffing_agency_it.note.client", "en": "The ad names the agency, not the client: ask which client it is before agreeing to be presented."},
+        {"key": "rsim.profile.staffing_agency_it.note.town", "en": "Agency recruiters search by role, skills and town: write your town in the CV header."}
+      ],
+      "sources": [
+        {"title": "Agency postings read on their own sites (JobPosting data names the agency)", "url": null, "evidence": "V"}
+      ]
+    },
+    {
+      "key": "arca24",
+      "name": "Arca24 Skillskan",
+      "kind": "ats",
+      "platforms": ["arca24"],
+      "hosts": ["arca24.com"],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.arca24.confidence", "en": "Only marketing pages describe a multilingual semantic search engine; nothing technical was read."},
+      "parser": {"reading_order": "layout", "header_footer": "keep", "images": "lost", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "skills"],
+      "search": {"keyword_mode": "semantic", "boolean": false, "fields_searched": ["full_text"]},
+      "score": {"kind": "percent", "method": "semantic", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["parsed_profile_autofill"],
+      "retention": {"key": "rsim.profile.arca24.retention", "en": "Retention depends on the employer."},
+      "notes": [
+        {"key": "rsim.profile.arca24.note.semantic", "en": "A semantic engine can match synonyms, but the recruiter still reads your exact words."}
+      ],
+      "sources": [
+        {"title": "Arca24 marketing pages (search results)", "url": null, "evidence": "D"}
+      ]
+    },
+    {
+      "key": "email_no_ats",
+      "name": "E-mail to HR (no ATS)",
+      "kind": "none",
+      "platforms": ["email"],
+      "hosts": [],
+      "confidence": "medium",
+      "confidence_note": {"key": "rsim.profile.email_no_ats.confidence", "en": "A person opens the file: nothing is parsed or scored automatically, but the first skim is short."},
+      "parser": {"reading_order": "layout", "header_footer": "keep", "images": "ocr", "tables": "flatten", "text_boxes": "keep", "date_precision": "year_ok", "headings": "fuzzy", "file_types": ["pdf", "doc", "docx", "odt"], "max_pages": 2},
+      "record_fields": [],
+      "search": {"keyword_mode": "semantic", "boolean": false, "fields_searched": ["full_text"]},
+      "score": {"kind": "none", "method": "semantic", "recency": true, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "manual_review", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": [],
+      "retention": {"key": "rsim.profile.email_no_ats.retention", "en": "The company's privacy notice states how long it keeps e-mailed CVs."},
+      "notes": [
+        {"key": "rsim.profile.email_no_ats.note.skim", "en": "A first skim is short: your current title, employer, dates and top skills must be visible in the first third of page one."},
+        {"key": "rsim.profile.email_no_ats.note.pdf", "en": "Send a PDF named with your name, and write the role in the e-mail subject."}
+      ],
+      "sources": [
+        {"title": "Recruiter study §1.4 (first skim; the 7.4 s figure is a small vendor study and decides nothing)", "url": null, "evidence": "M"}
+      ]
+    },
+    {
+      "key": "baseline_literal",
+      "name": "Baseline literal ATS",
+      "kind": "baseline",
+      "platforms": [],
+      "hosts": [],
+      "confidence": "low",
+      "confidence_note": {"key": "rsim.profile.baseline_literal.confidence", "en": "Not a real product: a conservative default for unknown platforms (linear reading, header and footer dropped, images lost, strict headings, literal whole-word search)."},
+      "parser": {"reading_order": "linear", "header_footer": "drop", "images": "lost", "tables": "flatten", "text_boxes": "lost", "date_precision": "month_required", "headings": "strict", "file_types": ["pdf", "doc", "docx"], "max_pages": null},
+      "record_fields": ["name", "email", "phone", "town", "title", "employer", "dates", "degree", "languages", "skills"],
+      "search": {"keyword_mode": "literal", "boolean": true, "fields_searched": ["full_text"]},
+      "score": {"kind": "percent", "method": "keyword_share", "recency": false, "months_per_skill": false, "weights": null},
+      "knockout": {"mode": "auto_disqualify", "cap_on_fail": 20, "screening_weight": null},
+      "dedup": false,
+      "blind": false,
+      "auto_advance": false,
+      "form_fields": ["first_name", "last_name", "email", "phone", "cv_file"],
+      "retention": {"key": "rsim.profile.baseline_literal.retention", "en": "Unknown platform: retention is stated in the employer's privacy notice."},
+      "notes": [
+        {"key": "rsim.profile.baseline_literal.note.default", "en": "Used for platforms we cannot recognise; the real system may be better or worse."}
+      ],
+      "sources": [
+        {"title": "Recruiter study §1.9 (Baseline literal ATS)", "url": null, "evidence": "M"}
+      ]
+    }
+  ]
+}

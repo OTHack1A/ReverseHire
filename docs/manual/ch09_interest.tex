@@ -1,0 +1,129 @@
+% Chapter 9 -- who could be interested in my profile. Update with background/* (screen.py, scheduler.py,
+% probes.py, texts.py), suggest/* (brief.py, prompt.py, runner.py, engine.py, verify.py, texts.py),
+% gui/interest_flow.py, gui/window_interest.py, gui/background_settings.py, gui/suggestions_view.py.
+\chapter{Who could be interested in my profile}\label{ch:interest}
+
+Tab 2 starts from a place and a radius. This chapter starts from the \emph{profile}: given the CV
+and the career directions you want, which companies, known or not yet known, could want it, and
+which deserve a full analysis first? The button \ui{Who could be interested in my profile?} (tab~1,
+and \ui{Search $>$ Who could be interested in my profile?\ldots}) opens one non-modal window with four
+boxes, \emph{1. Where and what} (an area: a town and a radius of 1--300\,km, a province, a region or
+the whole country; the career directions of chapter~\ref{ch:affinity}; the four company types),
+\emph{2. Companies already known, in order}, \emph{3. Ask your assistant} and \emph{4. Deep analysis}.
+Closing the window cancels what runs in it; slow work shows in the shared progress bar.
+
+\section{The fast pre-screen}\label{sec:prescreen}
+It starts by itself when the window opens with a CV, uses \emph{no network} and takes well under a
+second per thousand companies. It orders every company the app already knows, without hiding any:
+\begin{itemize}
+  \item \textbf{Candidates}: your saved cards, the regional register for the chosen area (up to 400,
+        chapter~\ref{ch:register}) and the local map index if it is already on disk (up to 1\,500);
+        duplicates are joined.
+  \item \textbf{Score}, for each enabled direction: $0.45\cdot$terms $+\,0.25\cdot$type fit $+\,0.30\cdot$rank.
+        \emph{Terms} counts role and skill phrases of the direction found in a short text built from the
+        name, description, sector, products and register or map tags; \emph{type fit} is how well the
+        guessed company type (the knowledge table of section~\ref{sec:knowledge}) suits the direction; \emph{rank}
+        is the free pre-crawl ranking against the CV (chapter~\ref{ch:discovery}). The best direction wins and
+        the score is multiplied by your company-type weight; a type set to 0 is kept but ordered last.
+  \item \textbf{Table}: Company, Source, Place, \emph{Why (quick estimate)}, Analysis state (\emph{not
+        analysed yet}, \emph{queued}, \emph{analysing}, \emph{analysed}) and the four affinity columns once a
+        result exists. A direction guessed from the name and the tags alone (no matching word, no known company type) is
+        shown as ``maybe \ldots (to be confirmed when the site is read)''. It is a quick estimate for ordering, \emph{not} an affinity; double-click opens the
+        card, and the right-click menu offers \ui{Analyse selected now} or \ui{Analyse when the PC is idle}.
+\end{itemize}
+
+\section{Assistant suggestions}\label{sec:suggest}
+For companies the app does not know, \ui{Suggest companies with the assistant} asks \emph{your own}
+Claude Code or Codex (Settings, \ui{Assistant and MCP}; it uses your plan, not a ReverseHire service) for
+up to 10 real companies in the area, best fit first; \ui{Show 10 more} continues the same conversation. The
+same view is under the companies list of the job search.
+
+\textbf{The anonymised brief.} Before the first request a window shows \emph{exactly} what will be sent, and
+\ui{What is sent} reopens it. In English, one fact per line: up to 6 roles, seniority and years (to the half
+year), up to 8 skill families with approximate years, up to 6 experiences as ``title, years, undisclosed
+employer'', sectors, up to 5 languages, travel willingness, the wanted directions and company types, and the
+area as words. Not sent: name, contacts, address, home town, employer names, dates, any CV text, the
+coordinates of the area. The text is scrubbed against the CV's own names and addresses, and if anything still
+leaks the personal parts are emptied. The names of companies you already know in the area go along as an exclusion list: at most 60 names (the
+companies already suggested first, then your saved ones), \emph{shown in the same window}: a line gives their
+number and \ui{Show the names} lists them. \ui{Show 10 more} adds the names already given in the conversation, never
+more than 300 in all.
+
+\textbf{A locked-down CLI.} The CLI runs in an empty folder, with the prompt on standard input. With Claude
+Code every built-in tool is off, an empty MCP configuration is forced, nothing is asked and at most 2 turns
+are allowed; with Codex the sandbox is read-only, approvals are never requested, MCP servers and shell, browser
+and other features are off. Your own settings, hooks and rules are ignored, and any tool call other than the
+optional web search stops the run. \textbf{Web search} is off by default (Settings, \ui{Idle analysis}):
+the app verifies every company anyway, and search results are untrusted text. The reply must be one JSON
+object, \code{\{"companies": [\ldots], "more\_available": \ldots\}}, each item with name, municipality,
+province, country, website, company type, direction, one-sentence \emph{why} and a confidence;
+the parser tolerates code fences and a bare list, and drops bad items one by one (a website must be a plain
+public http(s) address).
+
+\textbf{Nothing the assistant says is a fact until it is checked}, by the same polite fetcher as everywhere
+(robots.txt, delays, a budget of 8 requests per company and 80 per batch):
+\begin{enumerate}[leftmargin=1.5em]
+  \item the \emph{website} must be reachable, not a parked domain, and carry the company's name in its title,
+        site name, structured data or legal block (another company's legal name there is a contradiction);
+  \item the \emph{local map index} (no network) is searched for the same company within 12\,km, and the
+        \emph{regional register} (no network) for a company of the same name in the province;
+  \item \emph{identity}: a VAT number printed on the site must check out and be confirmed by VIES with a
+        matching name; a company tax code is looked up in GLEIF;
+  \item \emph{Wikidata} is asked, by name, only when the above did not settle it; one item with a nearly identical label
+        and an official website is accepted;
+  \item the \emph{place} is compared with the requested area (a confirmed position outside is a contradiction).
+\end{enumerate}
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Status} & \thead{Meaning} \\
+\midrule
+\textcolor{othGreen}{\textbf{Verified}}  & Site reachable with the name on it, plus identity confirmed, or the same company on the map, or a Wikidata item with the same website. \\
+\textcolor{othBlue}{\textbf{Partly verified}} & Site reachable with the name on it, nothing else confirms it; or no readable site, but the regional register lists the company in the area. \\
+\textcolor{othGray}{\textbf{Not verified}} & No reachable site carrying the name: shown greyed, can never be added; absence of evidence is not ``does not exist''. \\
+\textcolor{othRed}{\textbf{Rejected}}     & Contradicted (the site belongs to another company, a VAT number to another, the place is outside the area); hidden until \ui{Show rejected} is ticked. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{3pt}
+The table shows the status, the company, place, the website the app read, the checks as
+confirmed/contradicted lines and, apart, \emph{``Assistant's opinion (not verified)''}. \ui{Add to my companies}
+(only for verified or partly verified) creates a card tagged ``suggested by assistant'' with the checks in its
+notes. A request is capped at 240\,s (900\,s with verification); a notice under the table shows the tokens or cost the
+CLI reported, if any. If your plan has reached its usage limit the window says so, with the reset time when the
+assistant gave one. There is no daily limit on requests.
+
+\section{Deep analysis and the idle scheduler}
+\ui{Analyse the best now} (box 4, 1--50 companies, default 10) builds the full card of the best rows one after
+the other (chapter~\ref{ch:card}; the paid provider is never used), then computes their affinity, filling the
+columns; the rest are \emph{queued}: at most 200, the best first, and the first time the app asks whether to do so
+(it tells you the idle time, mains power and daily budget that apply) and remembers the answer. A queued company is analysed by the \textbf{idle scheduler}, which works
+only when you are not using the PC:
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Condition} & \thead{Rule (defaults; Settings, \ui{Idle analysis})} \\
+\midrule
+Idle time          & No input for at least 5 minutes (1--240). Read from the system (Windows: last input; Linux X11: \code{xprintidle}; macOS: HID idle time); if unknown, the app must have been in the background for at least 10 minutes. Input inside the app pauses at once. \\
+Nothing else running & No company search, job search, card build, suggestion request or work of the interest window. \\
+Power, CPU, network & On mains power (setting, on), CPU load below 50\,\%, network up; ``unknown'' counts as allowed. \\
+Budget             & At most 600 web requests a day (25--20\,000), 60 a day per site, one job at a time. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{3pt}
+When a condition fails, the running job is cancelled at its next wait, goes back to the queue \emph{without
+penalty}, keeps the steps already saved and resumes by itself. A failure is retried after 5\,min, doubling up to 6\,h,
+and given up after 5 attempts. The best pre-screen score goes first. The status line shows ``Idle analysis: 4
+done, 12 queued, waiting'' with the reason; \ui{Tools $>$ Pause the idle analysis} (or the button in the bar)
+pauses it, and the pause survives a restart. The queue and the day's counters are kept in \code{idle\_analysis.json}
+and read again at start-up; nothing is analysed at start-up unless the conditions hold.
+
+\begin{infobox}
+Only the requests of the site fetcher are counted against the daily budget, and after each job, so a job can
+overshoot it slightly. The ranking of this chapter never uses your name, address or CV text: it uses the profile.
+\end{infobox}

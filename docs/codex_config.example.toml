@@ -1,0 +1,19 @@
+# Example for Codex CLI: copy this section into ~/.codex/config.toml
+# (on Windows: %USERPROFILE%\.codex\config.toml). Alternatively:
+#   codex mcp add reversehire -- "<path>\.venv\Scripts\python.exe" -m reversehire.mcp_server
+# Replace <PROJECT_PATH> with the project folder, for example:
+#   Windows:      C:\Users\alex\projects\ReverseHire\.venv\Scripts\python.exe
+#   Linux/macOS:  /home/alex/projects/ReverseHire/.venv/bin/python
+# Windows paths go in single quotes (literal strings) so backslashes need no doubling.
+# The app's "MCP connection" dialog (dot at the top right of the window) shows this
+# section already filled in with the real path. MCP access is off by default:
+# switch it on there, or the tools answer with an error that explains how.
+
+[mcp_servers.reversehire]
+command = '<PROJECT_PATH>\.venv\Scripts\python.exe'
+args = ["-m", "reversehire.mcp_server"]
+# Startup loads heavy libraries; analyze_company reads sites with politeness delays
+# and, on the first evaluation, downloads the embedding model (about 470 MB).
+# Codex defaults (10 s startup, 60 s per tool) are too short.
+startup_timeout_sec = 30
+tool_timeout_sec = 600

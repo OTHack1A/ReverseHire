@@ -1,0 +1,65 @@
+% Chapter 5 -- finding companies. Update with discovery/*, geo/regions.py, geo/italy.py, progress.py,
+% financials/trend.py (ranking bonus), gui/search_panel.py, gui/start_point_dialog.py, gui/lazy_map.py.
+\chapter{Finding companies}\label{ch:discovery}
+
+\section{Where the search starts}
+Tab \ui{2. Location and start} takes an address (looked up with Nominatim),
+coordinates, the home town found in the CV, or a point from the start-point dialog
+(paste from a map link, or latitude/longitude moved by an azimuth and a distance).
+Then an \textbf{area mode}; what is required depends on it:
+
+\begin{itemize}
+  \item \textbf{Radius around the point}: the radius must be a number above 0 (slider 0.5--50\,km, any positive value
+        can be typed). A typed address that is not found is refused. With an \emph{empty} address the search starts
+        from the chief town of the selected province or, without one, of the selected region, and says so next to
+        the button.
+  \item \textbf{Whole province} / \textbf{whole region}: the address is optional. Choose the \ui{Region} (default
+        Emilia-Romagna) and, for a province, the \ui{Province}; with no address the search starts from the chief town
+        or the regional capital. \ui{Whole province} without a province is not started: the app asks you to choose one.
+\end{itemize}
+
+
+A typed address that cannot be found is \emph{ignored} in the two wide modes (with a note) and the centre is
+used. \ui{Show on map} shows the start point and
+radius (section~\ref{sec:map}). Without a profile with a role \ui{Start} does not run (section~\ref{sec:autosave}).
+
+\section{Sources}
+Independent sources run behind one interface (\code{discovery/sources.py}), local ones first, at most two
+network sources at a time; a failure is non-fatal and each reports a status line. All requests share one polite gateway: 2\,s between requests to a host, two hosts at once, cached answers, one back-off on HTTP 429 and then the host is dropped. Tab~2 ticks local map data, the
+regional register, Overpass and Wikidata by default.
+
+\begin{tabularx}{\textwidth}{@{}l c Y@{}}
+\toprule
+\hdr \thead{Source} & \thead{Default} & \thead{What it is} \\
+\midrule
+Local map data (\code{osm\_extract}) & on & Regional OpenStreetMap extract (e.g.\ Emilia-Romagna, about 205\,MB) indexed once into SQLite. Downloaded only with \ui{Download / refresh map data}: resumable, 3\,MB/s, checked, reused 30 days. \\
+Regional register (\code{regional\_register}) & on & The local register: official lists, your lists, companies you added (chapter~\ref{ch:register}); no network. \\
+My companies (\code{own})            & always & Your favourite company cards. \\
+Overpass (\code{overpass})           & on & OpenStreetMap online, \emph{only as fallback}; rotates public instances. \\
+Wikidata (\code{wikidata})           & on & Companies headquartered in the region with an official website (mostly mid/large); cached 30 days. \\
+Overture (\code{overture})           & off & Overture Maps places; needs the \code{overture} extra (DuckDB); radius mode only. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{3pt}
+\textbf{Imported lists} (CSV/XLSX: Registro Imprese lists, the innovative start-up register,
+any list with a name) are no longer a source of their own: \ui{Import company list\ldots} stores
+them \emph{in the register}, where they can be edited and refreshed (section~\ref{sec:lists}).
+Twenty Italian region extracts are listed. Download your region once: searches
+then answer in seconds, also offline. Optional job boards (Indeed, LinkedIn via JobSpy) are \textbf{off}.
+
+\section{Merge, categories, ranking}
+\textbf{Merge.} Duplicates are joined by VAT or tax code, then website domain, then name with town or a position
+within 300\,m; provenance is kept per field.
+
+\textbf{ATECO 2025 categories.} The app proposes up to 15 categories \emph{of interest} from the profile
+(ISTAT table, CC BY 4.0); you edit them. A company's own ATECO code is never guessed: it comes only from the register.
+
+\textbf{Ranking before any site is read.} A score from free local data: sector terms and profile words in the name,
+industrial OpenStreetMap tags, Wikidata industry, register ATECO inside or outside the chosen categories, a small
+bonus for a website, demotion of public offices, schools, shops and associations.
+A register ATECO \emph{inside} the chosen categories lifts the score to at least 0.95 and
+adds 0.3; a known code \emph{outside} them costs 0.25; an unknown code costs nothing.
+A company whose \emph{stored} revenue figures grow gets a \textbf{small bonus}: $+0.05$ from
+$+2$\,\%/year, $+0.10$ from $+10$\,\%/year, never negative and never hiding a company
+(rule in section~\ref{sec:trend}); only for companies with a card holding three yearly values. Reasons are stored as \textbf{``why selected''}; \emph{Maximum companies} keeps the top.

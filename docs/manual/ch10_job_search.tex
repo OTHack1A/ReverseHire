@@ -1,0 +1,139 @@
+% Chapter 10 -- job search and hidden employers. Update with jobsearch/* (query.py, pipeline.py, agencies.py,
+% keyed.py, ats_source.py, dedup.py, paste.py, employers.py, semantic.py, spontaneous.py), gui/jobsearch_panel.py,
+% gui/jobsearch_companies.py, gui/jobsearch_dialogs.py, gui/window_features.py and the "Job search" page
+% of gui/settings_extra.py.
+\chapter{Job search and hidden employers}\label{ch:jobs}
+
+Tab \ui{Job search} starts from \emph{postings}, like a job search engine, and lets you go back to the company
+behind each one. It never reads a site whose terms forbid it, and never claims to know who stands behind an
+agency ad: it offers a labelled hypothesis.
+
+\section{Typing a query}
+Write the query as on a job site; ReverseHire shows how it understood it as \emph{editable chips}:
+\begin{lstlisting}
+plc programmer bologna
+"project manager" -commerciale modena smart working
+\end{lstlisting}
+\begin{itemize}
+  \item \textbf{Role and skills}: the role words, the canonical skills found, the role expanded with
+        Italian/English equivalents; only the cleaned role title can go to ESCO.
+  \item \textbf{Place and radius}: found in the local map data without the network, else in a small built-in
+        list, else with the address lookup. Default radius 30\,km (40\,km for a province, at most 300\,km).
+  \item \textbf{Filters} (contract, hours, remote or hybrid, seniority); \textbf{quotes and minus}: a quoted
+        phrase \emph{must} appear in the ad, a \code{-word} \emph{must not}.
+\end{itemize}
+The \emph{Role} chip shows the words as they are searched, so a corrected typo already appears corrected. An ad is kept when its title carries a role variant, or more than half of the role words, or a skill of the query.
+
+\section{Sources and what their terms say}\label{sec:jobsources}
+Only sources whose terms allow automated reading are contacted. Each has a \emph{verdict}, read on 2026-11-18 and
+shown in Settings, page \ui{Job search}; one whose terms forbid it is greyed out with the reason and
+\textbf{can never be enabled}.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\toprule
+\hdr \thead{Source} & \thead{State} & \thead{Verdict and how it is read} \\
+\midrule
+Postings already found & enabled & Postings of your company searches already on this PC; no network. \\
+Pasted by you          & always & The postings you saved with \ui{Paste posting / company page\ldots}; no network; the \ui{Source} column says \emph{Pasted by you}. \\
+My companies           & enabled & Public job-board APIs and careers pages of your saved companies; robots.txt honoured. \\
+Randstad, Synergie     & enabled & Terms do not address automated reading. \\
+Manpower               & enabled & Terms forbid only harmful automation; slow reading for your own search is neither. Links with a summary. \\
+Adecco, Gi Group, Umana & \textbf{never enabled} & Terms forbid extracting or reusing the site by any means: never contacted. \\
+Adzuna, Jooble, Careerjet & own key, off & Official APIs under their own terms; your key stays in \code{config.json}, masked in the log, sent only to that service. Written from the documentation, \emph{not tested live}. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{2pt}
+Agency sites are read through their public \emph{sitemap} and the schema.org \emph{JobPosting} data of each page:
+one sitemap download per agency per day, a URL pre-filter, at most 20 posting pages per agency and search
+(Settings: 1--100), a per-source time limit (120\,s, Settings: 10--900\,s) after which partial results are kept,
+all through the polite gateway (chapter~\ref{ch:discovery}). \textbf{LinkedIn and Indeed} are never read; two buttons open \emph{the same search} in your browser.
+
+\section{De-duplication, ranking and results}
+The program drops what does not answer the query, has expired, breaks a filter or is too far (no known place: kept
+after the located ones; remote is never far), then \textbf{merges duplicates} (same source and id or URL; same title,
+place and publisher within 10 days; very similar titles in one place sharing 80\,\% of their phrases), keeping the
+richest record and listing the others as ``also on''. Postings are scored with \emph{Match with my CV} (section~\ref{sec:match}) and ordered by
+\[
+\mathrm{rank}=0.65\,\mathrm{fit}+10\,\mathrm{rel}+15\,e^{-d/25\,\mathrm{km}}+10\,e^{-a/21\,\mathrm{days}}
+\]
+($\mathrm{fit}$ the match 0--100, or the relevance without a CV; $\mathrm{rel}$ how well the ad answers the query,
+0 to 1; $d$ distance, $a$ age of the ad, 0.5 each when unknown, distance 1 for remote); a posting blocked by a
+hard requirement goes last. Searches are saved and reopen from \ui{Previous searches}. Removing a
+chip of \emph{Searched also for} re-ranks without asking the sources again.
+
+\section{Search by meaning and the two lists}\label{sec:jobmeaning}
+The tab has three parts: \ui{Open postings}, \ui{Companies for a spontaneous application} and \ui{Previous
+searches}. Both lists answer the \emph{same query}, ranked by meaning (an estimate of the local language model) and
+by exact words; without the model only words, corrected typos and synonyms are matched, and a note says so. The
+query becomes up to 8 texts (the role as typed, each alternative such as ``OT/Cybersecurity'', phrases, then the
+synonyms, Italian/English equivalents and corrected typos shown as chips); a document keeps its best hit. Posting
+texts are the title, skills and start of the description, never the publisher or the place. Tiers and cache are
+those of section~\ref{sec:tables}; in addition an ad the words dropped is \emph{kept} when its meaning score is at
+least 62, and the matching sentence is the first \emph{why} line (``Close in meaning to your search'').
+
+The second list is for \emph{spontaneous applications}, built without network from what the app holds: your saved
+cards (every card text indexed), the regional register (rows found by the search words, plus the ATECO divisions the
+words imply: cybersecurity 62--63, PLC and automation 28, 27, 26, 33) and the local map index if present (within the
+radius, 40\,km by default, else the region). A company already saved is listed once, as a card. It is listed when a
+word is found or its meaning relevance is at least 45; a register company found only by sector appears at relevance
+30 (``Sector named by the search''); at most 150. Columns: \emph{Company, From, Place, Why it matches}, the four
+\emph{affinity} columns and \emph{Data} (card built, not analysed, not saved, running). With a CV the list is ordered
+by affinity (chapter~\ref{ch:affinity}) for the direction that best matches the query, then exact matches, then
+relevance. \ui{Analyse now}, \ui{Create card} and \ui{Open card} move a company into \ui{My companies} with the
+tags \emph{job search} and \emph{spontaneous} and a note of the query, and start building its card; assistant
+suggestions (chapter~\ref{ch:interest}) can be requested under the table.
+
+\section{Paste and review}
+For a page the program must not read (a LinkedIn or Indeed job, a LinkedIn company ``About'' page, any other) use
+\ui{Paste posting / company page\ldots}: copy the page in your browser and paste it. \emph{Nothing is fetched}; only
+the pasted text (or clipboard HTML) is read. A review form shows the fields found; those read next to a label are
+certain, those taken from the layout or guessed are \emph{framed}: check them. Lines naming \emph{people}
+(``people you can reach out to'', connection lines) are dropped and never stored. Nothing is saved until you press
+\ui{Save as posting} or \ui{Save to company card}. If a site changes, fields land as ``to check'', never invented.
+
+\textbf{Your pasted postings.} A saved posting is searched as the source \emph{Pasted by you}. The button
+\ui{Pasted postings (N)}, under the list of saved searches, lists them all; with one selected, \ui{Edit pasted
+posting\ldots} reopens it in the paste window and \ui{Delete pasted posting} removes it after a confirmation.
+
+\ui{Create company card} turns a result into a card of the employer (else the agency, marked as hidden-employer) in
+\ui{My companies}, built in the background (chapter~\ref{ch:card}); \ui{Add to favourites} stars it; \ui{Simulate
+screening} opens \ui{Recruiter analysis} with this posting (chapter~\ref{ch:analysis}).
+
+\section{Who might be behind this ad?}\label{sec:employers}
+Agencies often hide their client. \ui{Who might be behind this ad?} estimates which companies \emph{nearby} could be
+the employer, from data on the PC only: the local map index and your last five company searches, your
+cards, technologies seen on their sites and ads, and the agency's public client list. \textbf{Hard filters}: within
+25\,km of the ad (40\,km when only the province is known), not a staffing agency, not the publisher. Each remaining
+company gets an additive score $S$ from eight \emph{signals}:
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l c Y@{}}
+\toprule
+\hdr \thead{Signal} & \thead{Weight} & \thead{What counts} \\
+\midrule
+Distance        & 2.0 & $e^{-d/12\,\mathrm{km}}$. \\
+Sector          & 1.5 & Same ATECO division as the ad's sector words 1, same section 0.5, compatible site without code 0.2. \\
+Technologies    & 3.0 & Technologies shared with the ad, rare ones weighing more. \\
+Role            & 2.5 & The company's own ads show a similar title: 1 in the last 90 days, 0.5 if older or undated. \\
+Agency client   & 1.5 & Named in the agency's public client list. \\
+Collective agreement & 1.0 & Consistent with the company's ATECO $+1$, contradictory $-1$. \\
+Size            & 0.8 & The ad's size hint agrees with the company's. \\
+Wording         & 0.8 & Distinctive four-word phrases shared with the company's own ads. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{2pt}
+The scores become shares: $P(c)=e^{S(c)}\big/\big(e^{S_0}+\sum_j e^{S(j)}\big)$ with $S_0=3+\ln N$ ($N$ the companies
+considered). $S_0$ stands for \emph{``another company not in the list''}: it always appears with its own percentage
+and keeps most of the weight when only distance speaks. At most the \textbf{top five companies above 10\,\%} are
+shown with reason chips (``3 km away'', ``same technologies'') and a label: \emph{strong hint} (at least 50\,\% and
+20 points ahead of the runner-up and of ``another company''), \emph{plausible} (20--50\,\%) or \emph{possible}.
+
+\begin{warnbox}
+Every hypothesis carries the fixed label \textbf{Unverified hypothesis}: an estimate from public data, not a
+statement that the company is the employer. Do not write to a company as if it had advertised. 
+\end{warnbox}

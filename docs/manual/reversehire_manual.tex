@@ -1,0 +1,175 @@
+% How ReverseHire works -- main file.
+% Build: run pdflatex three times in this folder (see README.md).
+% One chapter per file: update the matching chNN_*.tex whenever that feature changes.
+\documentclass[10pt,a4paper,openany]{report}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,top=2.0cm,bottom=2.3cm,left=2.1cm,right=2.1cm,footskip=1.0cm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{bookmark}
+
+% --- house colours ---------------------------------------------------------------
+\definecolor{othRed}{HTML}{B91C1C}
+\definecolor{othDark}{HTML}{1A1A1A}
+\definecolor{othGray}{HTML}{4D4D4D}
+\definecolor{othLightGray}{HTML}{E8E8E8}
+\definecolor{othGreen}{HTML}{1F7A1F}
+\definecolor{othBlue}{HTML}{1B4F72}
+\definecolor{othWarn}{HTML}{8A6D00}
+\definecolor{othCodeBg}{HTML}{F4F4F4}
+
+\hypersetup{
+  colorlinks=true, linkcolor=othDark, urlcolor=othBlue,
+  pdftitle={How ReverseHire works}, pdfauthor={0THack1A},
+  pdfsubject={ReverseHire manual}
+}
+
+\renewcommand{\contentsname}{Contents}
+\setlength{\emergencystretch}{2.5em} % long code paths: stretch spaces, never overflow
+\renewcommand{\familydefault}{\sfdefault}
+\color{othDark}
+
+% --- chapter titles: "CHAPTER N" in red, title large, rule below -----------------
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\color{othDark}}
+  {\color{othRed}\large\MakeUppercase{Chapter}~\thechapter}
+  {4pt}
+  {\LARGE}
+  [\vspace{2pt}{\color{othGray}\titlerule[0.8pt]}]
+\titleformat{name=\chapter,numberless}[display]
+  {\normalfont\bfseries\color{othDark}}
+  {}
+  {0pt}
+  {\LARGE}
+  [\vspace{2pt}{\color{othGray}\titlerule[0.8pt]}]
+\titlespacing*{\chapter}{0pt}{-12pt}{10pt}
+\titleformat{\section}{\normalfont\large\bfseries\color{othBlue}}{\thesection}{0.6em}{}
+\titlespacing*{\section}{0pt}{8pt}{3pt}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\color{othDark}}{\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{6pt}{2pt}
+
+% --- compact contents (one page) -----------------------------------------------
+\setcounter{tocdepth}{1}
+\titlecontents{chapter}[1.6em]{\addvspace{3pt}\bfseries}
+  {\contentslabel{1.6em}}{\hspace*{-1.6em}}{\hfill\contentspage}
+\titlecontents{section}[3.9em]{\footnotesize\color{othGray}}
+  {\contentslabel{2.3em}}{}{\titlerule*[0.6pc]{.}\contentspage}
+
+% --- footer: page number centred, chapter name (link to contents) on its right ---
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\chaptermark}[1]{\markright{#1}}
+\renewcommand{\sectionmark}[1]{}
+\fancyfoot[C]{%
+  \makebox[0pt][r]{\thepage\hspace{1.2em}}%
+  \hyperlink{contents}{\small\textcolor{othGray}{\rightmark}}%
+}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \fancyfoot[C]{%
+    \makebox[0pt][r]{\thepage\hspace{1.2em}}%
+    \hyperlink{contents}{\small\textcolor{othGray}{\rightmark}}%
+  }%
+}
+
+% --- the three boxes -----------------------------------------------------------
+\tcbset{boxrule=0.6pt, arc=1.5pt, left=5pt, right=5pt, top=3pt, bottom=3pt,
+        fonttitle=\bfseries\small, toptitle=1pt, bottomtitle=1pt,
+        before skip=6pt, after skip=6pt}
+\newtcolorbox{infobox}{colback=othBlue!5, colframe=othBlue, title=INFO}
+\newtcolorbox{warnbox}{colback=othWarn!7, colframe=othWarn, title=WARNING}
+\newtcolorbox{okbox}{colback=othGreen!6, colframe=othGreen, title=BEST PRACTICE}
+
+% --- code ----------------------------------------------------------------------
+\lstset{basicstyle=\ttfamily\small, backgroundcolor=\color{othCodeBg},
+        frame=single, rulecolor=\color{othLightGray}, columns=fullflexible,
+        keepspaces=true, breaklines=true, aboveskip=4pt, belowskip=4pt,
+        xleftmargin=4pt, xrightmargin=4pt, upquote=true}
+
+% --- lists and tables ----------------------------------------------------------
+\setlist{itemsep=1pt, topsep=2pt, parsep=0pt}
+\setlist[itemize]{leftmargin=1.3em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\thead}[1]{\textbf{#1}}
+\newcommand{\hdr}{\rowcolor{othLightGray}}
+\renewcommand{\arraystretch}{1.04}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\ui}[1]{\textsf{\textbf{#1}}}
+
+\begin{document}
+
+% ================================ cover ========================================
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+\vspace*{0.4cm}
+\includegraphics[width=0.42\textwidth]{../images/banner.png}\par
+\vspace{1.0cm}
+{\color{othRed}\rule{\textwidth}{1.2pt}}\par
+\vspace{0.5cm}
+{\Huge\bfseries How ReverseHire works\par}
+\vspace{0.3cm}
+{\Large\color{othGray} From one CV to the companies that could want you\par}
+\vspace{0.5cm}
+{\color{othRed}\rule{\textwidth}{1.2pt}}\par
+\vspace{1.2cm}
+\begin{tabular}{@{}r@{\hspace{0.8em}}l@{}}
+\textbf{Creator:}  & 0THack1A \\
+\textbf{Document:} & reversehire manual \\
+\textbf{Updated:}  & November 2026 \\
+\textbf{Version:}  & 0.1.3 (build of 2026-11-18) \\
+\end{tabular}\par
+\vspace{0.9cm}
+{\small\itshape\color{othGray} Personal project, no company or commercial affiliation.\par}
+\vfill
+{\color{othLightGray}\rule{0.6\textwidth}{0.6pt}}\par
+\vspace{0.2cm}
+{\footnotesize\color{othGray} Supported systems: Windows \quad$\cdot$\quad Linux \quad$\cdot$\quad macOS\par}
+\end{titlepage}
+
+% =============================== contents ======================================
+\hypertarget{contents}{}
+\makeatletter
+{\let\@mkboth\@gobbletwo\chapter*{\contentsname}
+\begin{multicols}{2}\@starttoc{toc}\end{multicols}}
+\makeatother
+\markright{Contents}
+
+% =============================== chapters ======================================
+\input{ch01_overview.tex}
+\input{ch02_start_data.tex}
+\input{ch03_cv_profile.tex}
+\input{ch04_recruiter_analysis.tex}
+\input{ch05_discovery.tex}
+\input{ch06_register.tex}
+\input{ch07_sites_scoring.tex}
+\input{ch08_affinity.tex}
+\input{ch09_interest.tex}
+\input{ch10_job_search.tex}
+\input{ch11_company_card.tex}
+\input{ch12_applications.tex}
+\input{ch13_applying.tex}
+\input{ch14_assistant_mcp.tex}
+\input{ch15_interface.tex}
+\input{ch16_troubleshooting.tex}
+\input{ch17_glossary.tex}
+\input{ch18_cheatsheet.tex}
+
+\end{document}

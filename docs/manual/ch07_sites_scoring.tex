@@ -1,0 +1,105 @@
+% Chapter 7 -- reading sites and scoring. Update with web/* and scoring/* (semantic_index.py), gui/results_table.py,
+% gui/detail_panel.py, gui/table_sort.py, gui/context_menu.py, gui/geo_filter.py, gui/search_box.py,
+% gui/social_links.py, gui/lazy_map.py (map view of Results), companies.workplace.
+\chapter{Reading sites and scoring}\label{ch:scoring}
+
+\section{Reading a company website}
+Sites are read on several threads (\emph{companies in parallel}, 1--16, default 8),
+with the rules of \code{web/fetch.py}: public http/https hosts only, robots.txt
+respected, a delay between requests to the same domain (default 2\,s), at most 5 pages
+per site, pages cached 7 days, a domain that answers HTTP 429 is not asked again.
+Engines: \emph{local} (default, httpx); \emph{playwright} and \emph{firecrawl}
+(only with a key; only the URL is sent) are tried when a page looks JavaScript-only.
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Careers page}: from link texts and paths, then common paths, then the
+        sitemap declared in robots.txt.
+  \item \textbf{Postings cascade}: ATS board $\rightarrow$ schema.org JobPosting
+        (JSON-LD) $\rightarrow$ heuristics on the careers page $\rightarrow$ an
+        ``open application'' signal only.
+  \item \textbf{ATS boards} read through their public APIs: Greenhouse, Lever, Ashby,
+        Workable, Recruitee, SmartRecruiters, Personio, Workday, BambooHR. When a
+        careers page has no ATS link, boards named like the domain are probed; a guess
+        counts only if the board's data names the site's own domain.
+  \item \textbf{Posting attributes}: contract, work mode, salary (only when published,
+        never estimated), business travel.
+\end{enumerate}
+
+\section{Requirements: must, nice, gate}
+Posting text is split into units and classified by heading (``Requirements'' $\to$
+must, ``Nice to have'' $\to$ nice, duties, offer) and cue words. Each unit gets an
+anchored level with the CV line quoted: 4 strong, 3 clear, 2 partial, 1 weak,
+0 explicit contradiction, \emph{none} = no evidence (uncertain, never a failure).
+The \textbf{blocking gate} fires only when a must-have of a hard kind (language,
+driving licence, own car, business travel) is \emph{explicitly contradicted} by the
+CV. Silence never blocks.
+
+\section{The scores in Results}
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Column} & \thead{Meaning (0--100 unless noted)} \\
+\midrule
+Hiring       & Hiring / Maybe / No signal / Website unreachable / No website. \\
+Match        & Sorting value. With postings: 0.50 fit + 0.25 desirability + 0.25 relevance (reduced if blocked). Without: discounted mix of spontaneous, relevance, desirability. Scaled by confidence. \\
+Fit          & Best posting vs CV: title and skills, requirement coverage, factors for unmet requirements. \\
+Desirability & Your preferences: distance, contract, work mode, salary, travel. Unknown = neutral. \\
+Relevance    & Company vs profile: semantic similarity of site text, sector, CV words, ESCO role coverage. \\
+Salary, Contract, Work mode & From the best posting. \\
+Distance, Job ads & Kilometres from the start point; number of postings. \\
+Confidence   & 0--1: how much was actually read (text, pages, posting source). \\
+Affinity, Verdict, Fits as, Type & How well the CV fits what the company needs, its verdict, the best direction and the kind of company (chapter~\ref{ch:affinity}); empty until a CV is loaded. \\
+Revenue trend & Yearly growth of revenue from the stored figures, e.g.\ ``+6.3\,\%/year (2021--2024)'' (section~\ref{sec:trend}). \\
+\bottomrule
+\end{tabularx}
+
+\vspace{3pt}
+\textbf{Table or map.} A button switches table and map (section~\ref{sec:map}); the detail
+panel lists postings with their \emph{Match with my CV} badge (section~\ref{sec:match}, not
+the company \emph{Match} above) and \ui{Simulate screening} (chapter~\ref{ch:analysis}).
+
+Filters: name, hiring only, website only, hiring first, remote/hybrid, permanent, salary. The
+detail panel shows reasons with their source, gaps and the job ads, a \textbf{row of links}
+beside the company name (section~\ref{sec:links}), and the buttons \ui{Open website},
+\ui{Open careers page}, \ui{Open job ad}, \ui{Open LinkedIn} and \ui{Write e-mail\ldots}
+(chapter~\ref{ch:apply}). \ui{Open LinkedIn} only opens a search in \emph{your} browser.
+
+\textbf{Workplace.} CSV export, \ui{My companies} and favourites have a \emph{Workplace}
+column: the best posting's location, else the company's town, else blank.
+
+\section{Working with the tables}\label{sec:tables}
+\textbf{Sorting.} Click a column header: ascending, a second click descending, with an arrow.
+Numbers sort as numbers (``9\,\%'' before ``10\,\%'', a range by its lower bound), dates as dates,
+text without regard to case or accents, and empty cells always last. The order survives refills
+and is remembered per table until the program closes; there is no filter row. With no column
+chosen, Results, \ui{My companies} and the favourites are ordered by affinity
+(section~\ref{sec:order}).
+
+\textbf{Right-click menus.} Every table has one, built from the same actions as the buttons and
+the menu bar (a disabled action is left out): Results (website, careers, LinkedIn, e-mail, ad,
+simulate screening), \ui{My companies} (create full card, e-mail, find similar, save, delete),
+the favourites, \ui{Previous searches}, the job search and the interest table. The Delete key runs
+the delete action where there is one.
+
+\textbf{Place selectors.} Above \ui{My companies}, the favourites, Results, the job-search
+results and \ui{Previous searches} sit three linked multi-choice menus, \ui{Country},
+\ui{Region} and \ui{Province}, each with counts (``Emilia-Romagna (12)'') and an \emph{Unknown
+place} entry. Region and Province exist for Italy only and are enabled when Italy is chosen;
+about 50 countries are known, a foreign place keeps just country and town as written, and
+nothing uses the network. The selectors combine (AND) with the column filters and the search box.
+
+\textbf{Search by meaning, everywhere.} The same search box is in all those lists. Typing runs
+an exact-word pass at once and, after 0.4\,s, a pass \emph{by meaning} in the background with the
+local model: a hybrid ranking. A whole phrase found as words (or its Italian/English variant)
+scores 75--100\,\%, all the words in one passage 60--85\,\%, meaning alone at most 59\,\% (a hit
+under 35\,\% is hidden), so an exact hit never ranks below an unrelated neighbour. Texts are cut
+into sentence-like passages (about 280 characters, at most 60 per document) and every vector is
+cached in the store: a repeated search only reads the query, a changed card only its changed
+passages. A hit shows its relevance and the \emph{matching sentence} with where it was found, for
+example ``87\,\% $\cdot$ Presentation: <the sentence>'' (a \ui{Matched text} column in \ui{My
+companies}, the row tooltip in Results). Without the model only exact words are found and the box
+says so.
+
+\begin{warnbox}
+Without the scoring model the search runs with a built-in lexical embedder: confidence is
+lowered and a ``Reduced accuracy'' notice with \ui{Why?} appears (chapter~\ref{ch:troubleshooting}).
+\end{warnbox}

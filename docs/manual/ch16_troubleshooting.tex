@@ -1,0 +1,107 @@
+% Chapter 12 -- limits, troubleshooting, robustness and the log. Update with diagnostics.py, cv/ocr_models.py,
+% recruiter_sim/data/profiles.json (confidence), jobsearch/ (verdicts), mapview/,
+% scoring/embedding.py (load causes), web/fetch.py, store.py, gui/safety.py, applog.py,
+% gui/activity.py, mail/outcome.py, chat/messages.py, registers/, suggest/, background/ and the locale texts.
+\chapter{Limits, troubleshooting and the log}\label{ch:troubleshooting}
+
+\section{Known limits}
+\begin{itemize}
+  \item Open map data and the free registers are incomplete (roughly a quarter to a third of a province's machinery
+        companies in the project's check; no websites or e-mails); many sites show no postings, or only behind
+        JavaScript or an unreadable ATS; a province may be only \emph{presumed}. Scores are indicative.
+  \item Region extracts, ATECO, VIES and the identity rule are built around Italy.
+  \item Free financial figures exist only for listed companies (rarely Wikidata); the paid-provider adapter has never
+        run against the live service.
+  \item \textbf{Assistant}: it names companies from its own knowledge and may not know small local ones; in the real check it never named a well-known local cybersecurity company that the local map data did find.
+  \item \textbf{Idle analysis}: its pause when you use the PC was verified only with simulated idle signals. Two short stalls of the window (about 5\,s) were seen during heavy background work and are \emph{not fixed yet}.
+  \item \textbf{Simulators are approximations}: 13 of 20 profiles are rated low confidence, none high. The AI-writing
+        figure is an estimate with false positives, always shown with its band and caption.
+  \item \textbf{The affinity is an estimate} from the card and the CV text: with little data it says ``not enough
+        data'', inferred needs are guesses (chapter~\ref{ch:affinity}). \textbf{Assistant suggestions} come from your
+        CLI's own knowledge and can be missing, partly verified or wrong; the idle analysis works only when the PC is idle,
+        within its daily request budget (chapter~\ref{ch:interest}).
+  \item OCR reads at most 10 pages; very poor scans may fail even with the advanced reader, and the normal text is kept.
+  \item Job sources are few (Italian staffing agencies, your saved companies, keyed APIs not tested live); three agencies
+        and the big portals are not read; paste-and-review may leave fields ``to check''. A hidden employer is an
+        \emph{unverified hypothesis}.
+  \item The assistant strip needs your own signed-in Claude Code or Codex. The tracker's 10-working-day follow-up is
+        fixed and calendar files are only files. The map needs Internet for tiles (or a source of your own); with the background switched off or failing it
+        shows markers only.
+\end{itemize}
+
+\section{Symptom, cause, what to do}
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.25\textwidth} >{\raggedright\arraybackslash}p{0.29\textwidth} >{\raggedright\arraybackslash}p{0.33\textwidth}@{}}
+\toprule
+\hdr \thead{Symptom} & \thead{Cause} & \thead{What to do} \\
+\midrule
+\endhead
+``Reduced accuracy'' above Results & Scoring model not loaded; lexical fallback in use & Click \ui{Why?}; a new search retries the model. \\
+Model ``blocked'' & Smart App Control or a policy blocks an unsigned DLL & Windows Security, App \& browser control; or allow the program folder in the antivirus. \\
+Model ``runtime'' & Visual C++ runtime missing & Install \code{vc\_redist.x64.exe}, restart. \\
+Model ``network'' / ``certificate'' & Model not on disk; download failed or HTTPS scanned & Connect, or copy a \code{models} folder (chapter~\ref{ch:start}). \\
+``Website unreachable'' & Site answers 403, times out or blocks & Open it in a browser; add what you know to the card. \\
+A site stops answering & HTTP 429: not asked again in this search & Wait; raise the delay in Settings. \\
+No companies found & No map data and Overpass busy, or area too small & \ui{Download / refresh map data}; widen the radius; import a list. \\
+Scan read badly & Photo, rotation or low quality; advanced reader not installed & Tools $>$ \ui{Advanced reader (OCR)}: download, then \ui{Read again with the advanced reader}. \\
+Simulated score low everywhere & Columns, missing months, unmatched keywords & \ui{Compare all systems}; apply the top fixes; save your screening answers. \\
+Job source ``disabled'' or ``no key'' & Terms forbid it, or an API key is missing & Nothing to do for the first; enter your own key in Settings $>$ \ui{Job search}. \\
+Map without background & No Internet, or \ui{Show the map background} not ticked & Check Settings $>$ \ui{Appearance}; markers still show. \\
+``(original language)'' markers & Translation models missing & \code{python -m reversehire.cv.translate download it uk}. \\
+Store not writable / ``locked'' & Read-only, full or cloud-synced folder & Use a local writable folder or \code{REVERSEHIRE\_HOME}. \\
+``The database is busy'' & Another thread or program held the file over 2\,s & Try again; close a second copy or the sync client. \\
+MCP or assistant ``switched off'' & Switch off (the default) & Click the MCP dot, tick the switch. \\
+MCP server does not start & \code{mcp} package missing & \code{pip install mcp} in the app's Python. \\
+Assistant ``not signed in'' / ``not found'' & CLI not logged in, missing, wrong path & Run its login in a terminal; set the path in Settings; \ui{Check again}. \\
+Idle analysis does not run & PC in use, on battery, CPU busy, no network, daily budget used, or paused & Read the reason in the second status line; \ui{Tools $>$ Pause the idle analysis} to resume. \\
+Suggestions ``No assistant is ready'' & Claude Code or Codex not installed or not signed in & Settings $>$ \ui{Assistant and MCP}, \ui{Check again}. \\
+Suggestion ``Not verified'' or ``Rejected'' & No reachable site with the name, or contradicted & Check by hand; \ui{Show rejected} lists them; nothing is added automatically. \\
+Register empty, ``not available'' & Nothing downloaded yet & \ui{Search $>$ Register manager}, \ui{Download / update}. \\
+Panel on the map, or a plain drawn map & Offline mode, no connection, or Qt WebEngine could not start (the log says why) & \ui{Show the online map} or \ui{Retry}. \\
+Card UNVERIFIED & No identifier on the site, no register hit & \ui{More $>$ Open Registro Imprese}, enter the data. \\
+Financials empty & Not listed, no LEI, no Wikidata item & Read the reason shown; import a CSV or add figures. \\
+Draft has no PDF & Method cannot attach (Gmail, \code{mailto}) & Drag the file from the folder that opened, or pick Outlook or Thunderbird. \\
+\bottomrule
+\end{longtable}
+}
+
+\section{Staying responsive}\label{sec:robust}
+\begin{itemize}
+  \item \textbf{Database.} Each thread has its own connection, so readers do not queue
+        behind a worker; a local, unsynced folder uses write-ahead logging. The window
+        waits for the file at most about \textbf{2\,s} (workers: 10\,s); then the action is
+        skipped with ``The database is busy''. A read-only, full or locked folder gives a
+        message with the path and the fix.
+  \item \textbf{Deadlines.} Background jobs (CV, place, estimate, card build, model load)
+        have one; after it the window stops waiting, the job is cancelled, a late result
+        is dropped and ``took too long'' is shown.
+  \item \textbf{Safety net.} An exception in a handler, thread or Qt is logged with its traceback and shows
+        ``Unexpected error: the program goes on'' in the status line: never a modal box or a crash.
+  \item \textbf{Watchdog.} If the window has not answered for \textbf{5\,s}, the log gets
+        \code{GUI thread not responding} with the stack of the interface thread; later ``responsive again''.
+\end{itemize}
+
+\section{The log}\label{sec:log}
+\code{reversehire.log} is in the data folder (\ui{? $>$ Open log folder}). Every line has this shape (\emph{PC} = computer name):
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+[YYYY-MM-DD][HH:MM:SS][PC]: LEVEL module [thread]: message
+[2026-11-18][09:14:02][WORKPC]: INFO gui.activity [MainThread]: Button "Start" in SearchPanel
+\end{lstlisting}
+\textbf{Every user action} is logged from one place: each button of the main window and of every panel
+(check boxes with the new state), menu item, drop-down choice, tab change, table sorting or header click, dialog opened or closed. Only interface \emph{labels} are written, never what you type.
+Searches, card steps, downloads and mail drafts (method, recipient \emph{domain}) are logged too; CV text, e-mail bodies
+and keys never are (keys show as \code{***}).
+
+\textbf{Size.} A file holds at most 10\,MB; the current file plus nine backups make \textbf{100\,MB at most}. A file
+that cannot be renamed has its oldest half cut; a full disk or lock is swallowed: logging never stops the app.
+
+\section{Diagnostics and a frozen window}
+\ui{? $>$ Diagnostics\ldots} runs checks in the background (PASS / WARN / FAIL / INFO /
+SKIP): app, Python, data folder, Visual C++ runtime, \textbf{Smart App Control}, onnxruntime,
+models, OCR (advanced reader and GPU included), certificates, and reachability of the services. It never shows CV text. From a terminal:
+\code{python -m reversehire.diagnostics -{}-selftest} (0 ok, 2 only the model failed, 1 other).
+
+\begin{okbox}
+If the window freezes, search the log for \code{not responding}: the stack below it shows where the
+interface thread was, the last \code{gui.activity} lines what was pressed. Send that block.
+\end{okbox}

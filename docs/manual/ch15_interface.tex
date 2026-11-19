@@ -1,0 +1,112 @@
+% Chapter 15 -- interface tour, progress bar, About, maps. Update with gui/main_window.py (tabs, menus, corner),
+% gui/window_features.py, gui/window_*.py, gui/menus.py, gui/progress_bar.py, progress.py, gui/about_dialog.py,
+% gui/lazy_map.py, mapview/* (widget.py messages), gui/hover.py, gui/theme.py, gui/settings_dialog.py,
+% gui/settings_pages.py, gui/settings_extra.py, gui/settings_registry.py and the locale files.
+\chapter{Interface tour}\label{ch:interface}
+
+The window has a menu bar, a header, ten tabs, the assistant strip (chapter~\ref{ch:mcp}) and a bottom bar with
+status, one shared progress bar, \ui{Cancel} and the map attribution, plus a line for the idle analysis
+(chapter~\ref{ch:interest}). It opens 1366\,px wide (reduced to the screen if that is smaller), the width at which the
+ten tab labels fit; in a narrower window the tab bar gets scroll arrows. Errors caught by the safety net appear in the status line (section~\ref{sec:robust}).
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Element} & \thead{What it is for} \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{\color{othBlue}Tabs, in order}} \\
+1. CV and profile       & Choose or drop the CV; correct the profile (autosaved, undo); \ui{Who could be interested in my profile?} (chapters~\ref{ch:cv}, \ref{ch:interest}). \\
+Recruiter view          & Area scores, findings, role coverage, AI-writing estimate (chapter~\ref{ch:cv}). \\
+Recruiter analysis      & Simulated screening systems for a role, posting or company, score in per cent (chapter~\ref{ch:analysis}). \\
+2. Location and start   & Place with optional map, radius, area mode with region and province, start point, sources, map data, register, ATECO, \ui{Start}. \\
+3. Results              & Ranked table or map, place selectors, search by meaning, star, detail panel with links, affinity columns. \\
+Job search              & Query chips, open postings, companies for a spontaneous application, paste and review, hidden employers (chapter~\ref{ch:jobs}). \\
+My companies            & Saved cards: filters, search by meaning, \emph{Workplace} and \emph{Revenue trend} columns, card view with affinity box, batch building (chapter~\ref{ch:card}). \\
+Applications sent       & The tracker: letters, CV as sent, follow-ups, appointments (chapter~\ref{ch:tracker}). \\
+Previous searches       & Reopen a saved search without crawling, resume, rename or note, delete. \\
+My CV                   & Language versions, viewer, photo, check; the primary PDF is the default e-mail attachment. \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{\color{othBlue}Menus (every button of the tabs also has an entry)}} \\
+File                    & Open CV (\code{Ctrl+O}), Read again, Export CSV, \ui{Export} $>$ card / application, Favourites (\code{Ctrl+Shift+F}), Settings, Exit. \\
+CV                      & Advanced-reader entries, show extracted text, \ui{Undo last profile change} (\code{Ctrl+Z}), add to My CV; submenus \ui{Recruiter analysis} and \ui{My CV}. \\
+Search                  & Check place, start point, \ui{Start}, \ui{Cancel}, map data, import a list, \ui{Register manager\ldots}, \ui{Who could be interested in my profile?\ldots}, maps (place, online or offline, retry). \\
+Results                 & Simulate screening, open website, careers, job ad, LinkedIn; \ui{Write e-mail\ldots}; links of the company; place filters; Export CSV; table or map. \\
+Job search              & Search, stop, paste a page; open the ad, create a card, who is behind this ad, favourite, simulate, map; same search on LinkedIn or Indeed; companies list and suggestions; settings. \\
+Companies               & Add, search, similar, delete; \ui{Create full card}, batches, paid register, Registro Imprese, financials, export; affinity entries; submenu \ui{Applications sent}. \\
+Tools                   & Theme (\code{Ctrl+Shift+L}), \ui{MCP server\ldots}, \ui{Pause the idle analysis}, submenus \ui{Assistant} and \ui{Advanced reader (OCR)}. \\
+?                       & \ui{Diagnostics\ldots}, \ui{Open log folder}, \ui{About}. \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{\color{othBlue}Menu-bar corner, left to right}} \\
+\ui{EN} \ui{UK} \ui{IT}  & Language chips: switch without restart, until the program is closed (chapter~\ref{ch:start}). \\
+Sun / moon              & Theme dark $\leftrightarrow$ light at once (also in \ui{Tools}). Dark is the default. \\
+Star button             & Opens the favourites window. \\
+MCP dot                 & Red ``MCP off'' / green ``MCP on''; click for the MCP dialog (chapter~\ref{ch:mcp}). \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{2pt}
+A menu entry, its button and the right-click menu (section~\ref{sec:tables}) run the \emph{same} handler. Buttons,
+tabs, chips and rows are highlighted under the mouse and share one focus ring; buttons grow 5\,\% briefly (not with
+\code{REVERSEHIRE\_REDUCED\_MOTION=1}).
+
+\section{The shared progress bar}\label{sec:bar}
+One bar serves every slow job: the one that started last is on top, the others reappear when it ends, and the bar
+never goes backwards, even when a total grows. For the \textbf{CV} it has ten weighted steps (read, OCR, advanced
+reader, sections, ESCO, translation, recruiter view, AI signals, photo, display), naming the step and, in OCR, ``page
+2 of 5''. For a \textbf{search} it shows ``analysed / estimated'' companies, the estimate replaced by the final number
+once ranking and the limit are known; ``about 3 min left'' appears only after three companies and 20\,s. The recruiter
+analysis, job search, register download, interest flow, suggestions and downloads show ``done / estimated'' steps.
+Several cards in a row have their own ``3/12'' bar in the card view.
+
+\section{Maps}\label{sec:map}
+A map appears under the place of tab 2, in Results (table $\leftrightarrow$ map) and in the job search. Points are
+\emph{company}, \emph{posting}, \emph{home} and \emph{hypothesis}; a click selects the row. It is built only when first
+shown (the placeholder \emph{Loading the map\ldots} appears meanwhile); about 20\,s after start-up, when you are not
+typing or clicking, the web component is started in the background so that the first map opens sooner. Leaflet runs in the embedded web view (Qt WebEngine) from files that come with the program; the page is locked:
+only those files, the one tile server and inline images load.
+
+\textbf{Tiles and the OpenStreetMap policy.} By default the map asks \code{tile.openstreetmap.org} under its usage
+policy: a stable User-Agent, the attribution ``\copyright\ OpenStreetMap contributors'' always visible, normal HTTP
+caching (up to 200\,MB in \code{<data>/cache/map}) and \emph{only the tiles of the current view}: no prefetching.
+Settings, \ui{Appearance}, offers \ui{Show the map background} (ticked by default; unticked, markers and radius are drawn on a blank background) and
+a \ui{Custom tile URL} (\code{\{z\}}, \code{\{x\}}, \code{\{y\}}; \code{https}, \code{http} to this PC, or a
+\code{file://} folder).
+
+\textbf{Messages.} A panel in the centre of the map says what is wrong, with one button: background switched off
+(\ui{Show the online map}); the full map could not start, or the backgrounds could not load, with the reason (no connection, a server
+error, no background sent) and \ui{Retry}. A corner switch \ui{Work offline} and the \ui{Search} entries \ui{Show the
+online map}, \ui{Work offline}, \ui{Retry loading the maps} do the same. If Qt WebEngine cannot start, a plain painted
+map (points, radius circle, scale bar, no tiles) takes over; the log says why.
+
+\section{About}
+\ui{? $>$ About} shows the version with build and date, the credits and a table \emph{This computer} (user, computer,
+system, processor, RAM, screen, graphics card, disks, network, Python, Qt, OCR engine, MCP). It is \textbf{only
+shown}: never logged, saved or sent.
+
+\section{Settings}
+\ui{File $>$ Settings\ldots} has ten pages on the left, \ui{Clear cache} at the bottom left and \ui{Save} /
+\ui{Cancel}. Keys are checked before saving.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Page} & \thead{Values (defaults)} \\
+\midrule
+General                & Language and start-up language (English); advanced OCR reader and mode (ask once); prefer permanent and remote/hybrid (on); minimum gross yearly salary (0); Indeed/LinkedIn boards (off). \\
+Search and discovery   & Engine local / playwright / firecrawl and key; delay per site (2\,s); pages per site (5); maximum companies (0 = no limit); companies without a website (on); pause (2\,s). \\
+Affinity               & Directions (four on, add your own); ``directions only'' (off); kinds of company (100\,\%); distance limit (off); calibration (chapter~\ref{ch:affinity}). \\
+Idle analysis          & Analyse when idle (on), after 5\,min, 600 requests a day, mains only (on); suggestions: web search (off), show what is sent first (on) (chapter~\ref{ch:interest}). \\
+Job search             & Sources with terms verdict and checkbox; own keys; pages per agency (20); source time limit (120\,s) (chapter~\ref{ch:jobs}). \\
+Screening answers      & Your truthful answers to knock-out questions, all empty (chapter~\ref{ch:analysis}). \\
+Registers and paid key & Paid provider and key (chapter~\ref{ch:card}); register regions (Emilia-Romagna), RNA months (24), start-up check (on), sources (all four) (chapter~\ref{ch:register}). \\
+Mail                   & Subject, text, your details, the PDF, how to open the draft, \ui{Test draft} (chapter~\ref{ch:apply}). \\
+Assistant and MCP      & Which CLI answers, optional paths, \ui{Check again}, the MCP switch (chapter~\ref{ch:mcp}). \\
+Appearance             & Theme: Dark (default), Light, Same as system; \ui{Show the map background} (on); custom tile URL. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{2pt}
+\ui{Clear cache} removes pages, map searches, addresses and scores; searches, cards, the profile and the register are
+kept. Keys are stored in plain text in \code{config.json} and masked in the log.

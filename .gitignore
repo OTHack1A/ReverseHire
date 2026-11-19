@@ -1,0 +1,66 @@
+# Virtual environment and Python caches
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build and distribution
+build/
+dist/
+
+# Research material (notes and third-party repositories): never published
+fonti/
+
+# Personal and local data
+# Portable data folder (settings, saved searches, log, models) next to the program
+userdata/
+data/cv_reali/
+data/esco/
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+*.db
+
+# Logs
+*.log
+
+# Local configuration and secrets (only .env.example and .mcp.json.example are published)
+.env
+.env.*
+!.env.example
+.mcp.json
+
+# Embedding model caches (downloaded on first use)
+models/
+.cache/
+fastembed_cache/
+*.onnx
+# ...except the small face detection model bundled with the package (MIT, see ATTRIBUTIONS.md)
+!src/reversehire/cv/data/*.onnx
+
+# Editor and operating system
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Original logo supplied by the owner: contains third-party company names
+# (see docs/PUBLISHING.md). The cropped versions are in docs/images and src/reversehire/resources.
+assetts/
+
+# Owner's private material (real CVs used for local end-to-end checks): never published
+private/
+
+# Not published: tests and sample data (the repository carries sources only).
+# They stay on the developer's PC.
+/tests/
+/data/
+/tools/ui_check_wiring.py
+/tools/make_manual_screenshots.py
+/.github/workflows/tests.yml

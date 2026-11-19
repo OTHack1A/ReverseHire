@@ -1,0 +1,101 @@
+% Chapter 6 -- the regional register. Update with registers/* (manager.py, db.py, model.py, rna.py, gleif.py,
+% opencoesione.py, agcm.py, lists.py, bought.py, italy_codes.py, discovery_source.py, texts.py),
+% gui/register_manager.py, gui/register_settings.py, gui/window_registers.py, discovery/imports.py.
+\chapter{The regional register}\label{ch:register}
+
+Open map data finds many places but knows little about them. The \textbf{regional
+register} is a list of companies kept on your PC, built from free official open data,
+from the lists you import or buy, and from the companies you add. It is
+\emph{one} register: official lists, imported lists and your own corrections live in the same
+SQLite file (\code{<data>/registers/register.sqlite}), and the search reads it as the source
+\code{regional\_register}, locally and without the network. \textbf{Nothing is downloaded until
+you ask}, in \ui{Search $>$ Register manager\ldots} (also a button in tab~2).
+
+\section{The four official sources}\label{sec:regsources}
+All four are on by default; each keeps its licence and attribution (shown in the manager, in the
+\ui{Licence} column). Only companies are stored: natural persons (16-character tax
+codes, sole traders, professionals) are not.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\toprule
+\hdr \thead{Source} & \thead{Licence} & \thead{What it gives, size, refresh} \\
+\midrule
+RNA, national register of state aid (Incentivi Italia) & CC BY 4.0 & Companies that received state aid, de minimis aid, guarantees or tax credits: name, \emph{region only}, size class, a sector \emph{hint}, number and date of aids, hiring incentives as a signal. Monthly ZIP files with XML up to about 600\,MB; the last 24 months by default (Settings: 0--120, 0 = whole archive, 1--2\,GB). Refreshed monthly. \\
+GLEIF golden copy (LEI register) & CC0 1.0 & Companies with an LEI: legal name, registered address, postcode, municipality, province, legal form, founding date, status; the tax code when it is an 11-digit number. About 490\,MB zipped (5\,GB of CSV worldwide), read from the ZIP without extracting it. Treated as monthly. \\
+OpenCoesione, recipients of cohesion funds & CC BY 4.0 & Municipality, address, the \emph{full 6-digit ATECO code} and its description, employee and size class; public bodies excluded. One CSV of about 2.3\,GB in a ZIP. About twice a year. \\
+AGCM, legality rating & CC BY 4.0 & Companies with a legality rating: stars, validity, municipality and province, town-level coordinates. Weekly list; the site's 10-second crawl delay is respected. \emph{Statistical value only}: later revocations must be checked on newer lists. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{3pt}
+Downloads go through the polite gateway (2\,s between requests), resume after an
+interruption (a \code{.part} file and an HTTP range), are checked (size, ZIP structure,
+SHA-256 where published), and a damaged file is discarded while the previous good copy is kept.
+\ui{Check for updates} asks each source whether it changed and how much would be fetched
+(no download); \ui{Download / update} asks first, and its result says which RNA months were loaded (``Months loaded: 12/2024--11/2026 (24)'') and which were not yet published and skipped; \ui{Stop} keeps the partial files. A refresh
+replaces, per source and region, that source's earlier values; a company no source lists any more
+disappears, unless you added or corrected it. Settings, \ui{Registers and paid key}, chooses the
+\emph{regions to keep} (default Emilia-Romagna), the RNA months and the sources, and can let the
+program \emph{check} (never download) about once a month at start-up.
+
+A note on coverage (how many companies the free registers list for the province chosen in tab~2 and roughly what share of the active ones that is) is shown in tab~2, under the register's controls, and under the table of the Register manager.
+
+\section{Merge, provenance, your corrections}
+\textbf{Merge by tax code.} The key is the 11-digit tax code (an ``IT'' prefix is removed,
+9--10 digits are zero-padded). Rows with the same code are one company; the same name with
+another code stays separate, and \ui{Possible duplicates} lists similar names without ever
+merging them. A row with no code (from a list or added by hand) gets a stable internal key.
+
+\textbf{Per-field provenance.} The register keeps \emph{every} source's value with its
+source and date and shows one by a fixed priority per field: you first, then the list you
+bought, then for example GLEIF for name and address, OpenCoesione for the exact ATECO code,
+AGCM for coordinates; your imported lists only when no official source has the field. The
+\ui{Sources} column names where a row comes from; a \ui{Signals} column shows badges (``Legality
+rating 3 stars'', ``Received public aid'', ``Hired with incentives''), and company cards get the
+same facts with the source named. An ATECO known only from RNA stays a \emph{hint}
+(``indicative: sector declared for an aid''), never a code.
+
+\textbf{Your corrections are locked.} Double-click a cell to change it (name, VAT, place,
+province, ATECO, website, legal form, employees, status, e-mail, phone): it gets a
+padlock and a refresh \emph{never} overwrites it; \ui{Unlock field} brings the sources' value
+back. You can \ui{Add company}, \ui{Hide} one (it stays hidden after every refresh),
+\ui{Delete} (a company you added is removed, one a source lists is hidden) and \ui{Undo} up to
+200 steps. \ui{Export CSV} writes the whole register.
+
+\section{Province, approximated and flagged}
+When no source gives a province and you have not set one, the program reads digits 8--10 of
+the tax code, the \emph{tax office of first registration}, and maps them to a province. Where
+a code is shared by provinces created later, candidates are filtered by the company's region;
+one left is used and marked \emph{presumed} (tooltip ``from the tax office code''), several
+leave the province empty with the candidates kept. A search in one province includes presumed
+ones. Region and province otherwise come from the postcode (GLEIF, bought lists) or the ISTAT
+municipality code (OpenCoesione).
+
+\section{Imported and bought lists}\label{sec:lists}
+\ui{Import list (CSV/XLSX)} adds any company list, with a preview to map the columns;
+\ui{Import bought Registro Imprese list} reads the ``Elenco'' you bought there, whose values rank
+just after your own corrections. Each list is a source of its own: \ui{Refresh list from file}
+replaces it with a newer file and keeps your corrections, \ui{Delete list} removes it (asks first)
+while companies another source lists stay. Lists kept by older versions are moved into the
+register once; the old copy stays as a backup.
+
+\section{How the search uses it, and how much it covers}
+For a province or region search the register supplies the companies of that area. The ATECO
+categories you chose select by exact code and by RNA hint, companies with no code are kept when
+they come from a list or from you, hidden and inactive ones are left out, and at most 3\,000 are
+read (the status line says ``choose ATECO categories to narrow''). Position comes from AGCM or
+from the town in the local map data; a radius search drops companies it cannot place. The
+register and your lists are the only trusted source of a company's exact ATECO code and legal
+name. The pre-screen (chapter~\ref{ch:interest}) and the second job-search list
+(chapter~\ref{ch:jobs}) read it too.
+
+\begin{warnbox}
+\textbf{The free registers are not complete.} In the project's own check on the machinery
+companies of one province they listed roughly a quarter to a third of the companies the
+Chambers of Commerce count; website, e-mail, phone and PEC are not in them at all. The
+complete list is the \emph{paid} Registro Imprese ``Elenco'' (5\,EUR plus 0.02--0.12\,EUR per
+company), which you buy yourself and import. Read a missing company as ``not in the lists'',
+not as ``does not exist''.
+\end{warnbox}

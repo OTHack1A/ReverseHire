@@ -1,0 +1,120 @@
+% Chapter 9 -- applying: e-mail drafts and exports. Update with mail/*, gui/mail_dialog.py,
+% gui/mail_support.py, gui/settings_pages.py (MailPage), export/*, gui/main_window.py (export_*),
+% applications/service.py (record_from_mail_draft, record_from_export), gui/affinity_box.py (talking points).
+\chapter{Applying: e-mail drafts and exports}\label{ch:apply}
+
+Once a company looks right, ReverseHire helps with the last step but \emph{does not take
+it}: it prepares a message or a document and hands it to you.
+
+\begin{warnbox}
+ReverseHire \textbf{never sends an e-mail}. It opens a \emph{draft} in a mail program (or
+prepares the text for you to paste); you read it, add what is missing and press Send
+yourself.
+\end{warnbox}
+
+\section{The ``Write e-mail'' dialog}
+\ui{Write e-mail\ldots} is in the detail panel of Results, in \ui{My companies}, in the
+favourites window, on the company card and in the \ui{Results} and \ui{Companies}
+menus. It opens a dialog with:
+\begin{itemize}
+  \item \textbf{To}: pre-filled and editable (it may stay empty). The choice order is the
+        card's \emph{HR contact}, other contacts, the HR address kept on the card, then the
+        company e-mail; privacy and data-protection mailboxes are never chosen. A line
+        says where the address came from.
+  \item \textbf{Role}: filled in and editable; the title of the posting when the e-mail answers one, else the first role of your profile. It is the \code{\{role\}} of the texts, and while subject and text are as produced they follow it.
+  \item \textbf{Subject and text}, built from the fixed text of Settings, page \ui{Mail},
+        with the company, the role and the contact filled in. Changes made in the
+        dialog apply to \emph{this message only}.
+  \item \textbf{Talking points}: from the card's affinity box, \ui{Into the e-mail} adds up to three points
+        taken from your CV and the company's needs to the draft (chapter~\ref{ch:affinity}); you edit them.
+  \item \textbf{Attachment}: the PDF set in Settings (by default the primary CV of tab
+        \ui{My CV}, when it has a PDF version).
+  \item \textbf{Open with}: the method (below) and \ui{Open draft}, which runs in the
+        background, because starting Outlook can take seconds. The result tells you what
+        happened and what is still yours to do.
+\end{itemize}
+
+\section{The fixed text and its placeholders}
+Settings $>$ \ui{Mail} keeps the subject, the text, your name, e-mail and phone, and the
+PDF. The templates support:
+\begin{itemize}
+  \item \code{\{company\}}, \code{\{role\}}, \code{\{contact\_name\}}, \code{\{my\_name\}},
+        \code{\{my\_email\}}, \code{\{my\_phone\}}: replaced by the value; an empty one is
+        removed and the line is tidied.
+  \item \code{\{contact\_name|Hiring Manager\}}: the text after the bar when the value is
+        missing.
+  \item \code{[[ for the \{role\} position]]}: an optional part, dropped as a whole when a
+        value inside it is missing.
+\end{itemize}
+Unknown placeholders are listed and removed. Defaults exist in English and Italian.
+\ui{Test draft} opens a draft addressed to \emph{your own} e-mail (or with no recipient)
+to check the look; nothing is sent.
+
+Once the mail program has taken the draft, the dialog also records it in tab \ui{Applications sent} as a
+\emph{draft} application (chapter~\ref{ch:tracker}); an export of the application does the same. Mark it as sent
+there when you have pressed Send.
+
+\section{How the draft is opened}
+Which programs exist is read from the system without starting any of them (on Windows
+from the registry only). The default, \ui{Automatic}, picks by your default mail
+program and, if that fails, tries the next way in the list.
+
+After each attempt the dialog lists the steps left for you (``Check the message and press
+Send yourself'', ``drag the PDF in'', ``sign in to Gmail and open the draft again''\ldots).
+The log records the method, the \emph{domain} of the recipient and the name of the
+attached file, never the text.
+
+\begin{okbox}
+Use \ui{Test draft} once after installing or changing mail program: it shows which method
+Automatic chooses and whether the PDF really arrives attached.
+\end{okbox}
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l c Y@{}}
+\toprule
+\hdr \thead{Method} & \thead{PDF} & \thead{What happens} \\
+\midrule
+Classic Outlook      & yes & A new message is created in Outlook itself with recipient, subject, text and the PDF attached. \\
+New Outlook          & yes & A draft file is written and \emph{opened by new Outlook itself}, which shows an editable message with the PDF attached; it also keeps the draft in the Drafts folder of your account. \\
+Thunderbird          & yes & New message with the PDF attached. \\
+Apple Mail (macOS)   & yes & New message with the PDF; macOS asks once whether ReverseHire may control Mail. \\
+Desktop mail (Linux) & if supported & The desktop's default program; the PDF is attached if that program supports it. \\
+Default program (\code{mailto}) & no & Opens a new message through a link; the folder with the PDF opens so you can drag the file in. \\
+Gmail in the browser & no & Opens the compose window (you must be signed in). A link cannot carry a file: the folder opens for you to drag the PDF in; a very long text is shortened and copied in full to the clipboard. \\
+Draft file (\code{.eml}) & depends & Opens the draft file with the program set for \code{.eml}; check text and PDF. \\
+Copy and attach by hand & no & Text to the clipboard, folder with the PDF opened; you paste and drag. Always works: it is the last fallback. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{4pt}
+
+\section{Exports with a preview}
+\ui{File $>$ Export} offers two documents for the selected company (it must be selected
+in Results, \ui{My companies} or the favourites):
+\begin{itemize}
+  \item \textbf{Company card}: the nine sections of chapter~\ref{ch:card}, the financial
+        chart included. Each value that has a provenance carries a numbered footnote with
+        its source and link; unknown values stay blank.
+  \item \textbf{Application}: page one is the \emph{letter} (your details, the date, the
+        company and contact, the subject and text of the e-mail template), then your
+        \emph{CV PDF pages as they are}, then the company card as a \emph{private
+        appendix} headed ``PRIVATE REMINDER: NOT TO BE SENT''.
+\end{itemize}
+Both open a \textbf{preview} first. From there: \ui{Print\ldots} (default printer),
+\ui{Save PDF}, \ui{Save Excel} (one sheet per section plus a \emph{Sources} sheet) and
+\ui{Save Word} (\code{.docx}). Work runs in the background; errors appear in the dialog, and a missing
+printer or CV file is reported instead of failing. Pages carry a small footer with the
+creation date.
+
+\begin{infobox}
+In the PDF and in print the CV pages follow the letter. Excel and Word hold the letter,
+a note naming the CV file and the card appendix, but not the CV pages themselves: attach
+the CV PDF yourself when you use those formats.
+\end{infobox}
+
+\begin{warnbox}
+The private appendix of an application export is a reminder for \emph{you} (identity
+data, contacts, financials of the company). Remove it, or send only the letter and the
+CV, before the file leaves your hands. The e-mail methods never attach it.
+\end{warnbox}

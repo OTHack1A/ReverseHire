@@ -1,0 +1,104 @@
+{
+  "_comment": "Regular expressions applied to CV rows after normalize() (lowercase, no accents). Italian, English and Ukrainian (Ukrainian written normalised: 'й' becomes 'и', 'ї' becomes 'і'). Negative patterns are checked first and removed from the row before the positive ones.",
+  "travel_excluded": [
+    "\\b(?:non|nessuna|senza|no)\\b\\W+(?:\\w+\\W+){0,3}?disponibil\\w*\\W+(?:\\w+\\W+){0,2}?(?:a|ad|alle|per|al)\\W+(?:\\w+\\W+){0,1}?(?:trasfert\\w*|viagg\\w*)",
+    "\\bnon\\W+(?:effettuo|faccio|posso fare|accetto)\\W+(?:\\w+\\W+){0,1}?trasferte\\b",
+    "\\bno\\W+trasferte\\b",
+    "\\bnessuna\\W+trasferta\\b",
+    "\\b(?:not|un)\\W*(?:willing|available|able)\\W+(?:to|for)\\W+(?:\\w+\\W+){0,1}?travel\\w*",
+    "\\b(?:no|without)\\W+(?:business\\W+)?travel(?:ling|ing)?\\b",
+    "\\bcannot\\W+travel\\b",
+    "\\bне\\W+(?:\\w+\\W+){0,1}?готов\\w*\\W+(?:\\w+\\W+){0,2}?до\\W+відряджен\\w*",
+    "\\bбез\\W+відряджень\\b"
+  ],
+  "travel_declared": [
+    "\\bdisponibil\\w*\\W+(?:\\w+\\W+){0,3}?(?:a|ad|alle|per|al)\\W+(?:\\w+\\W+){0,2}?(?:trasfert\\w*|viagg\\w*)",
+    "\\btrasferte\\W+(?:in\\W+)?(?:italia|estero|all\\W?estero|nazionali|internazionali|europa)\\b",
+    "\\b(?:willing|available|open|ready|happy|able)\\W+(?:to|for)\\W+(?:\\w+\\W+){0,1}?travel\\w*",
+    "\\b(?:willingness|availability|readiness)\\W+(?:to|for)\\W+(?:\\w+\\W+){0,1}?travel\\w*",
+    "\\btravel\\W+up\\W+to\\b",
+    "\\b(?:fino\\W+al|max\\W+|massimo\\W+)?\\d{1,3}\\W?%\\W+(?:di\\W+)?(?:trasfert\\w*|travel\\w*)",
+    "\\bготов\\w*\\W+(?:\\w+\\W+){0,2}?до\\W+(?:\\w+\\W+){0,1}?відряджен\\w*",
+    "\\bможливі\\W+відрядження\\b"
+  ],
+  "travel_likely": [
+    "\\btrasfertist\\w*",
+    "\\bfield\\W+(?:service\\W+)?(?:engineer|technician|specialist|application\\w*)\\b",
+    "\\bservice\\W+engineer\\b",
+    "\\bcommissioning\\b",
+    "\\bmess[ae]\\W+in\\W+(?:servizio|marcia)\\b",
+    "\\b(?:collaud\\w*|avviament\\w*|installazion\\w*|assistenza\\W+tecnica|interventi)\\W+(?:\\w+\\W+){0,3}?presso\\W+(?:i\\W+|il\\W+|lo\\W+|la\\W+)?(?:client\\w*|cantier\\w*|impiant\\w*|stabiliment\\w*)",
+    "\\binstallator\\w*",
+    "\\bcantier[ei]\\b",
+    "\\bon[- ]?site\\b",
+    "\\b(?:at|on)\\W+(?:the\\W+)?customers?\\W*(?:'s\\W+)?sites?\\b",
+    "\\bcustomer\\W+sites?\\b",
+    "\\btrasfert[ae]\\b",
+    "\\bbusiness\\W+trips?\\b",
+    "\\btravel(?:l)?ing\\W+(?:to|across|throughout)\\b",
+    "\\bвідрядження\\b",
+    "\\bпусконалагоджувальн\\w*"
+  ],
+  "relocation_excluded": [
+    "\\b(?:non|nessuna)\\W+(?:\\w+\\W+){0,2}?disponibil\\w*\\W+(?:\\w+\\W+){0,2}?(?:al\\W+trasferimento|a\\W+trasferir\\w*|al\\W+cambio\\W+di\\W+residenza)",
+    "\\b(?:not|un)\\W*(?:willing|available|able|open)\\W+(?:to|for)\\W+(?:relocat\\w*|move)\\b",
+    "\\bno\\W+relocation\\b",
+    "\\bне\\W+(?:\\w+\\W+){0,1}?готов\\w*\\W+(?:\\w+\\W+){0,2}?до\\W+переізд\\w*"
+  ],
+  "relocation_declared": [
+    "\\bdisponibil\\w*\\W+(?:\\w+\\W+){0,3}?(?:al\\W+trasferimento|a\\W+trasferir\\w*|al\\W+cambio\\W+di\\W+residenza)",
+    "\\b(?:willing|available|open|ready|happy)\\W+(?:to|for)\\W+relocat\\w*",
+    "\\bopen\\W+to\\W+relocation\\b",
+    "\\b(?:willingness|availability)\\W+to\\W+relocate\\b",
+    "\\bготов\\w*\\W+(?:\\w+\\W+){0,2}?до\\W+переізд\\w*"
+  ],
+  "licence_words": [
+    "patente(?:\\W+di\\W+guida)?",
+    "driving\\W+licen[cs]e",
+    "driver\\W?s?\\W+licen[cs]e",
+    "permis\\W+de\\W+conduire",
+    "посвідчення\\W+водія",
+    "водіиськ\\w*\\W+посвідчення",
+    "водіиськ\\w*\\W+права",
+    "права\\W+водія"
+  ],
+  "licence_categories": [
+    "AM",
+    "A1",
+    "A2",
+    "A",
+    "B1",
+    "BE",
+    "B",
+    "C1E",
+    "C1",
+    "CE",
+    "C",
+    "D1E",
+    "D1",
+    "DE",
+    "D",
+    "CQC",
+    "KB",
+    "KA"
+  ],
+  "own_car_yes": [
+    "\\bautomunit[oa]\\b",
+    "\\b(?:auto|automobile|vettura|mezzo)\\W+propri[oa]\\b",
+    "\\bmunit[oa]\\W+di\\W+(?:auto|automobile|mezzo\\W+proprio)\\b",
+    "\\bown\\W+(?:car|vehicle|transport)\\b",
+    "\\bcar\\W+owner\\b",
+    "\\bвласн\\w*\\W+(?:авто\\w*|машин\\w*)",
+    "\\bє\\W+(?:власнии\\W+)?автомобіль\\b"
+  ],
+  "own_car_no": [
+    "\\bnon\\W+automunit[oa]\\b",
+    "\\bno\\W+(?:own\\W+)?car\\b",
+    "\\bwithout\\W+(?:a\\W+)?car\\b",
+    "\\bбез\\W+(?:власного\\W+)?автомобіля\\b"
+  ],
+  "travel_period_words": {
+    "year": "\\b(?:anno|annui|all\\W?anno|l\\W?anno|annuali|year|years|yearly|annually|per\\W+annum|p\\.?a\\.?)\\b",
+    "month": "\\b(?:mese|mesi|al\\W+mese|mensili|month|months|monthly)\\b"
+  }
+}

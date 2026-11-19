@@ -1,0 +1,38 @@
+{
+  "_note": "Career directions (affinity/preferences.py). A direction is a named set of role keywords, skill families of cv/data/skills.json and extra skill names. Editable: the user can switch each one on/off and add their own (AffinityPreferences.directions). Role keywords are matched on normalised titles (lowercase, no accents) as whole words or phrases.",
+  "version": 1,
+  "directions": [
+    {
+      "id": "industrial_automation",
+      "name": "Industrial automation",
+      "roles": ["automation", "automazione", "plc", "scada", "hmi", "commissioning", "messa in servizio", "controls engineer", "control engineer", "machine software", "software di macchina", "robot", "field service", "service engineer", "tecnico trasfertista", "electrical designer", "progettista elettrico"],
+      "families": ["automation", "robotics", "electrical"],
+      "skills": ["PLC programming", "SCADA", "HMI", "Commissioning", "Motion control", "TIA Portal", "CODESYS", "Industrial networks", "Profinet", "OPC UA", "MES", "Robot programming", "EPLAN"],
+      "enabled": true
+    },
+    {
+      "id": "software_development",
+      "name": "Software development",
+      "roles": ["software", "developer", "sviluppatore", "programmatore", "programmer", "back end", "backend", "full stack", "fullstack", "web developer", "analista programmatore", "database", "applications"],
+      "families": ["dev", "data"],
+      "skills": ["Python", "Java", "C#", "C++", "SQL", "JavaScript", "REST APIs", "Git", "Docker", "Back-end development", "Web development", "ERP systems"],
+      "enabled": true
+    },
+    {
+      "id": "cybersecurity_networks",
+      "name": "Cybersecurity and industrial networks",
+      "roles": ["security", "sicurezza informatica", "cybersecurity", "cyber security", "network", "reti", "sistemista", "system administrator", "systems administrator", "infrastructure", "infrastruttura", "ot security", "it manager", "soc analyst"],
+      "families": ["security", "network", "it"],
+      "skills": ["Cybersecurity", "Network security", "Firewall", "Industrial networks", "computer networking", "Linux", "System administration", "Virtualization", "Windows Server", "Active Directory", "ISO 27001", "Penetration testing"],
+      "enabled": true
+    },
+    {
+      "id": "technical_coordination",
+      "name": "Technical coordination",
+      "roles": ["technical lead", "tech lead", "team leader", "team lead", "project manager", "project engineer", "capo progetto", "responsabile ufficio tecnico", "technical manager", "engineering manager", "responsabile tecnico", "coordinatore tecnico", "technical coordinator", "head of engineering"],
+      "families": ["management"],
+      "skills": ["project management", "Team management", "Stakeholder management", "Requirements analysis", "Technical documentation", "Agile"],
+      "enabled": true
+    }
+  ]
+}

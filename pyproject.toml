@@ -1,0 +1,99 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reversehire"
+# The version lives in src/reversehire/_version.py only (tools/build.py raises its
+# third number at every build): see [tool.setuptools.dynamic].
+dynamic = ["version"]
+description = "Desktop app that starts from a CV and finds the companies that fit the profile, and are hiring, within a radius."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "0THack1A"}]
+requires-python = ">=3.12"
+keywords = ["cv", "resume", "job-search", "openstreetmap", "esco", "embeddings", "desktop-app", "qt", "pyside6", "mcp"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Win32 (MS Windows)",
+    "Environment :: X11 Applications :: Qt",
+    "Environment :: MacOS X",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: Italian",
+    "Natural Language :: Ukrainian",
+    "Natural Language :: English",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business",
+]
+dependencies = [
+    "pypdf",
+    "python-docx",
+    "httpx",
+    "trafilatura",
+    "lxml",
+    "rapidfuzz",
+    "numpy",
+    "fastembed",
+    "lingua-language-detector",
+    "PySide6",
+    # Local OCR for image CVs and scanned PDFs (models bundled in the wheel, offline).
+    "rapidocr>=3.10",
+    "onnxruntime",
+    # Local CV translation (OPUS-MT models in ONNX, run with onnxruntime): tokenizer.
+    "tokenizers",
+    # System certificate store for HTTPS (scoring.embedding.use_system_certificates).
+    "truststore",
+    # Windows only: classic Outlook through COM for the application e-mail (mail.methods).
+    "pywin32; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+# The MCP server for AI clients and the in-app assistant strip (gui/chat_panel.py).
+mcp = ["mcp"]
+playwright = ["playwright"]
+# Optional job boards (Indeed, LinkedIn) as an extra source; off by default (job_boards_enabled).
+jobboards = ["python-jobspy"]
+# Overture Maps places (GeoParquet) as an extra discovery source, queried with DuckDB.
+overture = ["duckdb"]
+# Windows only: DirectML execution provider for the advanced OCR reader (any DX12 GPU,
+# about 3x faster than the CPU). Detected at run time; without it the CPU is used.
+# CAUTION: onnxruntime-directml installs the same "onnxruntime" folder as the required
+# onnxruntime package, so the two overwrite each other's files. The clean way is:
+#   pip uninstall -y onnxruntime && pip install onnxruntime-directml==1.24.4
+# ("python -m reversehire.diagnostics" warns when both are installed).
+gpu = ["onnxruntime-directml==1.24.4; sys_platform == 'win32'"]
+dev = ["pytest", "fpdf2"]
+
+[project.urls]
+Repository = "https://github.com/OTHack1A/ReverseHire"
+
+[project.scripts]
+reversehire = "reversehire.app:main"
+reversehire-mcp = "reversehire.mcp_server:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "reversehire._version.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+# cv/data/*.onnx: the face detector and the PP-OCRv5 Cyrillic recogniser (both with their
+# licence files in cv/data/*.txt; see ATTRIBUTIONS.md).
+reversehire = ["locales/*.json", "cv/data/*.json", "cv/data/*.onnx", "cv/data/*.txt",
+               "discovery/data/*.csv", "resources/*.png", "resources/*.ico",
+               "resources/fonts/*.ttf", "resources/fonts/OFL.txt",
+               "recruiter_sim/data/*.json", "affinity/data/*.json",
+               "mapview/web/*.html", "mapview/web/*.js", "mapview/web/*.css",
+               "mapview/web/vendor/*/*", "mapview/web/vendor/leaflet/images/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

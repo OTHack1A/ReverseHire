@@ -1,0 +1,132 @@
+% Chapter 8 -- affinity. Update with affinity/* (demand.py, engine.py, weights.py, calibration.py, knowledge.py,
+% preferences.py, batch.py, texts.py, data/directions.json, data/knowledge.json), gui/affinity_box.py,
+% gui/affinity_service.py, gui/affinity_settings.py, gui/window_affinity.py.
+\chapter{Affinity: the score and the verdict}\label{ch:affinity}
+
+Chapter~\ref{ch:scoring} scores a company against what you \emph{prefer} (distance, contract) and
+a posting against the CV. The \textbf{affinity} answers the question of the product: \emph{how
+well does this profile fit what this company seems to need?} It is a number from 0 to 100\,\%, a
+confidence, a \textbf{verdict} and the reasons behind them. It is computed locally, deterministically, from a CV and the data on the company card, and is always
+an estimate, never a prediction of being hired. Company-type preferences only move a company
+in the lists; whether it is hiring or growing is a separate \emph{opportunity} signal, not part of the number.
+
+\section{What the company asks for: the demand}
+The \emph{demand} is assembled from the card (or a search result) as a list of items, each with an
+origin and a weight. Postings are read as in chapter~\ref{ch:scoring}; everything else is read from
+the company's own texts, and an item already present with a stronger origin is not repeated.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l c Y@{}}
+\toprule
+\hdr \thead{Origin} & \thead{Weight} & \thead{Where it comes from} \\
+\midrule
+Must (explicit)    & 5 & A requirement line of a posting classed ``must''. \\
+Nice (explicit)    & 3 & A ``nice to have'' line. \\
+Context (explicit) & 1 (+1 for a duty) & Other posting text; counts only as positive evidence. \\
+Stated             & 2 & A technology from the skills dictionary named on the company's site, products or presentation. \\
+Inferred from products & 0.3--0.7 & Product rules of the knowledge table (section~\ref{sec:knowledge}), e.g.\ packaging machines suggest PLC and HMI skills. \\
+Inferred from the type & 0.3--0.6, $\times$0.8 or 0.5 & What a kind of company usually employs (machine builder, system integrator, manufacturer, software house). \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{3pt}
+Besides skills the demand lists \emph{roles} (posting titles 1.0, inferred from products 0.8, from the
+type 0.7), \emph{sectors} (ATECO 1.0, OpenStreetMap 0.8, site keywords 0.6) and \emph{asked}
+values (years, languages, degree, seniority words in a title). An \emph{inferred} item is a guess, labelled ``inferred from their products
+(not a requirement)''; the company name classifies the type only, never counts as a skill.
+
+\section{Directions and components}
+A \textbf{direction} is a kind of career defined by role words and skill families. Four ship enabled:
+\emph{Industrial automation}, \emph{Software development}, \emph{Cybersecurity and industrial
+networks} and \emph{Technical coordination}; Settings, \ui{Affinity}, switches them and adds your own. The company is scored once per applicable direction, using only the
+demand that belongs to it, and once on the whole profile. A direction is \emph{applicable} when the company has a posting in it or at least 15\,\% of its demand lies in it; otherwise it is not scored (no penalty). The headline is the best applicable direction, shown as ``Fits you as:
+<direction>, 78\,\% (confidence)'' with the others as ``Also as\ldots''; with no direction applicable
+it is the whole profile. A direction whose best posting fits gets the same bonus as Apply in the lists, so it wins the headline over a direction that scores a little higher without an open posting.
+
+Each score is a weighted mean of six components (0--100); one without data is dropped and the weights renormalised.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l c Y@{}}
+\toprule
+\hdr \thead{Component} & \thead{Weight} & \thead{How it is scored} \\
+\midrule
+Skills       & 0.35 & Each demand item gets the CV evidence of chapter~\ref{ch:analysis}: named in a dated job 1.0, elsewhere 0.85, adjacent 0.5, absent 0; times recency (1 up to 24 months, decaying to 0.6; only listed 0.8). With a posting: 70\,\% best-posting coverage plus 30\,\% overlap with the stated and inferred skills. \\
+Role         & 0.20 & Company roles against your current and past titles, Italian and English variants (fuzzy and by meaning); a role inferred from the type can reach 70 at most. \\
+Sector       & 0.15 & Closeness of the company's sector to the ones of your jobs (months, recency) and to your ATECO categories. \\
+Seniority    & 0.10 & Years asked against years held (too few: held/asked; far too many: down to 0.5) and level words; only with a posting that asks. \\
+Constraints  & 0.10 & The knock-out answers of chapter~\ref{ch:analysis} (ok 1, unknown 0.8, warn 0.6, fail 0) and the distance limit if set. \\
+Practical    & 0.10 & Contract, remote work and salary against your preferences, where the posting publishes them. \\
+\bottomrule
+\end{tabularx}
+}
+
+\section{Hard requirements, coverage, confidence}
+\textbf{Hard-requirement cap.} If a screening question of the best posting is \emph{failed} (a must
+for a language, degree, licence, car, travel, right to work\ldots\ that your saved answers contradict),
+if the posting is gated (chapter~\ref{ch:scoring}), or if the company is beyond your distance limit,
+the affinity is capped at \textbf{25} and the verdict is \emph{Not a fit}.
+
+
+\textbf{Postings known only by title.} A posting read as a bare title (a careers page listing ``Back-end developer'') is not scored 0: the title is compared with your CV roles. An internship, apprenticeship or graduate programme (intern, stage, tirocinio, apprendistato, trainee\ldots) never counts as fitting a CV with five or more years of experience, and the card says why.
+
+\textbf{Coverage and ``not enough data''.} Each component counts only as far as its evidence is firm
+(a posting item 1.0, a skill stated on the site 0.8, inferred from products 0.5, from the type only 0.25).
+\emph{Coverage} is the share of the possible weight that rests on evidence. Below \textbf{0.45}, or
+with neither skills nor role known, there is no number: the card says \emph{Not enough data} and what
+to collect (add the website, build the full card, paste a posting, add the ATECO code).
+
+\textbf{Confidence}: \emph{high} from coverage 0.75 with a described posting, \emph{medium} from 0.55, else \emph{low}.
+
+\section{The verdict}\label{sec:order}
+The first rule that applies wins; the thresholds are those of Settings after calibration.
+
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Verdict} & \thead{When} \\
+\midrule
+Not enough data & No affinity number (above). \\
+Not a fit       & Company type switched off (0\,\%), a hard requirement failed, ``directions only'' is on and the company is outside every direction, or affinity below \textbf{40}. \\
+Apply           & The best posting fits (its match score is at least 55, not capped, no failed requirement) and affinity is at least \textbf{50}: send your CV. \\
+Spontaneous application & Affinity at least \textbf{55}, a \emph{plausible need} (stated or inferred skills overlap at least 40\,\% with one item at 50 or more, or the role scores 50 or more) and confidence not low. \\
+Keep an eye on it & Everything else: it fits, but nothing is open and the signals are weak. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{3pt}
+\textbf{Ordering.} Lists sort by tier: \emph{Apply} and \emph{Spontaneous} first, then
+\emph{Keep an eye on it}, \emph{Not a fit}, \emph{Not enough data}. Inside a tier the key is the affinity
+plus 15 for \emph{Apply} (postings first), times your company-type weight; ties go to higher
+confidence, then the name. So an \emph{Apply} at 60\,\% (key 75) beats a \emph{Spontaneous} at 74\,\%; a lower tier never outranks the first. A column header overrides this.
+
+\section{Calibration from your judgements}
+In the box on the card, \ui{Agree} and \ui{Disagree} record your opinion of one result (the last one
+counts). From \textbf{8} judgements Settings, \ui{Affinity}, offers \ui{Calibrate from my judgements}:
+a \emph{disagreement} with a positive verdict pushes the component weights and the thresholds towards
+fewer positives, one with \emph{Not a fit} the other way. Disagreements below 20\,\% of the judgements
+change nothing; a weight moves at most 0.05 a step (staying within 0.03--0.45), thresholds by 2 points, never more
+than 10 from their defaults (40, 50, 55). \ui{Apply these weights} saves
+them and recomputes, \ui{Default weights} resets. Nothing else is calibrated.
+
+\section{The conservative knowledge table}\label{sec:knowledge}
+For a company with no posting the demand is \emph{inferred} from a small hand-made, editable table
+(\code{affinity/\allowbreak data/\allowbreak knowledge.json}): 14 product rules (packaging, automatic machines, robotic cells,
+control panels, supervision and MES, machine tools, material handling, business and custom software,
+cybersecurity services, IT infrastructure, OT security, engineering services, production plants)
+with a few skills and roles each, and four company types with text, ATECO and map-tag evidence. All
+weights are at most 0.7, type-derived ones are cut again, inferred items are labelled, and a result resting on the type
+alone has coverage too low to give a number. A table of sector closeness completes it.
+
+\section{What it cannot know}
+Only what is on the card and in your CV text: a skill you have but did not write counts as a gap (``if you have
+it, state it''). Meaning-based matching of titles needs the language model already on disk. It does not know the
+employer's real needs, the competition, or whether a post is filled.
+
+\section{Where you see it}
+The \textbf{box at the top of the company card} shows the verdict badge, the percentage with its
+confidence, the best direction and company type, and one line of reasons; \ui{Details} lists per component the evidence with source links, strengths and gaps, up to three \emph{points for
+the cover letter} (\ui{Into the e-mail} puts them in the draft, chapter~\ref{ch:apply}) and ``What to collect''. The columns \ui{Affinity}, \ui{Verdict}, \ui{Fits as} and \ui{Type} appear in every company list. Results are cached and recomputed when the CV, the company data, the settings or the month
+change. Settings, \ui{Affinity}: directions, kinds of company (0--100\,\%; 0 excludes), an optional
+distance limit (off; 1--2\,000\,km) and calibration.

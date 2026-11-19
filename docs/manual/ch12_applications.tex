@@ -1,0 +1,100 @@
+% Chapter 12 -- applications sent (tracker). Update with applications/* (model.py, db.py, service.py, archive.py,
+% ics.py, table.py, panel.py, detail_widgets.py, dialog.py, pdf_preview.py, workers.py, texts.py),
+% gui/window_applications.py and the hooks in gui/mail_dialog.py and export/dialog.py.
+\chapter{Applications sent}\label{ch:tracker}
+
+After the draft (chapter~\ref{ch:apply}) comes the question ``what did I send, to whom, and what
+happened?'' Tab \ui{Applications sent} keeps one record per application: the company, the role,
+the cover letter \emph{exactly as sent}, the CV file \emph{as sent}, the status, follow-ups and
+appointments. It is a notebook for you; it never contacts anyone and never changes a status by
+itself.
+
+\section{Where it is kept}
+A separate SQLite file, \code{<data>/applications/applications.sqlite}, with an archive folder
+\code{files/} next to it, so the tracker can be backed up or deleted without touching searches and
+cards. One connection per thread; if the file is busy more than 2\,s on the window thread you get
+``The applications file is busy: try again in a moment.'' The tab opens the file in the background.
+
+\section{The record}
+{\small
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\hdr \thead{Part} & \thead{Content} \\
+\midrule
+Type      & \emph{Spontaneous application} or \emph{Reply to a posting} (with the posting link). \\
+Channel   & E-mail, company site or form, agency, LinkedIn, other; recipient and contact name. \\
+Status    & Draft, Sent, Acknowledged, Interview, Offer, Rejected, No answer, Withdrawn. \textbf{Any status can be set from any other}: there is no fixed flow, and nothing is set automatically, not even ``No answer''. \\
+Company   & A saved card, or a name you typed (matched to cards ignoring case and accents). \\
+Texts     & Subject and cover letter as sent (read-only once the record is no longer a draft; \ui{Edit} unlocks it), notes. \\
+CV        & The PDF sent, its language, and its SHA-256 hash. \\
+Dates     & Date sent (setting \emph{Sent} with no date uses today), follow-up date. \\
+History   & Every change of status, dates, type, channel, follow-up, CV or letter, with who (you, the program, an e-mail draft, an import); of the letter only its length is kept. \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{3pt}
+\ui{New application\ldots} (also \ui{Companies $>$ Applications sent}) opens a form: the company (a list of
+your cards, or a new name), the type, role, link, channel, recipient, date, status (default \emph{Sent}), CV
+(prefilled with the reference CV of Settings, \ui{Mail}), subject, letter (which can be loaded from a
+\code{.txt} or \code{.md} file) and notes; it warns about a duplicate. The detail has five tabs, \emph{Details} (saved
+0.5\,s after the last keystroke), \emph{Cover letter}, \emph{CV sent}, \emph{Appointments} and \emph{History}.
+
+\section{The archive: one copy per content}
+The CV file of an application is copied into a \code{files/} subfolder named by the first two characters of the hash, then \code{<SHA-256>} plus the extension
+while its hash is computed, then moved into place in one step. The \textbf{same bytes are stored once},
+however many applications use them; a file over 100\,MiB is refused. \ui{CV sent} shows ``name (archived copy
+\ldots)'' and a page preview; \ui{Open the CV sent} opens a temporary copy under its original name. Replacing the CV
+of a record already sent asks first. When a record is deleted, or at every start, files no record refers to are
+removed. Attachments are archived the same way, but the interface has no button to add one.
+
+\section{Follow-ups and appointments}
+\textbf{Follow-ups.} An application in an \emph{open} status (Sent, Acknowledged, Interview) with a follow-up
+date is flagged on that day; with \emph{no} date, a record in status \emph{Sent} is flagged \emph{due} after
+\textbf{10 working days} (Monday to Friday, holidays not known) from the sent date. The \ui{Follow-up} column
+shows the date or ``Due (12 days)'', in the warning colour. At start-up the status bar says ``Applications
+sent: follow-ups due: 2, appointments today: 1, appointments tomorrow: 0. Click here to open them''; nothing is
+shown when all are zero.
+
+\textbf{Appointments.} Each has a kind (phone, video, on-site, test, other), start with a UTC offset, duration
+(default 60\,min), place or link, people, notes, outcome (pending, positive, neutral, negative, cancelled) and a
+reminder (minutes before, or none). \ui{Add appointment} starts tomorrow at the current hour. The table column
+\emph{Next appointment} skips cancelled ones and those of rejected or withdrawn applications.
+
+\textbf{Calendar file.} \ui{Add to my calendar (.ics)} saves a standard \code{VCALENDAR} file, one event per
+appointment with start and end in UTC, summary, place, people, notes, the posting link, \texttt{STATUS:CANCELLED}
+for a cancelled one and an alarm for the reminder. It is \emph{only a file}: you open it in your calendar program;
+ReverseHire never talks to a calendar service.
+
+\section{How records are created from elsewhere}
+Only \emph{drafts} are created automatically, because the program cannot know whether you sent the message:
+you set \ui{Mark as sent} (which sets the date to today) yourself.
+\begin{itemize}
+  \item \textbf{After \ui{Open draft}} of the \ui{Write e-mail} dialog (chapter~\ref{ch:apply}), once the mail
+        program accepted it: a draft with recipient, subject, letter and the attached CV. Opening the \emph{same} draft
+        again updates that record.
+  \item \textbf{After an export or a print} of the \emph{application} (File $>$ Export, with a card): a draft
+        with the letter and the CV from Settings; saving the PDF and the Word file of one export is one record.
+  \item \textbf{On the company card}: the box \emph{Applications to this company} lists up to six records and has
+        \ui{Open in Applications sent} and \ui{New application for this company\ldots}.
+\end{itemize}
+A new record for the same company and role within 60 days is reported as a duplicate, not added twice.
+
+\section{Working in the table}
+Columns: \emph{Company, Role, Type, Sent, Status, Next appointment, Follow-up}; click a header to sort (status in
+workflow order, blanks last). A text box searches company, role, e-mail, contact and notes (not the letter), and
+two lists filter by status and type. A line above shows ``12 recorded, 9 sent, 4 answered, 2 with interviews
+(median answer time: 8 days)''. The right-click menu and the submenu \ui{Companies $>$ Applications sent} offer open,
+mark as sent, change status, appointment, open the company card, export, delete; \ui{Undo last change} remembers 50
+steps in the session (a deleted application cannot be undone).
+
+\textbf{Export and CSV.} \ui{Export this application\ldots} writes a folder with \code{cover\_letter.txt},
+\code{notes.txt}, the CV as sent, any attachments and \code{appointments.ics}. \ui{Export all to CSV\ldots} writes
+20 columns, UTF-8 with BOM, with cells that start with \code{=}, \code{+}, \code{-} or \code{@} protected against
+spreadsheet formulas; \ui{Import from CSV\ldots} detects the separator, skips rows without a company or identical
+to an existing one, and reports values it replaced by defaults.
+
+\begin{infobox}
+The records hold your letters, notes and contacts. They stay in the data folder and are never sent anywhere, and
+no setting changes the 10-day follow-up rule.
+\end{infobox}

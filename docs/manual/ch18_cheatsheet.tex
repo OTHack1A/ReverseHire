@@ -1,0 +1,106 @@
+% Cheat sheet -- unnumbered, must stay on ONE page (shorten bullets, never below \footnotesize).
+\chapter*{Cheat sheet}\markright{Cheat sheet}\addcontentsline{toc}{chapter}{Cheat sheet}
+
+\begin{multicols}{2}
+\small
+\setlist{itemsep=0pt, topsep=1pt, leftmargin=1.1em}
+
+\textbf{\color{othRed}Start and data}
+\begin{itemize}
+  \item Windows \code{start.bat}; Linux \code{start.sh}; macOS \code{start.command}; Python 3.12+, no admin rights.
+  \item Every start is in English (Settings: start-up language); version in \ui{? $>$ About}.
+  \item Data folder, first match: \code{REVERSEHIRE\_HOME}; \code{<program>/userdata}; per-user OS folder; temp.
+\end{itemize}
+
+\textbf{\color{othRed}Workflow}
+\begin{enumerate}[itemsep=0pt, topsep=1pt, leftmargin=1.3em]
+  \item Tab 1: choose or drop the CV; edits autosave (\code{Ctrl+Z} undoes).
+  \item Recruiter view and analysis: fix what the CV gets wrong.
+  \item \ui{Who could be interested\ldots}: pre-screen, suggestions, deep analysis.
+  \item Or tab 2: place, area mode (address optional for a province or region), \ui{Start}.
+  \item Results and cards: sort by header; star the good ones; check the affinity.
+  \item Job search: postings and companies for a spontaneous application.
+  \item \ui{Write e-mail}: a draft, you press Send; then \ui{Mark as sent} in \ui{Applications sent}.
+\end{enumerate}
+
+\textbf{\color{othRed}Affinity (0--100\,\%)}
+\begin{itemize}
+  \item Skills .35, role .20, sector .15, seniority, constraints, practical .10 each.
+  \item Verdict: Apply (posting fits, $\geq$50); Spontaneous ($\geq$55, plausible need); Keep an eye on it; Not a fit ($<$40 or a failed must: cap 25); Not enough data (coverage $<$0.45).
+  \item Order: Apply and Spontaneous first; Apply +15. Judgements (8+) calibrate weights.
+\end{itemize}
+
+\textbf{\color{othRed}Who could be interested}
+\begin{itemize}
+  \item Pre-screen: offline, saved cards, register, local map; not an affinity.
+  \item Assistant: anonymised brief and names to leave out (60), both readable; CLI with no tools; 10 at a time.
+  \item Status: Verified, Partly, Not verified, Rejected; only the first two can be added.
+  \item Idle analysis: asked once, 200 queued at most; 5\,min idle, mains, 600 requests a day; pause or resume.
+\end{itemize}
+
+\textbf{\color{othRed}Regional register}
+\begin{itemize}
+  \item RNA, GLEIF, OpenCoesione, AGCM plus your lists; merged by tax code; downloaded only on request.
+  \item Your edits are locked. Province may be \emph{presumed}. Free lists cover about a quarter to a third.
+\end{itemize}
+
+\textbf{\color{othRed}Scanned CV (OCR)}
+\begin{itemize}
+  \item Latin and Cyrillic; advanced reader (139\,MB) on demand, kept only if better; GPU optional.
+\end{itemize}
+
+\columnbreak
+
+\textbf{\color{othRed}Discovery and results}
+\begin{itemize}
+  \item Local map data and register first; Overpass fallback; Wikidata on. 2\,s per host, 429 = host dropped.
+  \item \textbf{Match}: sorting value. \textbf{Fit}: best posting. \textbf{Relevance}: company. Blocked: a hard must-have contradicted.
+  \item Search by meaning in every list: exact phrase 75--100, words 60--85, meaning $\leq$59.
+  \item Revenue growing $\geq$2\,\%/year over 3+ years: small ranking bonus.
+\end{itemize}
+
+\textbf{\color{othRed}Recruiter analysis}
+\begin{itemize}
+  \item 20 systems (7 medium, 13 low confidence); score in \%, ``how this system shows you'' beside it.
+  \item 11 checks; parse .20, findability .25, match .35, timeline .10, credentials .10; failed knock-out caps at 20.
+  \item Match with my CV = $100\,(0.8\,\mathrm{AdFit}+0.2\,\mathrm{CvUse})$.
+\end{itemize}
+
+\textbf{\color{othRed}Job search}
+\begin{itemize}
+  \item Quotes must appear; \code{-word} must not; chips show synonyms and typos.
+  \item Sources: saved data and companies, Randstad, Manpower, Synergie; own key for Adzuna, Jooble, Careerjet.
+  \item Adecco, Gi Group, Umana never read; LinkedIn, Indeed: browser or paste only.
+  \item Hidden employer: top 5 above 10\,\%, always \emph{unverified hypothesis}.
+\end{itemize}
+
+\textbf{\color{othRed}Card, identity, financials}
+\begin{itemize}
+  \item \textcolor{othGreen}{\textbf{CONFIRMED}} IDs agree; \textcolor{othBlue}{\textbf{PROBABLE}} valid ID, no register hit; \textcolor{othGray}{\textbf{UNVERIFIED}} no ID; \textcolor{othRed}{\textbf{CONFLICT}} IDs differ.
+  \item Links are never guessed. Financials: ESEF, paste, CSV, by hand.
+\end{itemize}
+
+\textbf{\color{othRed}Applications sent}
+\begin{itemize}
+  \item Letter and CV stored as sent (one copy per content); any status from any other.
+  \item Follow-up after 10 working days; \ui{.ics} is only a file.
+\end{itemize}
+
+\textbf{\color{othRed}Menus, keys, MCP}
+\begin{itemize}
+  \item 10 tabs; menus File, CV, Search, Results, Job search, Companies, Tools, ?.
+  \item \code{Ctrl+O} CV; \code{Ctrl+Shift+F} favourites; \code{Ctrl+Shift+L} theme.
+  \item MCP off until the dot is green; 9 tools; your own Claude Code or Codex.
+\end{itemize}
+
+\textbf{\color{othRed}When it goes wrong}
+\begin{itemize}
+  \item Reduced accuracy: \ui{Why?}. No companies: download map data or register.
+  \item Frozen: wait 5\,s, search the log for \code{not responding}. Else \ui{? $>$ Diagnostics}.
+\end{itemize}
+
+\textbf{\color{othRed}Rules of the house}
+\begin{itemize}
+  \item The CV never goes to company sites. Blanks stay blank. Nothing is sent for you.
+\end{itemize}
+\end{multicols}

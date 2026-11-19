@@ -1,0 +1,60 @@
+% Chapter 1 -- the idea. Update when the overall flow (pipeline.py, companies.py, background/, suggest/,
+% affinity/, registers/, applications/, mail/, export/, chat/, recruiter_sim/, jobsearch/) changes.
+\chapter{What it does and the idea}
+
+ReverseHire is a desktop application (Python, PySide6) with one goal: to go \emph{from
+the CV to the companies that could want this profile}. It reads one CV, works out who you are,
+finds the companies around you (or in a province, a region, the country), reads them, and says for
+each how well the profile fits what it seems to need, with the reasons. It also simulates the
+screening software an employer may use, searches postings and tracks the applications you send.
+
+\section{``Reverse'' hiring}
+The usual job search starts from the postings that happen to be online. ReverseHire first works
+out \emph{who you are}, then looks for the \emph{companies that could employ such a profile}, whether
+they publish postings or not, and reads their websites to see which are hiring and how well you fit. A company with no posting but a plausible need is still
+shown, as a candidate for a \emph{spontaneous application}. A company you did not know can come
+from the free regional register (chapter~\ref{ch:register}) or from your own assistant, whose
+suggestions are checked before they are listed (chapter~\ref{ch:interest}).
+
+\section{The flow in one table}
+{\small
+\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\toprule
+\hdr \thead{Step} & \thead{Code} & \thead{What happens} \\
+\midrule
+1. Read the CV     & \code{cv/}        & Text (local OCR for scans), sections, skills, languages; loaded when you choose or drop the file. \\
+2. Build the profile & \code{cv/}, \code{geo/sectors.py} & Roles, skills, sectors, ATECO categories, shown in English; every edit saved at once. \\
+3. Test the CV     & \code{recruiter\_sim/} & Simulated screening systems: parse, knock-outs, score in per cent, fixes. \\
+4. Find companies  & \code{discovery/}, \code{registers/} & Local map data, regional register, Wikidata, favourites; ranked. \\
+5. Read the sites  & \code{web/}       & Careers page, ATS boards, postings, legal identifiers, links. \\
+6. Score           & \code{scoring/}, \code{affinity/} & The \emph{match}; then the \emph{affinity} and its verdict. \\
+7. Who could be interested & \code{background/}, \code{suggest/} & Pre-screen of every known company, verified assistant suggestions, deep analysis when the PC is idle. \\
+8. Search postings & \code{jobsearch/} & Postings, and companies for a spontaneous application, ranked by meaning. \\
+9. Keep            & \code{store.py}, \code{companies.py} & Results saved at once; starred companies get a card on demand. \\
+10. Apply          & \code{mail/}, \code{export/} & E-mail \emph{draft}; card or application as PDF, Excel, Word. \\
+11. Follow         & \code{applications/} & What you sent, follow-ups, appointments. \\
+12. Ask            & \code{chat/}, \code{mcp\_server.py} & Optional strip: your own Claude Code or Codex answers from your data. \\
+\bottomrule
+\end{tabularx}
+}
+
+
+\section{Design principles}
+\begin{itemize}
+  \item \textbf{Rules, not a chatbot.} Profile, scoring and affinity use rules, dictionaries and a
+        small local embedding model; the program calls no large language model. Only \emph{your own}
+        Claude Code or Codex is started, by the assistant strip (chapter~\ref{ch:mcp}) and, when you
+        ask, to suggest companies (chapter~\ref{ch:interest}).
+  \item \textbf{The CV stays on the PC.} It never goes to company websites; only a cleaned role title
+        goes to the public ESCO API. The one exception is the \emph{anonymised summary} you see before
+        the first suggestion request.
+  \item \textbf{Nothing is sent for you.} Applications open as \emph{drafts}; you press Send (chapter~\ref{ch:apply}).
+  \item \textbf{No long freezes, polite network.} Slow work runs in the background (section~\ref{sec:robust});
+        pauses per host, robots.txt, caches; a site whose terms forbid automated reading is never contacted (chapter~\ref{ch:jobs}).
+  \item \textbf{Nothing invented, estimates labelled.} Unknown values stay blank; simulators, the AI-writing
+        figure, the affinity, a hidden employer and every suggestion say they are estimates or hypotheses.
+\end{itemize}
+
+\begin{infobox}
+Scores are indicative: they help to decide where to look first, they are not a verdict.
+\end{infobox}

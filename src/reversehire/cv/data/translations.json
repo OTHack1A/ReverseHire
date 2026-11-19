@@ -1,0 +1,1065 @@
+{
+  "_note": "Deterministic IT/UK -> EN tables used to show the profile in English (cv/english.py). Keys are compared after normalisation (lowercase, no accents, apostrophes unified). 'roles': whole job titles. 'role_words': single words of titles (used when a title is one word, or every word is known and the title is a plain 'noun adjective' pair). 'degree_types': degree words, longest first; 'subjects': fields of study. 'phrases': short generic phrases (skills not in the dictionary, subjects).",
+  "roles": {
+    "it": {
+      "contabile": "Accountant",
+      "impiegato contabile": "Accounting clerk",
+      "impiegata contabile": "Accounting clerk",
+      "impiegato amministrativo": "Administrative clerk",
+      "impiegata amministrativa": "Administrative clerk",
+      "impiegato amministrativo contabile": "Administrative and accounting clerk",
+      "impiegata amministrativa contabile": "Administrative and accounting clerk",
+      "addetto alla contabilita": "Accounting clerk",
+      "addetta alla contabilita": "Accounting clerk",
+      "stagista contabile": "Accounting intern",
+      "ragioniere": "Accountant",
+      "commercialista": "Chartered accountant",
+      "revisore contabile": "Auditor",
+      "responsabile amministrativo": "Administration manager",
+      "responsabile amministrazione": "Administration manager",
+      "addetta alla segreteria": "Secretary",
+      "addetto alla segreteria": "Secretary",
+      "segretaria": "Secretary",
+      "segretario": "Secretary",
+      "receptionist": "Receptionist",
+      "centralinista": "Switchboard operator",
+      "impiegato": "Office clerk",
+      "impiegata": "Office clerk",
+      "impiegato tecnico": "Technical clerk",
+      "impiegata tecnica": "Technical clerk",
+      "infermiere": "Nurse",
+      "infermiera": "Nurse",
+      "infermiere professionale": "Registered nurse",
+      "coordinatore infermieristico": "Nursing coordinator",
+      "oss": "Healthcare assistant",
+      "operatore socio sanitario": "Healthcare assistant",
+      "operatrice socio sanitaria": "Healthcare assistant",
+      "medico": "Physician",
+      "fisioterapista": "Physiotherapist",
+      "farmacista": "Pharmacist",
+      "assistente alla poltrona": "Dental assistant",
+      "falegname": "Carpenter",
+      "capo reparto falegnameria": "Carpentry department supervisor",
+      "operaio falegname": "Carpentry worker",
+      "operaio": "Worker",
+      "operaia": "Worker",
+      "operaio specializzato": "Skilled worker",
+      "operaio generico": "General worker",
+      "operatore cnc": "CNC operator",
+      "operatore macchine cnc": "CNC machine operator",
+      "programmatore cnc": "CNC programmer",
+      "tornitore": "Lathe operator",
+      "fresatore": "Milling machine operator",
+      "saldatore": "Welder",
+      "carpentiere": "Carpenter",
+      "carpentiere metallico": "Metal fabricator",
+      "elettricista": "Electrician",
+      "elettricista industriale": "Industrial electrician",
+      "idraulico": "Plumber",
+      "muratore": "Bricklayer",
+      "imbianchino": "Painter and decorator",
+      "meccanico": "Mechanic",
+      "meccanico industriale": "Industrial mechanic",
+      "manutentore": "Maintenance technician",
+      "manutentore meccanico": "Mechanical maintenance technician",
+      "manutentore elettrico": "Electrical maintenance technician",
+      "manutentore elettromeccanico": "Electromechanical maintenance technician",
+      "tecnico manutentore": "Maintenance technician",
+      "tecnico manutentore elettromeccanico": "Electromechanical maintenance technician",
+      "tecnico di manutenzione": "Maintenance technician",
+      "tecnico trasfertista": "Field service technician",
+      "tecnico installatore": "Installation technician",
+      "installatore": "Installer",
+      "tecnico elettronico": "Electronics technician",
+      "tecnico informatico": "IT technician",
+      "tecnico di laboratorio": "Laboratory technician",
+      "tecnico commerciale": "Technical sales representative",
+      "tecnico di automazione": "Automation technician",
+      "tecnico dell'automazione": "Automation technician",
+      "tecnico dell'automazione industriale": "Industrial automation technician",
+      "tecnico software": "Software technician",
+      "tecnico collaudatore": "Test technician",
+      "collaudatore": "Tester",
+      "tecnico": "Technician",
+      "magazziniere": "Warehouse worker",
+      "addetto al magazzino": "Warehouse worker",
+      "addetta al magazzino": "Warehouse worker",
+      "responsabile di magazzino": "Warehouse manager",
+      "responsabile magazzino": "Warehouse manager",
+      "carrellista": "Forklift operator",
+      "mulettista": "Forklift operator",
+      "autista": "Driver",
+      "autista patente c": "Truck driver",
+      "corriere": "Courier",
+      "addetto alle vendite": "Sales assistant",
+      "addetta alle vendite": "Sales assistant",
+      "commesso": "Shop assistant",
+      "commessa": "Shop assistant",
+      "cassiere": "Cashier",
+      "cassiera": "Cashier",
+      "commerciale": "Sales representative",
+      "agente di commercio": "Sales agent",
+      "venditore": "Salesperson",
+      "responsabile commerciale": "Sales manager",
+      "direttore commerciale": "Sales director",
+      "area manager": "Area manager",
+      "responsabile acquisti": "Purchasing manager",
+      "buyer": "Buyer",
+      "addetto acquisti": "Purchasing clerk",
+      "addetta acquisti": "Purchasing clerk",
+      "addetto marketing": "Marketing assistant",
+      "addetta marketing": "Marketing assistant",
+      "responsabile marketing": "Marketing manager",
+      "cuoco": "Cook",
+      "cuoca": "Cook",
+      "aiuto cuoco": "Kitchen assistant",
+      "chef": "Chef",
+      "pizzaiolo": "Pizza maker",
+      "cameriere": "Waiter",
+      "cameriera": "Waitress",
+      "barista": "Barista",
+      "lavapiatti": "Dishwasher",
+      "addetto alle pulizie": "Cleaner",
+      "addetta alle pulizie": "Cleaner",
+      "insegnante": "Teacher",
+      "docente": "Teacher",
+      "educatore": "Educator",
+      "educatrice": "Educator",
+      "formatore": "Trainer",
+      "formatrice": "Trainer",
+      "avvocato": "Lawyer",
+      "praticante avvocato": "Trainee lawyer",
+      "architetto": "Architect",
+      "geometra": "Surveyor",
+      "grafico": "Graphic designer",
+      "grafica": "Graphic designer",
+      "sviluppatore": "Developer",
+      "sviluppatrice": "Developer",
+      "sviluppatore software": "Software developer",
+      "sviluppatrice software": "Software developer",
+      "sviluppatore web": "Web developer",
+      "sviluppatore full stack": "Full-stack developer",
+      "sviluppatore front end": "Front-end developer",
+      "sviluppatore back end": "Back-end developer",
+      "programmatore": "Programmer",
+      "programmatrice": "Programmer",
+      "programmatore software": "Software programmer",
+      "programmatore plc": "PLC programmer",
+      "programmatore plc trasfertista": "Field PLC programmer",
+      "programmatore robot": "Robot programmer",
+      "analista programmatore": "Programmer analyst",
+      "sistemista": "System administrator",
+      "amministratore di sistema": "System administrator",
+      "amministratore di rete": "Network administrator",
+      "tecnico di rete": "Network technician",
+      "ingegnere": "Engineer",
+      "ingegnere meccanico": "Mechanical engineer",
+      "ingegnere elettrico": "Electrical engineer",
+      "ingegnere elettronico": "Electronics engineer",
+      "ingegnere informatico": "Computer engineer",
+      "ingegnere del software": "Software engineer",
+      "ingegnere gestionale": "Management engineer",
+      "ingegnere civile": "Civil engineer",
+      "ingegnere di processo": "Process engineer",
+      "ingegnere di produzione": "Production engineer",
+      "ingegnere dell'automazione": "Automation engineer",
+      "ingegnere progettista": "Design engineer",
+      "progettista": "Designer",
+      "progettista meccanico": "Mechanical designer",
+      "progettista elettrico": "Electrical designer",
+      "progettista elettronico": "Electronics designer",
+      "disegnatore tecnico": "Technical draughtsperson",
+      "disegnatore meccanico": "Mechanical draughtsperson",
+      "responsabile ufficio tecnico": "Technical office manager",
+      "capo ufficio tecnico": "Technical office manager",
+      "responsabile di produzione": "Production manager",
+      "responsabile produzione": "Production manager",
+      "direttore di produzione": "Production director",
+      "direttore tecnico": "Technical director",
+      "direttore generale": "General manager",
+      "amministratore delegato": "Chief executive officer",
+      "responsabile qualita": "Quality manager",
+      "addetto controllo qualita": "Quality control inspector",
+      "addetta controllo qualita": "Quality control inspector",
+      "responsabile della sicurezza": "Health and safety manager",
+      "rspp": "Health and safety manager",
+      "responsabile della manutenzione": "Maintenance manager",
+      "responsabile manutenzione": "Maintenance manager",
+      "capo turno": "Shift supervisor",
+      "capoturno": "Shift supervisor",
+      "capo reparto": "Department supervisor",
+      "caporeparto": "Department supervisor",
+      "capo cantiere": "Site manager",
+      "capocantiere": "Site manager",
+      "capo squadra": "Team leader",
+      "caposquadra": "Team leader",
+      "operatore di produzione": "Production operator",
+      "operatrice di produzione": "Production operator",
+      "addetto alla produzione": "Production operator",
+      "addetta alla produzione": "Production operator",
+      "operatore di linea": "Line operator",
+      "conduttore di impianti": "Plant operator",
+      "conduttore di linea": "Line operator",
+      "addetto al confezionamento": "Packaging operator",
+      "addetta al confezionamento": "Packaging operator",
+      "responsabile risorse umane": "Human resources manager",
+      "addetto risorse umane": "Human resources assistant",
+      "addetta risorse umane": "Human resources assistant",
+      "addetto paghe": "Payroll clerk",
+      "addetta paghe": "Payroll clerk",
+      "consulente": "Consultant",
+      "consulente informatico": "IT consultant",
+      "consulente commerciale": "Sales consultant",
+      "project manager": "Project manager",
+      "responsabile di progetto": "Project manager",
+      "capo progetto": "Project manager",
+      "responsabile commessa": "Project manager",
+      "responsabile di commessa": "Project manager",
+      "responsabile it": "IT manager",
+      "responsabile ced": "IT manager",
+      "stagista": "Intern",
+      "tirocinante": "Trainee",
+      "apprendista": "Apprentice",
+      "libero professionista": "Freelancer",
+      "titolare": "Business owner",
+      "socio titolare": "Business partner",
+      "artigiano": "Craftsman",
+      "badante": "Caregiver",
+      "baby sitter": "Babysitter",
+      "custode": "Caretaker",
+      "guardia giurata": "Security guard",
+      "addetto alla sicurezza": "Security officer",
+      "agricoltore": "Farmer",
+      "giardiniere": "Gardener",
+      "parrucchiere": "Hairdresser",
+      "parrucchiera": "Hairdresser",
+      "estetista": "Beautician",
+      "farmacista collaboratore": "Pharmacist",
+      "logista": "Logistics specialist",
+      "responsabile logistica": "Logistics manager",
+      "addetto alla logistica": "Logistics clerk",
+      "addetta alla logistica": "Logistics clerk",
+      "addetto spedizioni": "Shipping clerk",
+      "addetta spedizioni": "Shipping clerk",
+      "addetto al magazzino e alle spedizioni": "Warehouse and shipping clerk",
+      "data entry": "Data entry clerk",
+      "operatore call center": "Call centre operator",
+      "operatrice call center": "Call centre operator",
+      "addetto customer service": "Customer service representative",
+      "addetta customer service": "Customer service representative",
+      "ricercatore": "Researcher",
+      "ricercatrice": "Researcher",
+      "assegnista di ricerca": "Research fellow",
+      "dottorando": "PhD student",
+      "dottoranda": "PhD student"
+    },
+    "uk": {
+      "бухгалтер": "Accountant",
+      "головний бухгалтер": "Chief accountant",
+      "бухгалтер з розрахунку заробітної плати": "Payroll accountant",
+      "економіст": "Economist",
+      "фінансовий аналітик": "Financial analyst",
+      "аудитор": "Auditor",
+      "касир": "Cashier",
+      "менеджер": "Manager",
+      "менеджер з продажу": "Sales manager",
+      "менеджер з продажів": "Sales manager",
+      "менеджер проєктів": "Project manager",
+      "менеджер проекту": "Project manager",
+      "менеджер проектів": "Project manager",
+      "керівник проєкту": "Project manager",
+      "керівник проекту": "Project manager",
+      "менеджер з персоналу": "Human resources manager",
+      "менеджер із закупівель": "Purchasing manager",
+      "менеджер з логістики": "Logistics manager",
+      "менеджер з маркетингу": "Marketing manager",
+      "офіс-менеджер": "Office manager",
+      "офіс менеджер": "Office manager",
+      "адміністратор": "Administrator",
+      "секретар": "Secretary",
+      "секретарка": "Secretary",
+      "діловод": "Records clerk",
+      "продавець": "Salesperson",
+      "продавець-консультант": "Sales assistant",
+      "продавець консультант": "Sales assistant",
+      "торговий представник": "Sales representative",
+      "кухар": "Cook",
+      "шеф-кухар": "Chef",
+      "офіціант": "Waiter",
+      "офіціантка": "Waitress",
+      "бармен": "Bartender",
+      "бариста": "Barista",
+      "прибиральник": "Cleaner",
+      "прибиральниця": "Cleaner",
+      "водій": "Driver",
+      "водій-експедитор": "Delivery driver",
+      "водій експедитор": "Delivery driver",
+      "кур'єр": "Courier",
+      "комірник": "Warehouse worker",
+      "вантажник": "Loader",
+      "кладовщик": "Warehouse worker",
+      "оператор складу": "Warehouse operator",
+      "логіст": "Logistics specialist",
+      "медична сестра": "Nurse",
+      "медсестра": "Nurse",
+      "медичний брат": "Nurse",
+      "лікар": "Physician",
+      "фармацевт": "Pharmacist",
+      "провізор": "Pharmacist",
+      "доглядальниця": "Caregiver",
+      "фізичний терапевт": "Physiotherapist",
+      "вчитель": "Teacher",
+      "вчителька": "Teacher",
+      "викладач": "Lecturer",
+      "вихователь": "Educator",
+      "вихователька": "Educator",
+      "юрист": "Lawyer",
+      "адвокат": "Lawyer",
+      "архітектор": "Architect",
+      "дизайнер": "Designer",
+      "графічний дизайнер": "Graphic designer",
+      "інженер": "Engineer",
+      "інженер-механік": "Mechanical engineer",
+      "інженер механік": "Mechanical engineer",
+      "інженер-електрик": "Electrical engineer",
+      "інженер електрик": "Electrical engineer",
+      "інженер-електронік": "Electronics engineer",
+      "інженер-конструктор": "Design engineer",
+      "інженер конструктор": "Design engineer",
+      "інженер-технолог": "Process engineer",
+      "інженер технолог": "Process engineer",
+      "інженер-програміст": "Software engineer",
+      "інженер програміст": "Software engineer",
+      "інженер з автоматизації": "Automation engineer",
+      "інженер з якості": "Quality engineer",
+      "інженер з охорони праці": "Health and safety engineer",
+      "інженер-будівельник": "Civil engineer",
+      "інженер з налагодження": "Commissioning engineer",
+      "інженер-налагоджувальник": "Commissioning engineer",
+      "налагоджувальник": "Machine setter",
+      "наладчик": "Machine setter",
+      "програміст": "Programmer",
+      "розробник": "Developer",
+      "розробник програмного забезпечення": "Software developer",
+      "веб-розробник": "Web developer",
+      "системний адміністратор": "System administrator",
+      "адміністратор мережі": "Network administrator",
+      "тестувальник": "Software tester",
+      "аналітик": "Analyst",
+      "аналітик даних": "Data analyst",
+      "бізнес-аналітик": "Business analyst",
+      "технік": "Technician",
+      "електрик": "Electrician",
+      "електромонтер": "Electrician",
+      "електромонтажник": "Electrical fitter",
+      "слюсар": "Fitter",
+      "слюсар-ремонтник": "Maintenance fitter",
+      "слюсар ремонтник": "Maintenance fitter",
+      "механік": "Mechanic",
+      "автомеханік": "Car mechanic",
+      "зварник": "Welder",
+      "електрозварник": "Welder",
+      "токар": "Lathe operator",
+      "фрезерувальник": "Milling machine operator",
+      "оператор верстатів з чпк": "CNC machine operator",
+      "оператор чпк": "CNC operator",
+      "оператор виробництва": "Production operator",
+      "оператор лінії": "Line operator",
+      "оператор": "Operator",
+      "робітник": "Worker",
+      "різноробочий": "General worker",
+      "майстер": "Foreman",
+      "майстер дільниці": "Section foreman",
+      "майстер зміни": "Shift supervisor",
+      "начальник зміни": "Shift supervisor",
+      "начальник цеху": "Workshop manager",
+      "начальник відділу": "Head of department",
+      "керівник відділу": "Head of department",
+      "керівник виробництва": "Production manager",
+      "керівник виробничої дільниці": "Production section manager",
+      "директор": "Director",
+      "генеральний директор": "Chief executive officer",
+      "комерційний директор": "Sales director",
+      "технічний директор": "Technical director",
+      "фінансовий директор": "Chief financial officer",
+      "будівельник": "Construction worker",
+      "муляр": "Bricklayer",
+      "столяр": "Joiner",
+      "тесляр": "Carpenter",
+      "сантехнік": "Plumber",
+      "маляр": "Painter",
+      "охоронник": "Security guard",
+      "перукар": "Hairdresser",
+      "косметолог": "Beautician",
+      "консультант": "Consultant",
+      "стажер": "Intern",
+      "практикант": "Trainee",
+      "помічник": "Assistant",
+      "асистент": "Assistant",
+      "фрілансер": "Freelancer",
+      "фізична особа-підприємець": "Self-employed",
+      "фоп": "Self-employed",
+      "дослідник": "Researcher",
+      "науковий співробітник": "Research associate",
+      "перекладач": "Translator"
+    }
+  },
+  "role_words": {
+    "it": {
+      "contabile": "accountant",
+      "impiegato": "clerk",
+      "impiegata": "clerk",
+      "tecnico": "technician",
+      "tecnica": "technician",
+      "ingegnere": "engineer",
+      "sviluppatore": "developer",
+      "sviluppatrice": "developer",
+      "programmatore": "programmer",
+      "programmatrice": "programmer",
+      "progettista": "designer",
+      "responsabile": "manager",
+      "direttore": "director",
+      "direttrice": "director",
+      "consulente": "consultant",
+      "operaio": "worker",
+      "operaia": "worker",
+      "operatore": "operator",
+      "operatrice": "operator",
+      "addetto": "clerk",
+      "addetta": "clerk",
+      "assistente": "assistant",
+      "coordinatore": "coordinator",
+      "coordinatrice": "coordinator",
+      "analista": "analyst",
+      "specialista": "specialist",
+      "esperto": "expert",
+      "esperta": "expert",
+      "capo": "head",
+      "manutentore": "maintenance technician",
+      "installatore": "installer",
+      "collaudatore": "tester",
+      "magazziniere": "warehouse worker",
+      "autista": "driver",
+      "commerciale": "sales representative",
+      "venditore": "salesperson",
+      "agente": "agent",
+      "insegnante": "teacher",
+      "docente": "teacher",
+      "infermiere": "nurse",
+      "infermiera": "nurse",
+      "medico": "physician",
+      "ricercatore": "researcher",
+      "ricercatrice": "researcher",
+      "stagista": "intern",
+      "tirocinante": "trainee",
+      "apprendista": "apprentice",
+      "senior": "senior",
+      "junior": "junior",
+      "software": "software",
+      "meccanico": "mechanical",
+      "elettrico": "electrical",
+      "elettronico": "electronics",
+      "informatico": "IT",
+      "industriale": "industrial",
+      "commerciale estero": "export sales",
+      "amministrativo": "administrative",
+      "amministrativa": "administrative",
+      "trasfertista": "field service",
+      "elettromeccanico": "electromechanical"
+    },
+    "uk": {
+      "бухгалтер": "accountant",
+      "інженер": "engineer",
+      "програміст": "programmer",
+      "розробник": "developer",
+      "менеджер": "manager",
+      "керівник": "manager",
+      "директор": "director",
+      "технік": "technician",
+      "оператор": "operator",
+      "майстер": "foreman",
+      "спеціаліст": "specialist",
+      "фахівець": "specialist",
+      "аналітик": "analyst",
+      "консультант": "consultant",
+      "помічник": "assistant",
+      "асистент": "assistant",
+      "старший": "senior",
+      "провідний": "lead",
+      "головний": "chief",
+      "молодший": "junior",
+      "стажер": "intern",
+      "робітник": "worker",
+      "водій": "driver",
+      "продавець": "salesperson",
+      "кухар": "cook",
+      "вчитель": "teacher",
+      "лікар": "physician",
+      "юрист": "lawyer",
+      "дизайнер": "designer",
+      "механік": "mechanic",
+      "електрик": "electrician",
+      "зварник": "welder",
+      "слюсар": "fitter",
+      "токар": "lathe operator"
+    }
+  },
+  "degree_types": {
+    "it": [
+      [
+        "laurea magistrale a ciclo unico",
+        "Master's degree (single cycle)"
+      ],
+      [
+        "laurea specialistica",
+        "Master's degree"
+      ],
+      [
+        "laurea magistrale",
+        "Master's degree"
+      ],
+      [
+        "laurea quinquennale",
+        "Master's degree (five-year)"
+      ],
+      [
+        "laurea vecchio ordinamento",
+        "Master's degree (pre-reform)"
+      ],
+      [
+        "laurea di secondo livello",
+        "Master's degree"
+      ],
+      [
+        "laurea di primo livello",
+        "Bachelor's degree"
+      ],
+      [
+        "laurea triennale",
+        "Bachelor's degree"
+      ],
+      [
+        "laurea breve",
+        "Bachelor's degree"
+      ],
+      [
+        "diploma di laurea",
+        "University degree"
+      ],
+      [
+        "diploma universitario",
+        "University diploma"
+      ],
+      [
+        "laurea",
+        "University degree"
+      ],
+      [
+        "dottorato di ricerca",
+        "PhD"
+      ],
+      [
+        "dottorato",
+        "PhD"
+      ],
+      [
+        "master universitario di secondo livello",
+        "Second-level university master"
+      ],
+      [
+        "master universitario di primo livello",
+        "First-level university master"
+      ],
+      [
+        "master di secondo livello",
+        "Second-level university master"
+      ],
+      [
+        "master di primo livello",
+        "First-level university master"
+      ],
+      [
+        "master universitario",
+        "University master"
+      ],
+      [
+        "specializzazione",
+        "Specialisation"
+      ],
+      [
+        "diploma di perito industriale",
+        "Technical high-school diploma (industrial)"
+      ],
+      [
+        "diploma di perito meccanico",
+        "Technical high-school diploma (mechanics)"
+      ],
+      [
+        "diploma di perito elettronico",
+        "Technical high-school diploma (electronics)"
+      ],
+      [
+        "diploma di perito elettrotecnico",
+        "Technical high-school diploma (electrical engineering)"
+      ],
+      [
+        "diploma di perito informatico",
+        "Technical high-school diploma (computer science)"
+      ],
+      [
+        "diploma di perito chimico",
+        "Technical high-school diploma (chemistry)"
+      ],
+      [
+        "diploma di perito agrario",
+        "Technical high-school diploma (agriculture)"
+      ],
+      [
+        "diploma di perito aziendale",
+        "Technical high-school diploma (business)"
+      ],
+      [
+        "diploma di perito",
+        "Technical high-school diploma"
+      ],
+      [
+        "perito industriale",
+        "Technical high-school diploma (industrial)"
+      ],
+      [
+        "perito meccanico",
+        "Technical high-school diploma (mechanics)"
+      ],
+      [
+        "perito elettronico",
+        "Technical high-school diploma (electronics)"
+      ],
+      [
+        "perito elettrotecnico",
+        "Technical high-school diploma (electrical engineering)"
+      ],
+      [
+        "perito informatico",
+        "Technical high-school diploma (computer science)"
+      ],
+      [
+        "perito chimico",
+        "Technical high-school diploma (chemistry)"
+      ],
+      [
+        "perito agrario",
+        "Technical high-school diploma (agriculture)"
+      ],
+      [
+        "diploma di ragioneria",
+        "Technical high-school diploma (accounting)"
+      ],
+      [
+        "diploma di ragioniere",
+        "Technical high-school diploma (accounting)"
+      ],
+      [
+        "ragioniere",
+        "Technical high-school diploma (accounting)"
+      ],
+      [
+        "diploma di geometra",
+        "Technical high-school diploma (surveying)"
+      ],
+      [
+        "geometra",
+        "Technical high-school diploma (surveying)"
+      ],
+      [
+        "diploma di maturita scientifica",
+        "High-school diploma (science)"
+      ],
+      [
+        "diploma di maturita classica",
+        "High-school diploma (classics)"
+      ],
+      [
+        "diploma di maturita linguistica",
+        "High-school diploma (languages)"
+      ],
+      [
+        "diploma di maturita tecnica",
+        "Technical high-school diploma"
+      ],
+      [
+        "diploma di maturita professionale",
+        "Vocational high-school diploma"
+      ],
+      [
+        "diploma di maturita",
+        "High-school diploma"
+      ],
+      [
+        "maturita scientifica",
+        "High-school diploma (science)"
+      ],
+      [
+        "maturita classica",
+        "High-school diploma (classics)"
+      ],
+      [
+        "maturita",
+        "High-school diploma"
+      ],
+      [
+        "diploma di liceo scientifico",
+        "High-school diploma (science)"
+      ],
+      [
+        "diploma di liceo classico",
+        "High-school diploma (classics)"
+      ],
+      [
+        "diploma di liceo linguistico",
+        "High-school diploma (languages)"
+      ],
+      [
+        "liceo scientifico",
+        "High-school diploma (science)"
+      ],
+      [
+        "liceo classico",
+        "High-school diploma (classics)"
+      ],
+      [
+        "liceo linguistico",
+        "High-school diploma (languages)"
+      ],
+      [
+        "diploma di istituto tecnico",
+        "Technical high-school diploma"
+      ],
+      [
+        "diploma di istituto professionale",
+        "Vocational high-school diploma"
+      ],
+      [
+        "diploma tecnico",
+        "Technical high-school diploma"
+      ],
+      [
+        "diploma professionale",
+        "Vocational diploma"
+      ],
+      [
+        "istituto tecnico superiore",
+        "Higher technical diploma (ITS)"
+      ],
+      [
+        "diploma its",
+        "Higher technical diploma (ITS)"
+      ],
+      [
+        "qualifica professionale",
+        "Vocational qualification"
+      ],
+      [
+        "attestato di qualifica",
+        "Vocational qualification"
+      ],
+      [
+        "licenza media",
+        "Lower secondary school certificate"
+      ],
+      [
+        "licenza elementare",
+        "Primary school certificate"
+      ],
+      [
+        "abilitazione professionale",
+        "Professional licence"
+      ],
+      [
+        "abilitazione",
+        "Professional licence"
+      ],
+      [
+        "diploma",
+        "Diploma"
+      ]
+    ],
+    "uk": [
+      [
+        "ступінь магістра",
+        "Master's degree"
+      ],
+      [
+        "ступінь бакалавра",
+        "Bachelor's degree"
+      ],
+      [
+        "освітній ступінь магістра",
+        "Master's degree"
+      ],
+      [
+        "освітній ступінь бакалавра",
+        "Bachelor's degree"
+      ],
+      [
+        "освітньо-кваліфікаційний рівень спеціаліста",
+        "Specialist degree"
+      ],
+      [
+        "диплом магістра",
+        "Master's degree"
+      ],
+      [
+        "диплом бакалавра",
+        "Bachelor's degree"
+      ],
+      [
+        "диплом спеціаліста",
+        "Specialist degree"
+      ],
+      [
+        "магістр",
+        "Master's degree"
+      ],
+      [
+        "бакалавр",
+        "Bachelor's degree"
+      ],
+      [
+        "фаховий молодший бакалавр",
+        "Associate degree (junior bachelor)"
+      ],
+      [
+        "молодший бакалавр",
+        "Associate degree (junior bachelor)"
+      ],
+      [
+        "молодший спеціаліст",
+        "Associate degree (junior specialist)"
+      ],
+      [
+        "спеціаліст",
+        "Specialist degree"
+      ],
+      [
+        "кандидат технічних наук",
+        "PhD in Engineering (Candidate of Sciences)"
+      ],
+      [
+        "кандидат економічних наук",
+        "PhD in Economics (Candidate of Sciences)"
+      ],
+      [
+        "кандидат наук",
+        "PhD (Candidate of Sciences)"
+      ],
+      [
+        "доктор філософії",
+        "PhD"
+      ],
+      [
+        "доктор наук",
+        "Doctor of Sciences"
+      ],
+      [
+        "аспірантура",
+        "Doctoral studies"
+      ],
+      [
+        "повна загальна середня освіта",
+        "High-school diploma"
+      ],
+      [
+        "атестат про повну загальну середню освіту",
+        "High-school diploma"
+      ],
+      [
+        "атестат",
+        "High-school diploma"
+      ],
+      [
+        "професійно-технічна освіта",
+        "Vocational qualification"
+      ],
+      [
+        "кваліфікований робітник",
+        "Vocational qualification (skilled worker)"
+      ],
+      [
+        "вища освіта",
+        "Higher education"
+      ],
+      [
+        "диплом",
+        "Diploma"
+      ]
+    ]
+  },
+  "subjects": {
+    "it": {
+      "ingegneria meccanica": "Mechanical Engineering",
+      "ingegneria informatica": "Computer Engineering",
+      "ingegneria gestionale": "Management Engineering",
+      "ingegneria elettronica": "Electronic Engineering",
+      "ingegneria elettrica": "Electrical Engineering",
+      "ingegneria elettrotecnica": "Electrical Engineering",
+      "ingegneria civile": "Civil Engineering",
+      "ingegneria edile": "Building Engineering",
+      "ingegneria chimica": "Chemical Engineering",
+      "ingegneria aerospaziale": "Aerospace Engineering",
+      "ingegneria biomedica": "Biomedical Engineering",
+      "ingegneria energetica": "Energy Engineering",
+      "ingegneria dei materiali": "Materials Engineering",
+      "ingegneria ambientale": "Environmental Engineering",
+      "ingegneria delle telecomunicazioni": "Telecommunications Engineering",
+      "ingegneria dell'automazione": "Automation Engineering",
+      "ingegneria meccatronica": "Mechatronic Engineering",
+      "ingegneria industriale": "Industrial Engineering",
+      "ingegneria del software": "Software Engineering",
+      "informatica": "Computer Science",
+      "scienze informatiche": "Computer Science",
+      "economia aziendale": "Business Administration",
+      "economia e commercio": "Economics and Business",
+      "economia e management": "Economics and Management",
+      "economia": "Economics",
+      "giurisprudenza": "Law",
+      "scienze giuridiche": "Legal Sciences",
+      "medicina e chirurgia": "Medicine and Surgery",
+      "infermieristica": "Nursing",
+      "fisioterapia": "Physiotherapy",
+      "farmacia": "Pharmacy",
+      "fisica": "Physics",
+      "matematica": "Mathematics",
+      "chimica": "Chemistry",
+      "chimica industriale": "Industrial Chemistry",
+      "biologia": "Biology",
+      "biotecnologie": "Biotechnology",
+      "psicologia": "Psychology",
+      "lettere": "Humanities",
+      "lettere moderne": "Modern Literature",
+      "filosofia": "Philosophy",
+      "storia": "History",
+      "lingue e letterature straniere": "Foreign Languages and Literatures",
+      "lingue straniere": "Foreign Languages",
+      "mediazione linguistica": "Language Mediation",
+      "scienze della comunicazione": "Communication Sciences",
+      "scienze politiche": "Political Science",
+      "scienze dell'educazione": "Education Sciences",
+      "scienze della formazione primaria": "Primary Education",
+      "architettura": "Architecture",
+      "design": "Design",
+      "statistica": "Statistics",
+      "scienze agrarie": "Agricultural Sciences",
+      "agraria": "Agricultural Sciences",
+      "veterinaria": "Veterinary Medicine",
+      "scienze motorie": "Sports Science",
+      "turismo": "Tourism",
+      "meccanica": "Mechanics",
+      "elettronica": "Electronics",
+      "elettrotecnica": "Electrical Engineering",
+      "elettronica ed elettrotecnica": "Electronics and Electrical Engineering",
+      "meccanica e meccatronica": "Mechanics and Mechatronics",
+      "amministrazione finanza e marketing": "Administration, Finance and Marketing",
+      "costruzioni ambiente e territorio": "Construction, Environment and Land",
+      "informatica e telecomunicazioni": "Computer Science and Telecommunications",
+      "operatore del legno": "Woodworking operator",
+      "operatore meccanico": "Mechanical operator",
+      "operatore elettrico": "Electrical operator"
+    },
+    "uk": {
+      "комп'ютерні науки": "Computer Science",
+      "інформатика": "Computer Science",
+      "програмна інженерія": "Software Engineering",
+      "комп'ютерна інженерія": "Computer Engineering",
+      "інформаційні технології": "Information Technology",
+      "кібербезпека": "Cybersecurity",
+      "економіка": "Economics",
+      "економіка підприємства": "Business Economics",
+      "облік і оподаткування": "Accounting and Taxation",
+      "облік і аудит": "Accounting and Auditing",
+      "фінанси і кредит": "Finance and Credit",
+      "фінанси, банківська справа та страхування": "Finance, Banking and Insurance",
+      "менеджмент": "Management",
+      "маркетинг": "Marketing",
+      "право": "Law",
+      "правознавство": "Law",
+      "філологія": "Philology",
+      "медицина": "Medicine",
+      "сестринська справа": "Nursing",
+      "фармація": "Pharmacy",
+      "психологія": "Psychology",
+      "педагогіка": "Pedagogy",
+      "середня освіта": "Secondary Education",
+      "туризм": "Tourism",
+      "машинобудування": "Mechanical Engineering",
+      "прикладна механіка": "Applied Mechanics",
+      "електротехніка": "Electrical Engineering",
+      "електроенергетика, електротехніка та електромеханіка": "Electric Power, Electrical Engineering and Electromechanics",
+      "автоматизація та комп'ютерно-інтегровані технології": "Automation and Computer-Integrated Technologies",
+      "автоматизація та приладобудування": "Automation and Instrumentation",
+      "електроніка": "Electronics",
+      "телекомунікації та радіотехніка": "Telecommunications and Radio Engineering",
+      "будівництво та цивільна інженерія": "Construction and Civil Engineering",
+      "архітектура": "Architecture",
+      "хімічні технології": "Chemical Technologies",
+      "харчові технології": "Food Technologies",
+      "агрономія": "Agronomy",
+      "логістика": "Logistics",
+      "міжнародні відносини": "International Relations",
+      "журналістика": "Journalism",
+      "дизайн": "Design",
+      "математика": "Mathematics",
+      "фізика": "Physics",
+      "хімія": "Chemistry",
+      "біологія": "Biology"
+    }
+  },
+  "phrases": {
+    "it": {
+      "dispositivi di bordo campo": "field devices",
+      "visione industriale": "machine vision",
+      "taglio laser": "laser cutting",
+      "gestionali": "management software",
+      "sensoristica": "sensors",
+      "fusibili elettronici": "electronic fuses",
+      "controllo energia": "energy monitoring",
+      "robotica": "robotics",
+      "azionamenti": "drives",
+      "lavoro di squadra": "teamwork",
+      "capacita organizzative": "organisational skills",
+      "capacita comunicative": "communication skills",
+      "gestione del tempo": "time management",
+      "precisione": "accuracy",
+      "affidabilita": "reliability",
+      "puntualita": "punctuality",
+      "flessibilita": "flexibility",
+      "autonomia": "autonomy",
+      "spirito di iniziativa": "initiative",
+      "orientamento al cliente": "customer focus",
+      "orientamento al risultato": "results orientation",
+      "capacita di analisi": "analytical skills",
+      "doti relazionali": "interpersonal skills",
+      "processi di automazione": "automation processes",
+      "modelli matematici": "mathematical models",
+      "sensori": "sensors",
+      "dispositivi di campo": "field devices",
+      "domotica": "home automation",
+      "manutenzione": "maintenance",
+      "saldatura": "welding"
+    },
+    "uk": {
+      "робота в команді": "teamwork",
+      "комунікабельність": "communication skills",
+      "відповідальність": "responsibility",
+      "уважність": "attention to detail",
+      "пунктуальність": "punctuality",
+      "стресостійкість": "stress resistance",
+      "організованість": "organisational skills",
+      "ініціативність": "initiative",
+      "аналітичне мислення": "analytical thinking",
+      "лідерство": "leadership",
+      "навчання персоналу": "staff training",
+      "ведення документації": "document management",
+      "робота з клієнтами": "customer service"
+    }
+  }
+}

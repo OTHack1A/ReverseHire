@@ -1,0 +1,46 @@
+# Required dependencies (versions not pinned). All have binary wheels for Windows
+# x64, Linux x86_64/aarch64 and macOS arm64 on Python 3.12-3.14. Intel Macs: the
+# last onnxruntime for macOS x86_64 is 1.23.2 (Python <= 3.13), so use Python 3.12
+# or 3.13 there.
+pypdf
+python-docx
+httpx
+trafilatura
+lxml
+rapidfuzz
+numpy
+fastembed
+lingua-language-detector
+# Desktop interface (Qt)
+PySide6
+# Local OCR for image CVs and scanned PDFs (PP-OCR models bundled, works offline)
+rapidocr>=3.10
+onnxruntime
+# Local CV translation into English (OPUS-MT models in ONNX, offline)
+tokenizers
+# System certificate store for HTTPS
+truststore
+# Windows only: classic Outlook through COM for the application e-mail
+pywin32; sys_platform == "win32"
+
+# Development and tests
+pytest
+fpdf2
+
+# Optional (uncomment to install them)
+# MCP server for Claude and Codex and the in-app assistant strip (see docs/MCP.md):
+# mcp
+# Crawl engine for dynamic websites; after installing it also run:
+#   playwright install chromium
+# playwright
+# Job boards (Indeed, LinkedIn) as an optional extra source, off by default
+# (setting job_boards_enabled). About 14 MB of extra wheels (pandas, curl_cffi).
+# Automated access is against those sites' terms of use: the user's choice.
+# python-jobspy
+# Overture Maps places as an extra discovery source (extra "overture"):
+# duckdb
+# Windows, optional: GPU (DirectML) for the advanced OCR reader (extra "gpu"). It
+# replaces the files of the onnxruntime package, so swap them instead of adding it:
+#   pip uninstall -y onnxruntime
+#   pip install onnxruntime-directml==1.24.4
+# onnxruntime-directml==1.24.4; sys_platform == "win32"

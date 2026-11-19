@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "reversehire": {
+      "command": "<PROJECT_PATH>\.venv\Scripts\python.exe",
+      "args": ["-m", "reversehire.mcp_server"],
+      "timeout": 600000
+    }
+  }
+}

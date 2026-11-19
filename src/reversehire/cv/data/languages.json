@@ -1,0 +1,574 @@
+{
+  "_note": "Spoken languages: canonical key -> IT/EN/UK names and variants recognised in the text (any language). 'levels': non-CEFR level words, with the normalised level (IT, EN, UK).",
+  "languages": {
+    "italian": {
+      "it": "italiano",
+      "en": "Italian",
+      "variants": [
+        "italiano",
+        "italiana",
+        "italian",
+        "італійська",
+        "італійська мова"
+      ],
+      "uk": "італійська"
+    },
+    "english": {
+      "it": "inglese",
+      "en": "English",
+      "variants": [
+        "inglese",
+        "english",
+        "англійська",
+        "англійська мова"
+      ],
+      "uk": "англійська"
+    },
+    "french": {
+      "it": "francese",
+      "en": "French",
+      "variants": [
+        "francese",
+        "french",
+        "français",
+        "francais",
+        "французька",
+        "французька мова"
+      ],
+      "uk": "французька"
+    },
+    "german": {
+      "it": "tedesco",
+      "en": "German",
+      "variants": [
+        "tedesco",
+        "german",
+        "deutsch",
+        "німецька",
+        "німецька мова"
+      ],
+      "uk": "німецька"
+    },
+    "spanish": {
+      "it": "spagnolo",
+      "en": "Spanish",
+      "variants": [
+        "spagnolo",
+        "spanish",
+        "español",
+        "espanol",
+        "castigliano",
+        "іспанська",
+        "іспанська мова"
+      ],
+      "uk": "іспанська"
+    },
+    "portuguese": {
+      "it": "portoghese",
+      "en": "Portuguese",
+      "variants": [
+        "portoghese",
+        "portuguese",
+        "português",
+        "португальська"
+      ],
+      "uk": "португальська"
+    },
+    "russian": {
+      "it": "russo",
+      "en": "Russian",
+      "variants": [
+        "russo",
+        "russian",
+        "російська",
+        "російська мова"
+      ],
+      "uk": "російська"
+    },
+    "chinese": {
+      "it": "cinese",
+      "en": "Chinese",
+      "variants": [
+        "cinese",
+        "chinese",
+        "mandarino",
+        "mandarin",
+        "китайська"
+      ],
+      "uk": "китайська"
+    },
+    "japanese": {
+      "it": "giapponese",
+      "en": "Japanese",
+      "variants": [
+        "giapponese",
+        "japanese",
+        "японська"
+      ],
+      "uk": "японська"
+    },
+    "arabic": {
+      "it": "arabo",
+      "en": "Arabic",
+      "variants": [
+        "arabo",
+        "arabic",
+        "арабська"
+      ],
+      "uk": "арабська"
+    },
+    "dutch": {
+      "it": "olandese",
+      "en": "Dutch",
+      "variants": [
+        "olandese",
+        "dutch",
+        "нідерландська",
+        "голландська"
+      ],
+      "uk": "нідерландська"
+    },
+    "romanian": {
+      "it": "rumeno",
+      "en": "Romanian",
+      "variants": [
+        "rumeno",
+        "romeno",
+        "romanian",
+        "румунська"
+      ],
+      "uk": "румунська"
+    },
+    "polish": {
+      "it": "polacco",
+      "en": "Polish",
+      "variants": [
+        "polacco",
+        "polish",
+        "польська",
+        "польська мова"
+      ],
+      "uk": "польська"
+    },
+    "albanian": {
+      "it": "albanese",
+      "en": "Albanian",
+      "variants": [
+        "albanese",
+        "albanian",
+        "албанська"
+      ],
+      "uk": "албанська"
+    },
+    "ukrainian": {
+      "it": "ucraino",
+      "en": "Ukrainian",
+      "variants": [
+        "ucraino",
+        "ukrainian",
+        "українська",
+        "українська мова"
+      ],
+      "uk": "українська"
+    },
+    "greek": {
+      "it": "greco",
+      "en": "Greek",
+      "variants": [
+        "greco",
+        "greek",
+        "грецька"
+      ],
+      "uk": "грецька"
+    },
+    "turkish": {
+      "it": "turco",
+      "en": "Turkish",
+      "variants": [
+        "turco",
+        "turkish",
+        "турецька"
+      ],
+      "uk": "турецька"
+    },
+    "hindi": {
+      "it": "hindi",
+      "en": "Hindi",
+      "variants": [
+        "hindi",
+        "гінді"
+      ],
+      "uk": "гінді"
+    },
+    "swedish": {
+      "it": "svedese",
+      "en": "Swedish",
+      "variants": [
+        "svedese",
+        "swedish",
+        "шведська"
+      ],
+      "uk": "шведська"
+    },
+    "croatian": {
+      "it": "croato",
+      "en": "Croatian",
+      "variants": [
+        "croato",
+        "croatian",
+        "хорватська"
+      ],
+      "uk": "хорватська"
+    },
+    "serbian": {
+      "it": "serbo",
+      "en": "Serbian",
+      "variants": [
+        "serbo",
+        "serbian",
+        "сербська"
+      ],
+      "uk": "сербська"
+    },
+    "slovenian": {
+      "it": "sloveno",
+      "en": "Slovenian",
+      "variants": [
+        "sloveno",
+        "slovenian",
+        "slovene",
+        "словенська"
+      ],
+      "uk": "словенська"
+    },
+    "lis": {
+      "it": "LIS (lingua dei segni)",
+      "en": "Italian Sign Language",
+      "variants": [
+        "lis",
+        "lingua dei segni"
+      ],
+      "uk": "італійська жестова мова"
+    },
+    "czech": {
+      "it": "ceco",
+      "en": "Czech",
+      "uk": "чеська",
+      "variants": [
+        "ceco",
+        "czech",
+        "cestina",
+        "чеська"
+      ]
+    },
+    "slovak": {
+      "it": "slovacco",
+      "en": "Slovak",
+      "uk": "словацька",
+      "variants": [
+        "slovacco",
+        "slovak",
+        "словацька"
+      ]
+    },
+    "hungarian": {
+      "it": "ungherese",
+      "en": "Hungarian",
+      "uk": "угорська",
+      "variants": [
+        "ungherese",
+        "hungarian",
+        "magyar",
+        "угорська"
+      ]
+    },
+    "bulgarian": {
+      "it": "bulgaro",
+      "en": "Bulgarian",
+      "uk": "болгарська",
+      "variants": [
+        "bulgaro",
+        "bulgarian",
+        "болгарська"
+      ]
+    },
+    "belarusian": {
+      "it": "bielorusso",
+      "en": "Belarusian",
+      "uk": "білоруська",
+      "variants": [
+        "bielorusso",
+        "belarusian",
+        "білоруська"
+      ]
+    },
+    "georgian": {
+      "it": "georgiano",
+      "en": "Georgian",
+      "uk": "грузинська",
+      "variants": [
+        "georgiano",
+        "georgian",
+        "грузинська"
+      ]
+    },
+    "hebrew": {
+      "it": "ebraico",
+      "en": "Hebrew",
+      "uk": "іврит",
+      "variants": [
+        "ebraico",
+        "hebrew",
+        "іврит"
+      ]
+    },
+    "korean": {
+      "it": "coreano",
+      "en": "Korean",
+      "uk": "корейська",
+      "variants": [
+        "coreano",
+        "korean",
+        "корейська"
+      ]
+    },
+    "persian": {
+      "it": "persiano",
+      "en": "Persian",
+      "uk": "перська",
+      "variants": [
+        "persiano",
+        "persian",
+        "farsi",
+        "перська"
+      ]
+    },
+    "finnish": {
+      "it": "finlandese",
+      "en": "Finnish",
+      "uk": "фінська",
+      "variants": [
+        "finlandese",
+        "finnish",
+        "фінська"
+      ]
+    },
+    "norwegian": {
+      "it": "norvegese",
+      "en": "Norwegian",
+      "uk": "норвезька",
+      "variants": [
+        "norvegese",
+        "norwegian",
+        "норвезька"
+      ]
+    },
+    "danish": {
+      "it": "danese",
+      "en": "Danish",
+      "uk": "данська",
+      "variants": [
+        "danese",
+        "danish",
+        "данська"
+      ]
+    },
+    "lithuanian": {
+      "it": "lituano",
+      "en": "Lithuanian",
+      "uk": "литовська",
+      "variants": [
+        "lituano",
+        "lithuanian",
+        "литовська"
+      ]
+    },
+    "latvian": {
+      "it": "lettone",
+      "en": "Latvian",
+      "uk": "латиська",
+      "variants": [
+        "lettone",
+        "latvian",
+        "латиська"
+      ]
+    },
+    "estonian": {
+      "it": "estone",
+      "en": "Estonian",
+      "uk": "естонська",
+      "variants": [
+        "estone",
+        "estonian",
+        "естонська"
+      ]
+    },
+    "catalan": {
+      "it": "catalano",
+      "en": "Catalan",
+      "uk": "каталонська",
+      "variants": [
+        "catalano",
+        "catalan",
+        "каталонська"
+      ]
+    },
+    "vietnamese": {
+      "it": "vietnamita",
+      "en": "Vietnamese",
+      "uk": "в'єтнамська",
+      "variants": [
+        "vietnamita",
+        "vietnamese",
+        "в'єтнамська"
+      ]
+    },
+    "moldovan": {
+      "it": "moldavo",
+      "en": "Moldovan",
+      "uk": "молдовська",
+      "variants": [
+        "moldavo",
+        "moldovan",
+        "молдовська"
+      ]
+    },
+    "urdu": {
+      "it": "urdu",
+      "en": "Urdu",
+      "uk": "урду",
+      "variants": [
+        "urdu",
+        "урду"
+      ]
+    },
+    "bengali": {
+      "it": "bengalese",
+      "en": "Bengali",
+      "uk": "бенгальська",
+      "variants": [
+        "bengalese",
+        "bengali",
+        "bangla",
+        "бенгальська"
+      ]
+    },
+    "tagalog": {
+      "it": "tagalog",
+      "en": "Tagalog",
+      "uk": "тагальська",
+      "variants": [
+        "tagalog",
+        "filipino",
+        "тагальська"
+      ]
+    }
+  },
+  "levels": [
+    {
+      "variants": [
+        "madrelingua",
+        "lingua madre",
+        "native",
+        "native speaker",
+        "mother tongue",
+        "bilingue",
+        "bilingual",
+        "рідна",
+        "рідна мова",
+        "носій мови",
+        "рідною"
+      ],
+      "it": "madrelingua",
+      "en": "native",
+      "uk": "рідна"
+    },
+    {
+      "variants": [
+        "fluente",
+        "fluent",
+        "ottimo",
+        "ottima",
+        "eccellente",
+        "excellent",
+        "proficient",
+        "advanced",
+        "avanzato",
+        "avanzata",
+        "full professional proficiency",
+        "вільно",
+        "вільне володіння",
+        "високий",
+        "високий рівень",
+        "досконало",
+        "просунутий",
+        "професійний рівень"
+      ],
+      "it": "avanzato",
+      "en": "advanced",
+      "uk": "вільно"
+    },
+    {
+      "variants": [
+        "buono",
+        "buona",
+        "good",
+        "intermedio",
+        "intermedia",
+        "intermediate",
+        "discreto",
+        "discreta",
+        "working knowledge",
+        "professional working proficiency",
+        "upper intermediate",
+        "середній",
+        "середній рівень",
+        "добре",
+        "добрий",
+        "розмовний",
+        "upper-intermediate",
+        "pre-intermediate"
+      ],
+      "it": "intermedio",
+      "en": "intermediate",
+      "uk": "середній"
+    },
+    {
+      "variants": [
+        "scolastico",
+        "scolastica",
+        "base",
+        "basic",
+        "elementare",
+        "elementary",
+        "sufficiente",
+        "beginner",
+        "principiante",
+        "limited working proficiency",
+        "базовий",
+        "базовий рівень",
+        "початковий",
+        "елементарний",
+        "зі словником"
+      ],
+      "it": "base",
+      "en": "basic",
+      "uk": "базовий"
+    },
+    {
+      "variants": [
+        "in fase di studio",
+        "in corso di studio",
+        "sto studiando",
+        "currently studying",
+        "currently learning",
+        "вивчаю",
+        "на етапі вивчення",
+        "у процесі вивчення"
+      ],
+      "it": "in studio",
+      "en": "learning",
+      "uk": "вивчаю"
+    }
+  ]
+}
