@@ -17,6 +17,16 @@ from PySide6.QtWebEngineCore import (QWebEnginePage, QWebEngineProfile, QWebEngi
                                      QWebEngineUrlRequestInfo, QWebEngineUrlRequestInterceptor)
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
+try:
+    # Qt WebEngine renders through internal Qt Quick objects (QQuickWindow, QQuickItem).
+    # The app's application-wide event filters (written in Python) receive their events,
+    # and PySide must then wrap them: with QtQuick not imported it guesses their type,
+    # which crashed (segmentation fault) on Linux and macOS. Importing it registers the
+    # real types. Nothing else of Qt Quick is used.
+    import PySide6.QtQuick  # noqa: F401
+except ImportError:  # pragma: no cover - a PySide6 without Qt Quick
+    pass
+
 from .bridge import MapBridge
 from .policy import RequestPolicy
 from .settings import MapSettings

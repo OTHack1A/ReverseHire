@@ -59,6 +59,12 @@ def main(argv: list[str] | None = None) -> int:
                 found.setdefault(version, []).append(str(path.relative_to(args.bundle)))
     for version in sorted(found):
         print(f"macOS {'.'.join(map(str, version))}: {len(found[version])} files, e.g. {found[version][0]}")
+        example = args.bundle / found[version][0]
+        output = subprocess.run(["otool", "-l", str(example)], capture_output=True, text=True,
+                                encoding="utf-8", errors="replace").stdout
+        for block in re.split(r"(?=Load command \d+)", output):
+            if "cmd LC_BUILD_VERSION" in block or "cmd LC_VERSION_MIN_MACOSX" in block:
+                print("    " + " | ".join(line.strip() for line in block.strip().splitlines()))
     highest = max(found) if found else None
     print(f"Highest minimum: {'.'.join(map(str, highest)) if highest else 'none found'}")
     too_new = [v for v in found if v > limit]

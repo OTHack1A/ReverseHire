@@ -96,7 +96,7 @@ hiddenimports += submodules("reversehire")
 hiddenimports += submodules("mcp", filter=lambda m: ".cli" not in m)
 hiddenimports += submodules("rapidocr")
 hiddenimports += ["truststore", "onnxruntime", "tokenizers", "cv2", "docx", "pypdf",
-                  "PySide6.QtPdf", "PySide6.QtPdfWidgets", "PySide6.QtPrintSupport",
+                  "PySide6.QtQuick", "PySide6.QtPdf", "PySide6.QtPdfWidgets", "PySide6.QtPrintSupport",
                   "PySide6.QtWebChannel", "PySide6.QtWebEngineCore", "PySide6.QtWebEngineWidgets"]
 if WINDOWS:
     hiddenimports += ["win32com", "win32com.client", "pythoncom", "pywintypes"]
@@ -108,11 +108,11 @@ excludes = [
     "playwright", "jobspy", "duckdb", "pandas", "torch", "tensorflow", "matplotlib",
     # GUI toolkits the app does not use
     "tkinter", "_tkinter", "PyQt5", "PyQt6", "PySide2",
-    # Qt modules the app does not use. Qt Quick and QML: Qt WebEngine's libraries link
-    # them (they stay as libraries), but the QML plugins (about 200 MB with their
-    # dependencies) are only collected through these Python modules.
-    "PySide6.QtQml", "PySide6.QtQuick", "PySide6.QtQuickWidgets", "PySide6.QtQuickControls2",
-    "PySide6.QtWebEngineQuick", "PySide6.QtQuick3D", "PySide6.Qt3DCore", "PySide6.Qt3DRender", "PySide6.QtCharts",
+    # Qt modules the app does not use. PySide6.QtQuick (and QtQml, which it needs) IS
+    # bundled: mapview/webbackend.py imports it so that PySide knows the types of Qt
+    # WebEngine's internal Qt Quick objects; its QML plugins and the libraries they
+    # pull in are filtered out below (UNUSED_QT).
+    "PySide6.QtQuickWidgets", "PySide6.QtQuickControls2", "PySide6.QtWebEngineQuick", "PySide6.QtQuick3D", "PySide6.Qt3DCore", "PySide6.Qt3DRender", "PySide6.QtCharts",
     "PySide6.QtDataVisualization", "PySide6.QtGraphs", "PySide6.QtMultimedia",
     "PySide6.QtMultimediaWidgets", "PySide6.QtBluetooth", "PySide6.QtNfc", "PySide6.QtSensors",
     "PySide6.QtSerialPort", "PySide6.QtSql", "PySide6.QtTest", "PySide6.QtDesigner",
@@ -165,9 +165,23 @@ a = Analysis(  # noqa: F821
 WEBENGINE_LOCALES = {"en-US", "en-GB", "it", "uk"}
 
 
+# Qt libraries that only QML plugins need (the app loads no QML). Some are GPL-only
+# (Qt Graphs, Quick 3D, Virtual Keyboard...): none of them must end up in a build.
+UNUSED_QT = re.compile(
+    r"(?:^|/|lib)Qt6?(?:Quick3D|3D|Charts|DataVisualization|Graphs|Multimedia|Location|Sensors|Scxml|"
+    r"StateMachine|RemoteObjects|TextToSpeech|SpatialAudio|WebView|WebSockets|VirtualKeyboard|"
+    r"QuickControls2|QuickDialogs2|QuickTemplates2|QuickParticles|QuickShapes|QuickTimeline|QuickEffects|"
+    r"QuickLayouts|QuickVectorImage|QuickTest|QuickNativeStyle|Test|Labs|Sql|QmlLocalStorage|"
+    r"QmlXmlListModel|QmlNetwork|QmlCore|QmlDesignSupport|ShaderTools|WebEngineQuick|WebChannelQuick|"
+    r"PdfQuick|PositioningQuick|SensorsQuick|MultimediaQuick|WebViewQuick|Lottie|Help|Designer|UiTools|"
+    r"Bluetooth|Nfc|SerialPort|SerialBus|HttpServer|Protobuf|Grpc|CanvasPainter)")  # name prefixes
+
+
 def wanted(destination):
     path = destination.replace("\\", "/")
     name = path.rsplit("/", 1)[-1]
+    if UNUSED_QT.search(path):  # Windows puts the Qt DLLs at the top of _internal
+        return False
     if "/qml/" in f"/{path}" and "PySide6" in path:
         return False  # QML plugins (see excludes)
     if ".debug." in name and "PySide6" in path:
